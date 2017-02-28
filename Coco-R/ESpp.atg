@@ -1,0 +1,44 @@
+COMPILER ESpp
+
+CHARACTERS
+	digit = '0'..'9'.
+	lower = 'a'..'z'.
+	upper = 'A'..'Z'.
+	eol = '\r' + '\n'.
+	noQuote = ANY - '\"' - eol.
+
+TOKENS
+	id = lower{['_'](lower|upper|digit)}.
+	ctestr = '"' {noQuote} '"'.
+	cteent = digit{digit}.
+	ctedbl = digit{digit}'.'digit{digit}.
+	ctebol = 'falso' | 'verdadero'
+
+IGNORE eol + '\t'
+
+PRODUCTIONS
+	ESpp = Program.
+	Program	= Vars Funs Main.
+	Vars = 'variables' ':' {Declaracion}.
+	Funs = 'funciones' ':' {(Tipo|'rutina') id '(' [Tipo id {',' Tipo id}] ')' Bloque}.
+	Main = 'main' Bloque.
+	Declaracion = Tipo [TipoArr] id {',' id} ';'.
+	Tipo = 'entero' | 'decimal' | 'booleano' | 'cadena'.
+	TipoArr = '[' cteent ']'.
+	Bloque = '{' (Declaracion | Asignacion | Funcion ';' | Condicion | Ciclo | Impresion) '}'.
+	Asignacion = Variable '=' Expresion ';'.
+	Funcion = id '(' [Expresion {',' Expresion}] ')'.
+	Condicion = 'si' '(' Expresion ')' Bloque  ['sino' Bloque].
+	Ciclo = 'mientras' '(' Expresion ')' Bloque.
+	Impresion = 'imprimir' '(' Expresion {',' Expresion} ')' ';'.
+	Variable = id ['[' Expresion ']'].
+	Expresion = Exp {('&&'|'||') Exp}.
+	Exp = Expt [('>' | '<' | '>=' | '<=' | '<>' | '==') Expt].
+	Expt = Termino {('+' | '-') Termino}.
+	Termino = Factor {('*' | '/' | '%') Factor}.
+	Factor = ('(' Expresion ')') | ([('+' | '-')] Constante).
+	Constante = cteent | ctedbl | ctebol | ctestr | Variable | Funcion | Aleatorio | Lectura.
+	Aleatorio = 'aleatorio' '(' ')'.
+	Lectura = 'lectura' '(' ')'.
+
+END ESpp.
