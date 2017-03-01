@@ -238,17 +238,16 @@ public class Scanner {
 		start[93] = 14; 
 		start[123] = 15; 
 		start[125] = 16; 
-		start[61] = 35; 
+		start[61] = 30; 
 		start[38] = 17; 
 		start[124] = 19; 
-		start[62] = 36; 
-		start[60] = 37; 
+		start[62] = 31; 
+		start[60] = 32; 
 		start[43] = 25; 
 		start[45] = 26; 
 		start[42] = 27; 
 		start[47] = 28; 
 		start[37] = 29; 
-		start[70] = 30; 
 		start[Buffer.EOF] = -1;
 
 	}
@@ -330,6 +329,7 @@ public class Scanner {
 			case "aleatorio": t.kind = 40; break;
 			case "lectura": t.kind = 41; break;
 			case "verdadero": t.kind = 42; break;
+			case "falso": t.kind = 43; break;
 			default: break;
 		}
 	}
@@ -429,28 +429,14 @@ public class Scanner {
 			case 29:
 				{t.kind = 39; break;}
 			case 30:
-				if (ch == 'a') {AddCh(); goto case 31;}
-				else {goto case 0;}
-			case 31:
-				if (ch == 'l') {AddCh(); goto case 32;}
-				else {goto case 0;}
-			case 32:
-				if (ch == 's') {AddCh(); goto case 33;}
-				else {goto case 0;}
-			case 33:
-				if (ch == 'o') {AddCh(); goto case 34;}
-				else {goto case 0;}
-			case 34:
-				{t.kind = 43; break;}
-			case 35:
 				recEnd = pos; recKind = 22;
 				if (ch == '=') {AddCh(); goto case 24;}
 				else {t.kind = 22; break;}
-			case 36:
+			case 31:
 				recEnd = pos; recKind = 29;
 				if (ch == '=') {AddCh(); goto case 21;}
 				else {t.kind = 29; break;}
-			case 37:
+			case 32:
 				recEnd = pos; recKind = 30;
 				if (ch == '=') {AddCh(); goto case 22;}
 				else if (ch == '>') {AddCh(); goto case 23;}

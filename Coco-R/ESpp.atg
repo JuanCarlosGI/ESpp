@@ -44,6 +44,6 @@ PRODUCTIONS
 	Constante = cteent | ctedbl | Ctebol | ctestr | Aleatorio | Lectura | IF(FollowedByLPar()) Funcion | Variable.
 	Aleatorio = "aleatorio" '(' ')'.
 	Lectura = "lectura" '(' ')'.
-	Ctebol = "verdadero" | "Falso".
+	Ctebol = "verdadero" | "falso".
 
 END ESpp.

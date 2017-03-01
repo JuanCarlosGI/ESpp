@@ -452,7 +452,7 @@ public class Errors {
 			case 40: s = "\"aleatorio\" expected"; break;
 			case 41: s = "\"lectura\" expected"; break;
 			case 42: s = "\"verdadero\" expected"; break;
-			case 43: s = "\"Falso\" expected"; break;
+			case 43: s = "\"falso\" expected"; break;
 			case 44: s = "??? expected"; break;
 			case 45: s = "invalid Tipo"; break;
 			case 46: s = "invalid Factor"; break;
