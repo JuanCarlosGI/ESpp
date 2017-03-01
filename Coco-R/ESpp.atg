@@ -1,5 +1,9 @@
 COMPILER ESpp
 
+bool FollowedByLPar() {
+ return scanner.Peek().kind == _lpar;
+} 
+
 CHARACTERS
 	digit = '0'..'9'.
 	lower = 'a'..'z'.
@@ -12,33 +16,34 @@ TOKENS
 	ctestr = '"' {noQuote} '"'.
 	cteent = digit{digit}.
 	ctedbl = digit{digit}'.'digit{digit}.
-	ctebol = 'falso' | 'verdadero'
+	lpar = '('.
 
 IGNORE eol + '\t'
 
 PRODUCTIONS
 	ESpp = Program.
 	Program	= Vars Funs Main.
-	Vars = 'variables' ':' {Declaracion}.
-	Funs = 'funciones' ':' {(Tipo|'rutina') id '(' [Tipo id {',' Tipo id}] ')' Bloque}.
-	Main = 'main' Bloque.
+	Vars = "variables" ':' {Declaracion}.
+	Funs = "funciones" ':' {(Tipo|"rutina") id '(' [Tipo id {',' Tipo id}] ')' Bloque}.
+	Main = "main" Bloque.
 	Declaracion = Tipo [TipoArr] id {',' id} ';'.
-	Tipo = 'entero' | 'decimal' | 'booleano' | 'cadena'.
+	Tipo = "entero" | "decimal" | "booleano" | "cadena".
 	TipoArr = '[' cteent ']'.
-	Bloque = '{' (Declaracion | Asignacion | Funcion ';' | Condicion | Ciclo | Impresion) '}'.
+	Bloque = '{' {Declaracion | Condicion | Ciclo | Impresion | IF(FollowedByLPar()) Funcion ';' | Asignacion} '}'.
 	Asignacion = Variable '=' Expresion ';'.
 	Funcion = id '(' [Expresion {',' Expresion}] ')'.
-	Condicion = 'si' '(' Expresion ')' Bloque  ['sino' Bloque].
-	Ciclo = 'mientras' '(' Expresion ')' Bloque.
-	Impresion = 'imprimir' '(' Expresion {',' Expresion} ')' ';'.
+	Condicion = "si" '(' Expresion ')' Bloque  ["sino" Bloque].
+	Ciclo = "mientras" '(' Expresion ')' Bloque.
+	Impresion = "imprimir" '(' Expresion {',' Expresion} ')' ';'.
 	Variable = id ['[' Expresion ']'].
-	Expresion = Exp {('&&'|'||') Exp}.
-	Exp = Expt [('>' | '<' | '>=' | '<=' | '<>' | '==') Expt].
+	Expresion = Exp {("&&"|"||") Exp}.
+	Exp = Expt [('>' | '<' | ">=" | "<=" | "<>" | "==") Expt].
 	Expt = Termino {('+' | '-') Termino}.
 	Termino = Factor {('*' | '/' | '%') Factor}.
 	Factor = ('(' Expresion ')') | ([('+' | '-')] Constante).
-	Constante = cteent | ctedbl | ctebol | ctestr | Variable | Funcion | Aleatorio | Lectura.
-	Aleatorio = 'aleatorio' '(' ')'.
-	Lectura = 'lectura' '(' ')'.
+	Constante = cteent | ctedbl | Ctebol | ctestr | Aleatorio | Lectura | IF(FollowedByLPar()) Funcion | Variable.
+	Aleatorio = "aleatorio" '(' ')'.
+	Lectura = "lectura" '(' ')'.
+	Ctebol = "verdadero" | "Falso".
 
 END ESpp.

@@ -1,0 +1,3 @@
+﻿Use the folloing command in this folder to generate scanner and parser:
+
+.\Coco .\..\ESpp.atg -namespace Coco_R -frames .\

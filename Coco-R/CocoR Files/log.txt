@@ -1,0 +1,2 @@
+
+C:\Users\juanc\Programs\Visual Studio\Projects\ES++\Coco-R\CocoR Files>﻿.\Coco ".\..\ESpp.atg" -namespace "Coco_R" -frames ".\" 
