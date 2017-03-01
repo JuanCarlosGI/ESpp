@@ -1,5 +1,4 @@
-# ESpp
-ES++
+# ES++
 
 <p>The solution consist of two projects:</p>
 <ul>
