@@ -1,26 +1,35 @@
 variables:
-	entero uno, dos;
-	cadena tres;
-	booleano cuatro;
-	decimal cinco;
-	entero[75] seis; 
+	entero entero_1, miEntero2;
+	cadena mi_cadena;
+	booleano elBooleano;
+	decimal dec;
+	entero[75] arrEnt; 
 
 funciones:
 	rutina primera(entero uno, cadena dos) { }
 	entero segunda() { }
 
 main {
-	uno = 3 + 4 * 5 / 7 % 2 * (3 + 5) - uno - (-dos) + segunda() - leer() * aleatorio();
+	entero_1 = 3 + 4 * 5 / 7 % 2 * (3 + 5) - entero_1 - (-dec) + segunda() - lectura() * aleatorio();
 	entero local;
 	local = 0;
-	primera(uno, 3*5);
-	imprimir(uno, dos, 5 * 9);
-	si (uno) {
-		si (dos) {
+	primera(entero_1, 3*5);
+	imprimir(entero_1, miEntero2, 5 * 9);
+	si (elBooleano) {
+		si (falso) {
+			entero ent;
 		}
+
+		local = 0;
+
+		booleano local;
+
+		local = falso;
+	}
+	sino {
 	}
 
 	mientras (verdadero) {
-		imrpimir("verdadero");
+		imprimir("verdadero");
 	}
 }

@@ -14,7 +14,7 @@
 #endif
             if (args.Length == 0)
             {
-                Console.WriteLine("Please specify a file address.");
+                Console.WriteLine("Especifica la dirección del archivo a compilar");
                 return;
             }
 
@@ -29,7 +29,7 @@
             }
             else
             {
-                Console.WriteLine("File not found.");
+                Console.WriteLine("Archivo no encontrado.");
             }
         }
     }

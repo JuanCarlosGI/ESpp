@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+
+
 
 using System;
 
@@ -25,9 +28,100 @@ public class Parser {
 	public Token la;   // lookahead token
 	int errDist = minErrDist;
 
+public SymbolTable currentSymbolTable;
+
 bool FollowedByLPar() {
  return scanner.Peek().kind == _lpar;
 } 
+
+private Type getType(string type) {
+	Type tipoD = Type.Entero;
+	switch(type) {
+		case "booleano": tipoD = Type.Booleano; break;
+		case "decimal": tipoD = Type.Decimal; break;
+		case "cadena": tipoD = Type.Cadena; break;
+		case "rutina": tipoD = Type.Rutina; break;
+	}
+
+	return tipoD;
+}
+
+void addVariable(string name, string tipo, bool isArr, int size) {
+	if(!currentSymbolTable.ExistsInScope(name)) {
+		Type tipoD = getType(tipo);
+
+		Symbol symbol = new Variable {
+			Name = name,
+			IsArray = isArr,
+			ArrayLength = size,
+			Type = tipoD
+		};
+		
+		currentSymbolTable.Add(symbol);
+	}
+	else
+		SemErr($"El nombre {name} ya ha sido declarado en este scope.");
+}
+
+void checkVariableExists(string name) {
+	var search = currentSymbolTable.Search(name);
+	if (search == null)
+		SemErr($"La variable {name} no ha sido declarada.");
+	else if (!(search is Variable))
+		SemErr($"El nombre {name} no se refiere a una variable.");
+}
+
+void checkFunctionExists(string name) {
+	var search = currentSymbolTable.Search(name);
+	if (search == null)
+		SemErr($"La función {name} no ha sido declarada.");
+	else if (!(search is Function))
+		SemErr($"El nombre {name} no se refiere a una funcion.");
+}
+
+void checkIsArray(string name){
+	var symbol = currentSymbolTable.Search(name) as Variable;
+	if (!symbol.IsArray)
+		SemErr($"La variable {name} no es un arreglo.");
+}
+
+void createNewSymbolTable(string name, List<Variable> parameters) {
+	var newTable = new SymbolTable(currentSymbolTable, name);  
+	currentSymbolTable.Children.Add(newTable);
+	currentSymbolTable = newTable;
+	addParameters(parameters.ToArray());
+}
+
+void addParameters(Variable[] parameters){
+	foreach (var variable in parameters) {
+		currentSymbolTable.Add(variable);
+	}
+}
+
+void addFunction(string name, string tipo, List<Variable> parameters)
+{
+	if (!currentSymbolTable.ExistsInScope(name))
+	{
+		var fun = new Function {
+			Name = name,
+			Type = getType(tipo),
+			Parameters = parameters
+		};
+
+		currentSymbolTable.Add(fun);
+	}
+	else {
+		SemErr($"El nombre {name} ya ha sido declarado en este scope.");
+	}
+}
+
+void checkParamAmount(string name, int amount)
+{
+	var fun = currentSymbolTable.Search(name) as Function;
+	if (fun == null || fun.Parameters.Count != amount) {
+		SemErr($"La funcion {name} no tiene {amount} parametros.");
+	}
+}
 
 
 
@@ -89,6 +183,7 @@ bool FollowedByLPar() {
 
 	
 	void ESpp() {
+		currentSymbolTable = new SymbolTable(null, "global"); 
 		Program();
 	}
 
@@ -115,36 +210,49 @@ bool FollowedByLPar() {
 			} else {
 				Get();
 			}
+			var funType = t.val; 
 			Expect(1);
+			var funName = t.val; 
 			Expect(5);
+			var vars = new List<Variable>(); string tipo; 
 			if (StartOf(1)) {
 				Tipo();
+				tipo = t.val; 
 				Expect(1);
+				vars.Add(new Variable(){Name=t.val, IsArray=false, ArrayLength=0, Type=getType(tipo)}); 
 				while (la.kind == 10) {
 					Get();
 					Tipo();
+					tipo = t.val; 
 					Expect(1);
+					vars.Add(new Variable(){Name=t.val, IsArray=false, ArrayLength=0, Type=getType(tipo)}); 
 				}
 			}
 			Expect(11);
-			Bloque();
+			addFunction(funName, funType, vars); 
+			Bloque(funName, vars.ToArray());
 		}
 	}
 
 	void Main() {
 		Expect(12);
-		Bloque();
+		Bloque("main", new Variable[]{});
 	}
 
 	void Declaracion() {
+		string tipo; bool isArr = false; int size = 0; 
 		Tipo();
+		tipo = t.val; 
 		if (la.kind == 18) {
-			TipoArr();
+			TipoArr(out size);
+			isArr = true; 
 		}
 		Expect(1);
+		addVariable(t.val, tipo, isArr, size); 
 		while (la.kind == 10) {
 			Get();
 			Expect(1);
+			addVariable(t.val, tipo, isArr, size); 
 		}
 		Expect(13);
 	}
@@ -161,8 +269,9 @@ bool FollowedByLPar() {
 		} else SynErr(45);
 	}
 
-	void Bloque() {
+	void Bloque(string name, Variable[] parameters) {
 		Expect(20);
+		createNewSymbolTable(name, new List<Variable>(parameters)); 
 		while (StartOf(3)) {
 			if (StartOf(1)) {
 				Declaracion();
@@ -180,11 +289,13 @@ bool FollowedByLPar() {
 			}
 		}
 		Expect(21);
+		currentSymbolTable = currentSymbolTable.Parent; 
 	}
 
-	void TipoArr() {
+	void TipoArr(out int length) {
 		Expect(18);
 		Expect(3);
+		length = int.Parse(t.val); 
 		Expect(19);
 	}
 
@@ -193,10 +304,10 @@ bool FollowedByLPar() {
 		Expect(5);
 		Expresion();
 		Expect(11);
-		Bloque();
+		Bloque("if", new Variable[]{});
 		if (la.kind == 24) {
 			Get();
-			Bloque();
+			Bloque("else", new Variable[]{});
 		}
 	}
 
@@ -205,7 +316,7 @@ bool FollowedByLPar() {
 		Expect(5);
 		Expresion();
 		Expect(11);
-		Bloque();
+		Bloque("while", new Variable[]{});
 	}
 
 	void Impresion() {
@@ -222,15 +333,20 @@ bool FollowedByLPar() {
 
 	void Funcion() {
 		Expect(1);
+		string name = t.val; checkFunctionExists(name); 
 		Expect(5);
+		var parameters = new List<object>(); 
 		if (StartOf(4)) {
 			Expresion();
+			parameters.Add(""); 
 			while (la.kind == 10) {
 				Get();
 				Expresion();
+				parameters.Add(""); 
 			}
 		}
 		Expect(11);
+		checkParamAmount(name, parameters.Count); 
 	}
 
 	void Asignacion() {
@@ -242,8 +358,10 @@ bool FollowedByLPar() {
 
 	void Variable() {
 		Expect(1);
+		string name = t.val; checkVariableExists(name); 
 		if (la.kind == 18) {
 			Get();
+			checkIsArray(name); 
 			Expresion();
 			Expect(19);
 		}

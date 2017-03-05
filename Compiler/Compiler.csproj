@@ -71,7 +71,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Test Files\VarDeclarationB.txt" />
     <Content Include="Test Files\VarDeclarationA.txt" />
     <Content Include="Test Files\ValidTestA.txt" />
   </ItemGroup>

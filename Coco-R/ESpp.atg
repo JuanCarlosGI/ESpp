@@ -1,8 +1,101 @@
+using System.Collections.Generic;
+
 COMPILER ESpp
+
+public SymbolTable currentSymbolTable;
 
 bool FollowedByLPar() {
  return scanner.Peek().kind == _lpar;
 } 
+
+private Type getType(string type) {
+	Type tipoD = Type.Entero;
+	switch(type) {
+		case "booleano": tipoD = Type.Booleano; break;
+		case "decimal": tipoD = Type.Decimal; break;
+		case "cadena": tipoD = Type.Cadena; break;
+		case "rutina": tipoD = Type.Rutina; break;
+	}
+
+	return tipoD;
+}
+
+void addVariable(string name, string tipo, bool isArr, int size) {
+	if(!currentSymbolTable.ExistsInScope(name)) {
+		Type tipoD = getType(tipo);
+
+		Symbol symbol = new Variable {
+			Name = name,
+			IsArray = isArr,
+			ArrayLength = size,
+			Type = tipoD
+		};
+		
+		currentSymbolTable.Add(symbol);
+	}
+	else
+		SemErr($"El nombre {name} ya ha sido declarado en este scope.");
+}
+
+void checkVariableExists(string name) {
+	var search = currentSymbolTable.Search(name);
+	if (search == null)
+		SemErr($"La variable {name} no ha sido declarada.");
+	else if (!(search is Variable))
+		SemErr($"El nombre {name} no se refiere a una variable.");
+}
+
+void checkFunctionExists(string name) {
+	var search = currentSymbolTable.Search(name);
+	if (search == null)
+		SemErr($"La función {name} no ha sido declarada.");
+	else if (!(search is Variable))
+		SemErr($"El nombre {name} no se refiere a una funcion.");
+}
+
+void checkIsArray(string name){
+	var symbol = currentSymbolTable.Search(name) as Variable;
+	if (!symbol.IsArray)
+		SemErr($"La variable {name} no es un arreglo.");
+}
+
+void createNewSymbolTable(string name, List<Variable> parameters) {
+	var newTable = new SymbolTable(currentSymbolTable, name);  
+	currentSymbolTable.Children.Add(newTable);
+	currentSymbolTable = newTable;
+	addParameters(parameters.ToArray());
+}
+
+void addParameters(Variable[] parameters){
+	foreach (var variable in parameters) {
+		currentSymbolTable.Add(variable);
+	}
+}
+
+void addFunction(string name, string tipo, List<Variable> parameters)
+{
+	if (!currentSymbolTable.ExistsInScope(name))
+	{
+		var fun = new Function {
+			Name = name,
+			Type = getType(tipo),
+			Parameters = parameters
+		};
+
+		currentSymbolTable.Add(fun);
+	}
+	else {
+		SemErr($"El nombre {name} ya ha sido declarado en este scope.");
+	}
+}
+
+void checkParamAmount(string name, int amount)
+{
+	var fun = currentSymbolTable.Search(name) as Function;
+	if (fun == null || fun.Parameters.Count != amount) {
+		SemErr($"La funcion {name} no tiene {amount} parametros.");
+	}
+}
 
 CHARACTERS
 	digit = '0'..'9'.
@@ -21,21 +114,64 @@ TOKENS
 IGNORE eol + '\t'
 
 PRODUCTIONS
-	ESpp = Program.
+	ESpp = (. currentSymbolTable = new SymbolTable(null, "global"); .) Program.
 	Program	= Vars Funs Main.
 	Vars = "variables" ':' {Declaracion}.
-	Funs = "funciones" ':' {(Tipo|"rutina") id '(' [Tipo id {',' Tipo id}] ')' Bloque}.
-	Main = "main" Bloque.
-	Declaracion = Tipo [TipoArr] id {',' id} ';'.
-	Tipo = "entero" | "decimal" | "booleano" | "cadena".
-	TipoArr = '[' cteent ']'.
-	Bloque = '{' {Declaracion | Condicion | Ciclo | Impresion | IF(FollowedByLPar()) Funcion ';' | Asignacion} '}'.
+	
+	Funs = "funciones" ':' {
+		(Tipo|"rutina")								(. var funType = t.val; .)
+		id											(. var funName = t.val; .)
+		'('											(. var vars = new List<Variable>(); string tipo; .)
+		[
+			Tipo (. tipo = t.val; .) id				(. vars.Add(new Variable(){Name=t.val, IsArray=false, ArrayLength=0, Type=getType(tipo)}); .) 
+			{
+				',' Tipo (. tipo = t.val; .) id		(. vars.Add(new Variable(){Name=t.val, IsArray=false, ArrayLength=0, Type=getType(tipo)}); .) 
+			}
+		] ')'										(. addFunction(funName, funType, vars); .)
+		Bloque<funName, vars.ToArray()>}.
+
+	Main = "main" Bloque<"main", new Variable[]{}>.
+	
+	Declaracion =					(. string tipo; bool isArr = false; int size = 0; .)
+		Tipo						(. tipo = t.val; .) 
+		[ TipoArr<out size>			(. isArr = true; .)
+		] id						(. addVariable(t.val, tipo, isArr, size); .) 
+		{ ',' id					(. addVariable(t.val, tipo, isArr, size); .) 
+		} ';'.
+
+	Tipo = ("entero"| "decimal" | "booleano" | "cadena").
+	TipoArr<out int length> = '[' cteent (. length = int.Parse(t.val); .) ']'.
+	
+	Bloque<string name, Variable[] parameters> =						
+		'{'										(. createNewSymbolTable(name, new List<Variable>(parameters)); .)
+		{
+			Declaracion 
+			| Condicion 
+			| Ciclo 
+			| Impresion 
+			| IF(FollowedByLPar()) Funcion ';' 
+			| Asignacion} 
+		'}'										(. currentSymbolTable = currentSymbolTable.Parent; .)
+		.
+
 	Asignacion = Variable '=' Expresion ';'.
-	Funcion = id '(' [Expresion {',' Expresion}] ')'.
-	Condicion = "si" '(' Expresion ')' Bloque  ["sino" Bloque].
-	Ciclo = "mientras" '(' Expresion ')' Bloque.
+
+	Funcion = 
+		id				(. string name = t.val; checkFunctionExists(name); .)
+		'('				(. var parameters = new List<object>(); .)
+		[ Expresion		(. parameters.Add(""); .)
+		{',' Expresion	(. parameters.Add(""); .)
+		}] ')'			(. checkParamAmount(name, parameters.Count); .)
+		.
+
+	Condicion = "si" '(' Expresion ')' Bloque<"if", new Variable[]{}>  ["sino" Bloque<"else", new Variable[]{}>].
+	Ciclo = "mientras" '(' Expresion ')' Bloque<"while", new Variable[]{}>.
 	Impresion = "imprimir" '(' Expresion {',' Expresion} ')' ';'.
-	Variable = id ['[' Expresion ']'].
+	
+	Variable = id			(. string name = t.val; checkVariableExists(name); .) 
+		['['				(. checkIsArray(name); .)
+		 Expresion ']'].
+
 	Expresion = Exp {("&&"|"||") Exp}.
 	Exp = Expt [('>' | '<' | ">=" | "<=" | "<>" | "==") Expt].
 	Expt = Termino {('+' | '-') Termino}.
