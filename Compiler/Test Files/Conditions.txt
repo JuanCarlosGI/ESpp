@@ -1,0 +1,20 @@
+variables:
+
+funciones:
+	decimal parametros(booleano uno, entero dos){ }
+	decimal ok(){ }
+
+main {
+	decimal estatura;
+	estatura = lectura();
+	imprimir(estatura);
+
+	cadena primo, noprimo;
+	mientras(noprimo || primo){
+		entero primero;
+		{}
+		sino{
+			imprimir(primero);
+		}	
+	}
+}

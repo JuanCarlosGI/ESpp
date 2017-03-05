@@ -1,0 +1,11 @@
+funciones:
+	decimal parametros(booleano uno, entero dos){ }
+
+variables:
+	cadena string;
+
+main {
+	decimal estatura;
+	estatura = lectura();
+	imprimir(estatura);
+}
