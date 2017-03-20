@@ -2,101 +2,6 @@ using System.Collections.Generic;
 
 COMPILER ESpp
 
-public SymbolTable currentSymbolTable;
-
-bool FollowedByLPar() {
- return scanner.Peek().kind == _lpar;
-} 
-
-private Type getType(string type) {
-	Type tipoD = Type.Entero;
-	switch(type) {
-		case "booleano": tipoD = Type.Booleano; break;
-		case "decimal": tipoD = Type.Decimal; break;
-		case "cadena": tipoD = Type.Cadena; break;
-		case "rutina": tipoD = Type.Rutina; break;
-	}
-
-	return tipoD;
-}
-
-void addVariable(string name, string tipo, bool isArr, int size) {
-	if(!currentSymbolTable.ExistsInScope(name)) {
-		Type tipoD = getType(tipo);
-
-		Symbol symbol = new Variable {
-			Name = name,
-			IsArray = isArr,
-			ArrayLength = size,
-			Type = tipoD
-		};
-		
-		currentSymbolTable.Add(symbol);
-	}
-	else
-		SemErr($"El nombre {name} ya ha sido declarado en este scope.");
-}
-
-void checkVariableExists(string name) {
-	var search = currentSymbolTable.Search(name);
-	if (search == null)
-		SemErr($"La variable {name} no ha sido declarada.");
-	else if (!(search is Variable))
-		SemErr($"El nombre {name} no se refiere a una variable.");
-}
-
-void checkFunctionExists(string name) {
-	var search = currentSymbolTable.Search(name);
-	if (search == null)
-		SemErr($"La función {name} no ha sido declarada.");
-	else if (!(search is Variable))
-		SemErr($"El nombre {name} no se refiere a una funcion.");
-}
-
-void checkIsArray(string name){
-	var symbol = currentSymbolTable.Search(name) as Variable;
-	if (!symbol.IsArray)
-		SemErr($"La variable {name} no es un arreglo.");
-}
-
-void createNewSymbolTable(string name, List<Variable> parameters) {
-	var newTable = new SymbolTable(currentSymbolTable, name);  
-	currentSymbolTable.Children.Add(newTable);
-	currentSymbolTable = newTable;
-	addParameters(parameters.ToArray());
-}
-
-void addParameters(Variable[] parameters){
-	foreach (var variable in parameters) {
-		currentSymbolTable.Add(variable);
-	}
-}
-
-void addFunction(string name, string tipo, List<Variable> parameters)
-{
-	if (!currentSymbolTable.ExistsInScope(name))
-	{
-		var fun = new Function {
-			Name = name,
-			Type = getType(tipo),
-			Parameters = parameters
-		};
-
-		currentSymbolTable.Add(fun);
-	}
-	else {
-		SemErr($"El nombre {name} ya ha sido declarado en este scope.");
-	}
-}
-
-void checkParamAmount(string name, int amount)
-{
-	var fun = currentSymbolTable.Search(name) as Function;
-	if (fun == null || fun.Parameters.Count != amount) {
-		SemErr($"La funcion {name} no tiene {amount} parametros.");
-	}
-}
-
 CHARACTERS
 	digit = '0'..'9'.
 	lower = 'a'..'z'.
@@ -114,32 +19,46 @@ TOKENS
 IGNORE eol + '\t'
 
 PRODUCTIONS
-	ESpp = (. currentSymbolTable = new SymbolTable(null, "global"); .) Program.
+	ESpp = Program	(. var main = currentCodeBlock.SearchForFunctionScope("main"); main.CommandList.ExecuteBy(this); .)
+		.
+
 	Program	= Vars Funs Main.
+
 	Vars = "variables" ':' {Declaracion}.
 	
-	Funs = "funciones" ':' {
-		(Tipo|"rutina")								(. var funType = t.val; .)
+	Funs = "funciones" ':' {						(. Type funType; .)
+		(
+			Tipo<out funType>
+			|"rutina"								(. funType = Type.Rutina; .)
+		)
 		id											(. var funName = t.val; .)
-		'('											(. var vars = new List<Variable>(); string tipo; .)
-		[
-			Tipo (. tipo = t.val; .) id				(. vars.Add(new Variable(){Name=t.val, IsArray=false, ArrayLength=0, Type=getType(tipo)}); .) 
+		'('											(. var vars = new List<Variable>(); .)
+		[											(. Type tipo; .)
+			Tipo<out tipo> id						(. vars.Add(new Variable(){Name=t.val, Type=tipo}); .) 
 			{
-				',' Tipo (. tipo = t.val; .) id		(. vars.Add(new Variable(){Name=t.val, IsArray=false, ArrayLength=0, Type=getType(tipo)}); .) 
+				',' Tipo<out tipo> id				(. vars.Add(new Variable(){Name=t.val, Type=tipo}); .) 
 			}
 		] ')'										(. addFunction(funName, funType, vars); .)
 		Bloque<funName, vars.ToArray()>}.
 
 	Main = "main" Bloque<"main", new Variable[]{}>.
 	
-	Declaracion =					(. string tipo; bool isArr = false; int size = 0; .)
-		Tipo						(. tipo = t.val; .) 
+	Declaracion =					(. Type tipo; bool isArr = false; int size = 0; .)
+		Tipo<out tipo> 
 		[ TipoArr<out size>			(. isArr = true; .)
 		] id						(. addVariable(t.val, tipo, isArr, size); .) 
 		{ ',' id					(. addVariable(t.val, tipo, isArr, size); .) 
 		} ';'.
 
-	Tipo = ("entero"| "decimal" | "booleano" | "cadena").
+	Tipo<out Type tipo> =	(. Type tipoAux = Type.Error; .)
+		(
+			"entero"		(. tipoAux = Type.Entero; .)
+			| "decimal"		(. tipoAux = Type.Decimal; .)
+			| "booleano"	(. tipoAux = Type.Booleano; .)
+			| "cadena"		(. tipoAux = Type.Cadena; .)
+		)					(. tipo = tipoAux; .)	
+		.
+
 	TipoArr<out int length> = '[' cteent (. length = int.Parse(t.val); .) ']'.
 	
 	Bloque<string name, Variable[] parameters> =						
@@ -151,10 +70,13 @@ PRODUCTIONS
 			| Impresion 
 			| IF(FollowedByLPar()) Funcion ';' 
 			| Asignacion} 
-		'}'										(. currentSymbolTable = currentSymbolTable.Parent; .)
+		'}'										(. currentCodeBlock = currentCodeBlock.Parent; .)
 		.
 
-	Asignacion = Variable '=' Expresion ';'.
+	Asignacion =					(. Variable variable; .)
+		Variable<out variable>		(. symbolStack.Push(variable); .)
+		'=' Expresion ';'			(. doAssign(); .)
+		.
 
 	Funcion = 
 		id				(. string name = t.val; checkFunctionExists(name); .)
@@ -165,21 +87,89 @@ PRODUCTIONS
 		.
 
 	Condicion = "si" '(' Expresion ')' Bloque<"if", new Variable[]{}>  ["sino" Bloque<"else", new Variable[]{}>].
+	
 	Ciclo = "mientras" '(' Expresion ')' Bloque<"while", new Variable[]{}>.
+	
 	Impresion = "imprimir" '(' Expresion {',' Expresion} ')' ';'.
 	
-	Variable = id			(. string name = t.val; checkVariableExists(name); .) 
-		['['				(. checkIsArray(name); .)
+	Variable<out Variable variable> = 
+		id							(. string name = t.val; checkVariableExists(name); var symbol = currentCodeBlock.Search(name); variable = symbol as Variable; .) 
+		['['						(. checkIsArray(name); variable=(symbol as VariableArray).Variables[0]; .)
 		 Expresion ']'].
 
-	Expresion = Exp {("&&"|"||") Exp}.
-	Exp = Expt [('>' | '<' | ">=" | "<=" | "<>" | "==") Expt].
-	Expt = Termino {('+' | '-') Termino}.
-	Termino = Factor {('*' | '/' | '%') Factor}.
-	Factor = ('(' Expresion ')') | ([('+' | '-')] Constante).
-	Constante = cteent | ctedbl | Ctebol | ctestr | Aleatorio | Lectura | IF(FollowedByLPar()) Funcion | Variable.
+	Expresion =
+		Exp
+		{
+			(
+				"&&"	(. operatorStack.Push(Operator.And); .)
+				|"||"	(. operatorStack.Push(Operator.Or); .)
+			) 
+			Exp			(. doPendingLogical(); .)
+		}.
+	
+	Exp = 
+		Expt
+		[
+			(
+				'>'		(. operatorStack.Push(Operator.GreaterThan); .)
+				|'<'	(. operatorStack.Push(Operator.LessThan); .)
+				|">="	(. operatorStack.Push(Operator.GreaterEqual); .)
+				|"<="	(. operatorStack.Push(Operator.LessEqual); .)
+				|"<>"	(. operatorStack.Push(Operator.Different); .)
+				|"=="	(. operatorStack.Push(Operator.Equality); .)
+			) 
+			Expt		(. doPendingRelational(); .)
+		].
+	
+	Expt = 
+		Termino
+		{
+			(
+				'+'		(. operatorStack.Push(Operator.Sum); .) 
+				| '-'	(. operatorStack.Push(Operator.Minus); .)
+			) 
+			Termino		(. doPendingSum(); .)
+		}.
+	
+	Termino = 
+		Factor
+		{
+			(
+				'*'		(. operatorStack.Push(Operator.Multiply); .) 
+				|'/'	(. operatorStack.Push(Operator.Divide); .)
+				|'%'	(. operatorStack.Push(Operator.Modulo); .)
+			) 
+			Factor		(. doPendingMultiplication(); .)
+		}.
+	
+	Factor = 
+		(
+			'('				(. operatorStack.Push(Operator.FakeLimit); .)
+			Expresion 
+			')'				(. operatorStack.Pop(); .)
+		) 
+		| 
+		(
+			[('+' | '-')]			(. DirectValueSymbol symbol; .)
+			Constante<out symbol>	(. symbolStack.Push(symbol); .)
+		).
+	
+	Constante<out DirectValueSymbol sym> = (. sym = null; .)
+		(cteent							(. sym = constBuilder.IntConstant(t.val); .)
+		| ctedbl						(. sym = constBuilder.DecConstant(t.val); .)
+		| Ctebol						(. sym = constBuilder.BoolConstant(t.val); .)
+		| ctestr						(. sym = constBuilder.StrConstant(t.val); .)
+		| Aleatorio						(. sym = constBuilder.IntConstant("10"); .)
+		| Lectura						(. sym = constBuilder.StrConstant("100"); .)
+		| IF(FollowedByLPar()) Funcion  (. sym = constBuilder.IntConstant("1000"); .)
+		|								(. Variable variable; .)
+			Variable<out variable>		(. sym = variable; .)
+		).
+	
 	Aleatorio = "aleatorio" '(' ')'.
+	
 	Lectura = "lectura" '(' ')'.
+	
 	Ctebol = "verdadero" | "falso".
 
 END ESpp.

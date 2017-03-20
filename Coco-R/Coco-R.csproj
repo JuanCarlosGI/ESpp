@@ -40,10 +40,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Command.cs" />
+    <Compile Include="ConstantBuilder.cs" />
+    <Compile Include="ParserExtension.cs" />
+    <Compile Include="SemanticCube.cs" />
     <Compile Include="Scanner.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SymbolTable.cs" />
+    <Compile Include="Symbols.cs" />
+    <Compile Include="CodeBlock.cs" />
+    <Compile Include="Types.cs" />
+    <Compile Include="VirtualMachine.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ESpp.atg" />

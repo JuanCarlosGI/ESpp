@@ -6,18 +6,27 @@ variables:
 	entero[75] arrEnt; 
 
 funciones:
-	rutina primera(entero uno, cadena dos) { }
+	rutina primera(entero uno, cadena dos) { entero ent; ent = 1+2/3*4*5%9; }
 	entero segunda() { }
 
 main {
-	entero_1 = 3 + 4 * 5 / 7 % 2 * (3 + 5) - entero_1 - (-dec) + segunda() - lectura() * aleatorio();
+	entero testNadaEnt;
+	decimal testNadaDec;
+	booleano testNadaBool;
+	cadena testNadaCadena;
+
+	dec = 1;
+	entero_1 = 3 + 4 * 5 / 7 % 2 * (3 + 5) - (-dec) + segunda() * aleatorio();
 	entero local;
 	local = 0;
+	decimal segundoLocal;
+	segundoLocal = 5 * 1.5;
 	primera(entero_1, 3*5);
 	imprimir(entero_1, miEntero2, 5 * 9);
 	si (elBooleano) {
 		si (falso) {
 			entero ent;
+			decimal dec;
 		}
 
 		local = 0;

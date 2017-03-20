@@ -8,7 +8,7 @@ namespace Coco_R {
 
 
 
-public class Parser {
+public partial class Parser {
 	public const int _EOF = 0;
 	public const int _id = 1;
 	public const int _ctestr = 2;
@@ -27,101 +27,6 @@ public class Parser {
 	public Token t;    // last recognized token
 	public Token la;   // lookahead token
 	int errDist = minErrDist;
-
-public SymbolTable currentSymbolTable;
-
-bool FollowedByLPar() {
- return scanner.Peek().kind == _lpar;
-} 
-
-private Type getType(string type) {
-	Type tipoD = Type.Entero;
-	switch(type) {
-		case "booleano": tipoD = Type.Booleano; break;
-		case "decimal": tipoD = Type.Decimal; break;
-		case "cadena": tipoD = Type.Cadena; break;
-		case "rutina": tipoD = Type.Rutina; break;
-	}
-
-	return tipoD;
-}
-
-void addVariable(string name, string tipo, bool isArr, int size) {
-	if(!currentSymbolTable.ExistsInScope(name)) {
-		Type tipoD = getType(tipo);
-
-		Symbol symbol = new Variable {
-			Name = name,
-			IsArray = isArr,
-			ArrayLength = size,
-			Type = tipoD
-		};
-		
-		currentSymbolTable.Add(symbol);
-	}
-	else
-		SemErr($"El nombre {name} ya ha sido declarado en este scope.");
-}
-
-void checkVariableExists(string name) {
-	var search = currentSymbolTable.Search(name);
-	if (search == null)
-		SemErr($"La variable {name} no ha sido declarada.");
-	else if (!(search is Variable))
-		SemErr($"El nombre {name} no se refiere a una variable.");
-}
-
-void checkFunctionExists(string name) {
-	var search = currentSymbolTable.Search(name);
-	if (search == null)
-		SemErr($"La función {name} no ha sido declarada.");
-	else if (!(search is Function))
-		SemErr($"El nombre {name} no se refiere a una funcion.");
-}
-
-void checkIsArray(string name){
-	var symbol = currentSymbolTable.Search(name) as Variable;
-	if (!symbol.IsArray)
-		SemErr($"La variable {name} no es un arreglo.");
-}
-
-void createNewSymbolTable(string name, List<Variable> parameters) {
-	var newTable = new SymbolTable(currentSymbolTable, name);  
-	currentSymbolTable.Children.Add(newTable);
-	currentSymbolTable = newTable;
-	addParameters(parameters.ToArray());
-}
-
-void addParameters(Variable[] parameters){
-	foreach (var variable in parameters) {
-		currentSymbolTable.Add(variable);
-	}
-}
-
-void addFunction(string name, string tipo, List<Variable> parameters)
-{
-	if (!currentSymbolTable.ExistsInScope(name))
-	{
-		var fun = new Function {
-			Name = name,
-			Type = getType(tipo),
-			Parameters = parameters
-		};
-
-		currentSymbolTable.Add(fun);
-	}
-	else {
-		SemErr($"El nombre {name} ya ha sido declarado en este scope.");
-	}
-}
-
-void checkParamAmount(string name, int amount)
-{
-	var fun = currentSymbolTable.Search(name) as Function;
-	if (fun == null || fun.Parameters.Count != amount) {
-		SemErr($"La funcion {name} no tiene {amount} parametros.");
-	}
-}
 
 
 
@@ -183,8 +88,8 @@ void checkParamAmount(string name, int amount)
 
 	
 	void ESpp() {
-		currentSymbolTable = new SymbolTable(null, "global"); 
 		Program();
+		var main = currentCodeBlock.SearchForFunctionScope("main"); main.CommandList.ExecuteBy(this); 
 	}
 
 	void Program() {
@@ -205,27 +110,27 @@ void checkParamAmount(string name, int amount)
 		Expect(8);
 		Expect(7);
 		while (StartOf(2)) {
+			Type funType; 
 			if (StartOf(1)) {
-				Tipo();
+				Tipo(out funType);
 			} else {
 				Get();
+				funType = Type.Rutina; 
 			}
-			var funType = t.val; 
 			Expect(1);
 			var funName = t.val; 
 			Expect(5);
-			var vars = new List<Variable>(); string tipo; 
+			var vars = new List<Variable>(); 
 			if (StartOf(1)) {
-				Tipo();
-				tipo = t.val; 
+				Type tipo; 
+				Tipo(out tipo);
 				Expect(1);
-				vars.Add(new Variable(){Name=t.val, IsArray=false, ArrayLength=0, Type=getType(tipo)}); 
+				vars.Add(new Variable(){Name=t.val, Type=tipo}); 
 				while (la.kind == 10) {
 					Get();
-					Tipo();
-					tipo = t.val; 
+					Tipo(out tipo);
 					Expect(1);
-					vars.Add(new Variable(){Name=t.val, IsArray=false, ArrayLength=0, Type=getType(tipo)}); 
+					vars.Add(new Variable(){Name=t.val, Type=tipo}); 
 				}
 			}
 			Expect(11);
@@ -240,9 +145,8 @@ void checkParamAmount(string name, int amount)
 	}
 
 	void Declaracion() {
-		string tipo; bool isArr = false; int size = 0; 
-		Tipo();
-		tipo = t.val; 
+		Type tipo; bool isArr = false; int size = 0; 
+		Tipo(out tipo);
 		if (la.kind == 18) {
 			TipoArr(out size);
 			isArr = true; 
@@ -257,16 +161,22 @@ void checkParamAmount(string name, int amount)
 		Expect(13);
 	}
 
-	void Tipo() {
+	void Tipo(out Type tipo) {
+		Type tipoAux = Type.Error; 
 		if (la.kind == 14) {
 			Get();
+			tipoAux = Type.Entero; 
 		} else if (la.kind == 15) {
 			Get();
+			tipoAux = Type.Decimal; 
 		} else if (la.kind == 16) {
 			Get();
+			tipoAux = Type.Booleano; 
 		} else if (la.kind == 17) {
 			Get();
+			tipoAux = Type.Cadena; 
 		} else SynErr(45);
+		tipo = tipoAux; 
 	}
 
 	void Bloque(string name, Variable[] parameters) {
@@ -289,7 +199,7 @@ void checkParamAmount(string name, int amount)
 			}
 		}
 		Expect(21);
-		currentSymbolTable = currentSymbolTable.Parent; 
+		currentCodeBlock = currentCodeBlock.Parent; 
 	}
 
 	void TipoArr(out int length) {
@@ -350,18 +260,21 @@ void checkParamAmount(string name, int amount)
 	}
 
 	void Asignacion() {
-		Variable();
+		Variable variable; 
+		    Variable(out variable);
+		symbolStack.Push(variable); 
 		Expect(22);
 		Expresion();
 		Expect(13);
+		doAssign(); 
 	}
 
-	void Variable() {
+	void Variable(out Variable variable) {
 		Expect(1);
-		string name = t.val; checkVariableExists(name); 
+		string name = t.val; checkVariableExists(name); var symbol = currentCodeBlock.Search(name); variable = symbol as Variable; 
 		if (la.kind == 18) {
 			Get();
-			checkIsArray(name); 
+			checkIsArray(name); variable=(symbol as VariableArray).Variables[0]; 
 			Expresion();
 			Expect(19);
 		}
@@ -372,10 +285,13 @@ void checkParamAmount(string name, int amount)
 		while (la.kind == 27 || la.kind == 28) {
 			if (la.kind == 27) {
 				Get();
+				operatorStack.Push(Operator.And); 
 			} else {
 				Get();
+				operatorStack.Push(Operator.Or); 
 			}
 			Exp();
+			doPendingLogical(); 
 		}
 	}
 
@@ -385,30 +301,37 @@ void checkParamAmount(string name, int amount)
 			switch (la.kind) {
 			case 29: {
 				Get();
+				operatorStack.Push(Operator.GreaterThan); 
 				break;
 			}
 			case 30: {
 				Get();
+				operatorStack.Push(Operator.LessThan); 
 				break;
 			}
 			case 31: {
 				Get();
+				operatorStack.Push(Operator.GreaterEqual); 
 				break;
 			}
 			case 32: {
 				Get();
+				operatorStack.Push(Operator.LessEqual); 
 				break;
 			}
 			case 33: {
 				Get();
+				operatorStack.Push(Operator.Different); 
 				break;
 			}
 			case 34: {
 				Get();
+				operatorStack.Push(Operator.Equality); 
 				break;
 			}
 			}
 			Expt();
+			doPendingRelational(); 
 		}
 	}
 
@@ -417,10 +340,13 @@ void checkParamAmount(string name, int amount)
 		while (la.kind == 35 || la.kind == 36) {
 			if (la.kind == 35) {
 				Get();
+				operatorStack.Push(Operator.Sum); 
 			} else {
 				Get();
+				operatorStack.Push(Operator.Minus); 
 			}
 			Termino();
+			doPendingSum(); 
 		}
 	}
 
@@ -429,20 +355,26 @@ void checkParamAmount(string name, int amount)
 		while (la.kind == 37 || la.kind == 38 || la.kind == 39) {
 			if (la.kind == 37) {
 				Get();
+				operatorStack.Push(Operator.Multiply); 
 			} else if (la.kind == 38) {
 				Get();
+				operatorStack.Push(Operator.Divide); 
 			} else {
 				Get();
+				operatorStack.Push(Operator.Modulo); 
 			}
 			Factor();
+			doPendingMultiplication(); 
 		}
 	}
 
 	void Factor() {
 		if (la.kind == 5) {
 			Get();
+			operatorStack.Push(Operator.FakeLimit); 
 			Expresion();
 			Expect(11);
+			operatorStack.Pop(); 
 		} else if (StartOf(6)) {
 			if (la.kind == 35 || la.kind == 36) {
 				if (la.kind == 35) {
@@ -451,27 +383,39 @@ void checkParamAmount(string name, int amount)
 					Get();
 				}
 			}
-			Constante();
+			DirectValueSymbol symbol; 
+			Constante(out symbol);
+			symbolStack.Push(symbol); 
 		} else SynErr(46);
 	}
 
-	void Constante() {
+	void Constante(out DirectValueSymbol sym) {
+		sym = null; 
 		if (la.kind == 3) {
 			Get();
+			sym = constBuilder.IntConstant(t.val); 
 		} else if (la.kind == 4) {
 			Get();
+			sym = constBuilder.DecConstant(t.val); 
 		} else if (la.kind == 42 || la.kind == 43) {
 			Ctebol();
+			sym = constBuilder.BoolConstant(t.val); 
 		} else if (la.kind == 2) {
 			Get();
+			sym = constBuilder.StrConstant(t.val); 
 		} else if (la.kind == 40) {
 			Aleatorio();
+			sym = constBuilder.IntConstant("10"); 
 		} else if (la.kind == 41) {
 			Lectura();
+			sym = constBuilder.StrConstant("100"); 
 		} else if (FollowedByLPar()) {
 			Funcion();
+			sym = constBuilder.IntConstant("1000"); 
 		} else if (la.kind == 1) {
-			Variable();
+			Variable variable; 
+			Variable(out variable);
+			sym = variable; 
 		} else SynErr(47);
 	}
 

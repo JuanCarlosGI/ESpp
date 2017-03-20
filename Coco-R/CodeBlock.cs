@@ -4,26 +4,17 @@ using System.Collections;
 
 namespace Coco_R
 {
-    public enum Type
+    public class CodeBlock
     {
-        Entero,
-        Decimal,
-        Booleano,
-        Cadena,
-        Rutina
-    }
-
-    public class SymbolTable
-    {
-        public SymbolTable(SymbolTable parent, string name)
+        public CodeBlock(CodeBlock parent, string name)
         {
             Parent = parent;
             Name = name;
         }
 
-        public SymbolTable Parent { get; set; }
+        public CodeBlock Parent { get; set; }
 
-        public List<SymbolTable> Children { get; set; } = new List<SymbolTable>();
+        public List<CodeBlock> Children { get; set; } = new List<CodeBlock>();
 
         public string Name { get; set; }
 
@@ -40,6 +31,14 @@ namespace Coco_R
             return symbol;
         }
 
+        public CodeBlock SearchForFunctionScope(string name)
+        {
+            if (Parent != null)
+                return Parent.SearchForFunctionScope(name);
+
+            return Children.Find(c => c.Name == name);
+        }
+
         public void Add(Symbol symbol)
         {
             if (hash[symbol.Name] != null)
@@ -52,22 +51,7 @@ namespace Coco_R
         {
             return hash[name] != null;
         }
-    }
 
-    public abstract class Symbol
-    {
-        public string Name { get; set; }
-        public Type Type { get; set; }
-    }
-
-    public class Variable : Symbol
-    {
-        public bool IsArray { get; set; }
-        public int ArrayLength { get; set; }
-    }
-
-    class Function : Symbol
-    {
-        public List<Variable> Parameters { get; set; }
+        public CommandList CommandList = new CommandList();
     }
 }
