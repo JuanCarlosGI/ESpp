@@ -258,14 +258,14 @@ public partial class Parser {
 		Expect(1);
 		string name = t.val; checkFunctionExists(name); 
 		Expect(5);
-		var parameters = new List<object>(); 
+		var parameters = new List<DirectValueSymbol>(); 
 		if (StartOf(4)) {
 			Expresion();
-			parameters.Add(""); 
+			parameters.Add(symbolStack.Pop()); 
 			while (la.kind == 10) {
 				Get();
 				Expresion();
-				parameters.Add(""); 
+				parameters.Add(symbolStack.Pop()); 
 			}
 		}
 		Expect(11);

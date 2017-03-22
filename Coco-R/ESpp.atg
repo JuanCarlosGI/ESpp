@@ -81,9 +81,9 @@ PRODUCTIONS
 
 	Funcion = 
 		id				(. string name = t.val; checkFunctionExists(name); .)
-		'('				(. var parameters = new List<object>(); .)
-		[ Expresion		(. parameters.Add(""); .)
-		{',' Expresion	(. parameters.Add(""); .)
+		'('				(. var parameters = new List<DirectValueSymbol>(); .)
+		[ Expresion		(. parameters.Add(symbolStack.Pop()); .)
+		{',' Expresion	(. parameters.Add(symbolStack.Pop()); .)
 		}] ')'			(. checkParamAmount(name, parameters.Count); .)
 		.
 
