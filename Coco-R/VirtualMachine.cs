@@ -24,10 +24,19 @@ namespace Coco_R
         void Execute(LessOrEqualThan cmd);
         void Execute(And cmd);
         void Execute(Or cmd);
+        void Execute(Conditional conditional);
+        void Execute(PushDefaults pushDefaults);
+        void Execute(PopLocals popLocals);
+        void Execute(Read lectura);
+        void Execute(While @while);
+        void Execute(Random random);
+        void Execute(Print print);
     }
 
     public partial class Parser : VirtualMachine
     {
+        private System.Random _rand = new System.Random();
+
         public void Execute(Subtract cmd)
         {
             cmd.Result.Value = cmd.Op1.Value - cmd.Op2.Value;
@@ -72,6 +81,60 @@ namespace Coco_R
         public void Execute(Or cmd)
         {
             cmd.Result.Value = cmd.Op1.Value || cmd.Op2.Value;
+        }
+
+        public void Execute(PushDefaults pushDefaults)
+        {
+            pushDefaults.CodeBlock.pushDefaultValues();
+        }
+
+        public void Execute(Read lectura)
+        {
+            var line = Console.ReadLine();
+
+            lectura.Result.Value = line;
+        }
+
+        public void Execute(Print print)
+        {
+            var final = "";
+            foreach(var symbol in print.Values)
+            {
+                final += $"{symbol.Value} " ;
+            }
+            final = final.Substring(0, final.Length - 1);
+
+            Console.WriteLine(final);
+        }
+
+        public void Execute(Random random)
+        {
+            var result = _rand.Next(int.MaxValue) / (double)int.MaxValue;
+
+            random.Result.Value = result;
+        }
+
+        public void Execute(While @while)
+        {
+            Execute(@while.Expression);
+            while (@while.Result.Value)
+            {
+                Execute(@while.WhileBlock);
+                Execute(@while.Expression);
+            }
+        }
+
+        public void Execute(PopLocals popLocals)
+        {
+            popLocals.CodeBlock.popLocalValues();
+        }
+
+        public void Execute(Conditional conditional)
+        {
+            if (conditional.Condition.Value)
+                Execute(conditional.If);
+            else if (conditional.Else != null)
+                Execute(conditional.Else);
         }
 
         public void Execute(And cmd)

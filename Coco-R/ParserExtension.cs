@@ -265,5 +265,65 @@ namespace Coco_R
                 currentCodeBlock.CommandList.Commands.Add(cmd);
             }
         }
+
+        void doIfElse(DirectValueSymbol condition, CommandList ifBlock, CommandList elseBlock)
+        {
+            var cmd = new Conditional
+            {
+                Condition = condition,
+                If = ifBlock,
+                Else = elseBlock
+            };
+
+            currentCodeBlock.CommandList.Commands.Add(cmd);
+        }
+
+        void doPushDefaults()
+        {
+            var cmd = new PushDefaults
+            {
+                CodeBlock = currentCodeBlock
+            };
+            currentCodeBlock.CommandList.Commands.Add(cmd);
+        }
+
+        void doPopLocals()
+        {
+            var cmd = new PopLocals
+            {
+                CodeBlock = currentCodeBlock
+            };
+            currentCodeBlock.CommandList.Commands.Add(cmd);
+        }
+
+        void doRead(DirectValueSymbol result)
+        {
+            var cmd = new Read { Result = result };
+            currentCodeBlock.CommandList.Commands.Add(cmd);
+        }
+
+        void doWhile(CommandList expression, DirectValueSymbol result, CommandList whileBlock)
+        {
+            if (result.Type != Type.Booleano)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+
+            var cmd = new While { Expression = expression, WhileBlock = whileBlock, Result = result };
+            currentCodeBlock.CommandList.Commands.Add(cmd);
+        }
+
+        void doRandom(DirectValueSymbol result)
+        {
+            var cmd = new Random { Result = result };
+            currentCodeBlock.CommandList.Commands.Add(cmd);
+        }
+
+        void doPrint(List<DirectValueSymbol> values)
+        {
+            var cmd = new Print { Values = values };
+            currentCodeBlock.CommandList.Commands.Add(cmd);
+        }
     }
 }

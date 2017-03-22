@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 COMPILER ESpp
 
@@ -19,7 +20,7 @@ TOKENS
 IGNORE eol + '\t'
 
 PRODUCTIONS
-	ESpp = Program	(. var main = currentCodeBlock.SearchForFunctionScope("main"); main.CommandList.ExecuteBy(this); .)
+	ESpp = Program	(. var main = currentCodeBlock.SearchForFunctionScope("main"); if(errors.count == 0) main.CommandList.ExecuteBy(this); .)
 		.
 
 	Program	= Vars Funs Main.
@@ -62,7 +63,7 @@ PRODUCTIONS
 	TipoArr<out int length> = '[' cteent (. length = int.Parse(t.val); .) ']'.
 	
 	Bloque<string name, Variable[] parameters> =						
-		'{'										(. createNewSymbolTable(name, new List<Variable>(parameters)); .)
+		'{'										(. createNewSymbolTable(name, new List<Variable>(parameters)); doPushDefaults(); .)
 		{
 			Declaracion 
 			| Condicion 
@@ -70,7 +71,7 @@ PRODUCTIONS
 			| Impresion 
 			| IF(FollowedByLPar()) Funcion ';' 
 			| Asignacion} 
-		'}'										(. currentCodeBlock = currentCodeBlock.Parent; .)
+		'}'										(. doPopLocals(); currentCodeBlock = currentCodeBlock.Parent; .)
 		.
 
 	Asignacion =					(. Variable variable; .)
@@ -86,11 +87,26 @@ PRODUCTIONS
 		}] ')'			(. checkParamAmount(name, parameters.Count); .)
 		.
 
-	Condicion = "si" '(' Expresion ')' Bloque<"if", new Variable[]{}>  ["sino" Bloque<"else", new Variable[]{}>].
+	Condicion = 
+		"si" '(' Expresion ')'							(. var condition = symbolStack.Pop(); .)
+		Bloque<"if", new Variable[]{}>					(. var ifBlock = currentCodeBlock.Children.Last().CommandList; CommandList elseBlock = null; .)
+		[
+			"sino" Bloque<"else", new Variable[]{}>		(. elseBlock = currentCodeBlock.Children.Last().CommandList; .)
+		]												(. doIfElse(condition, ifBlock, elseBlock); .)
+		.
 	
-	Ciclo = "mientras" '(' Expresion ')' Bloque<"while", new Variable[]{}>.
+	Ciclo = 
+		"mientras" '('							(. createNewSymbolTable("Expression", new List<Variable>()); .) 
+		Expresion								(. var expression = currentCodeBlock.CommandList; var result = symbolStack.Pop(); .)
+		')'										(. currentCodeBlock = currentCodeBlock.Parent; .)
+		 Bloque<"while", new Variable[]{}>		(. var whileBlock = currentCodeBlock.Children.Last().CommandList; doWhile(expression, result, whileBlock); .)
+		 .
 	
-	Impresion = "imprimir" '(' Expresion {',' Expresion} ')' ';'.
+	Impresion = "imprimir" '('		(. var expressions = new List<DirectValueSymbol>(); .)
+		Expresion					(. expressions.Add(symbolStack.Pop()); .)
+		{',' Expresion				(. expressions.Add(symbolStack.Pop()); .)
+		} ')' ';'					(. doPrint(expressions); .)
+		.
 	
 	Variable<out Variable variable> = 
 		id							(. string name = t.val; checkVariableExists(name); var symbol = currentCodeBlock.Search(name); variable = symbol as Variable; .) 
@@ -159,8 +175,8 @@ PRODUCTIONS
 		| ctedbl						(. sym = constBuilder.DecConstant(t.val); .)
 		| Ctebol						(. sym = constBuilder.BoolConstant(t.val); .)
 		| ctestr						(. sym = constBuilder.StrConstant(t.val); .)
-		| Aleatorio						(. sym = constBuilder.IntConstant("10"); .)
-		| Lectura						(. sym = constBuilder.StrConstant("100"); .)
+		| Aleatorio						(. sym = constBuilder.DecConstant("0"); doRandom(sym); .)
+		| Lectura						(. sym = constBuilder.StrConstant(""); doRead(sym); .)
 		| IF(FollowedByLPar()) Funcion  (. sym = constBuilder.IntConstant("1000"); .)
 		|								(. Variable variable; .)
 			Variable<out variable>		(. sym = variable; .)

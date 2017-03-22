@@ -38,4 +38,64 @@ namespace Coco_R
     public class LessOrEqualThan : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
     public class And : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
     public class Or : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
+
+    public class Conditional : Command
+    {
+        public CommandList If { get; set; }
+        public CommandList Else { get; set; }
+        public DirectValueSymbol Condition { get; set; }
+
+        public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); }
+    }
+
+    public abstract class CodeBlockOperation : Command
+    {
+        public CodeBlock CodeBlock { get; set; }
+    }
+
+    public class PushDefaults : CodeBlockOperation { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
+
+    public class PopLocals : CodeBlockOperation { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
+
+    public class Read : Command
+    {
+        public DirectValueSymbol Result { get; set; }
+
+        public override void ExecuteBy(VirtualMachine vm)
+        {
+            vm.Execute(this);
+        }
+    }
+
+    public class While : Command
+    {
+        public CommandList Expression { get; set; }
+        public CommandList WhileBlock { get; set; }
+        public DirectValueSymbol Result { get; set; }
+
+        public override void ExecuteBy(VirtualMachine vm)
+        {
+            vm.Execute(this);
+        }
+    }
+
+    public class Random : Command
+    {
+        public DirectValueSymbol Result { get; set; }
+
+        public override void ExecuteBy(VirtualMachine vm)
+        {
+            vm.Execute(this);
+        }
+    }
+
+    public class Print : Command
+    {
+        public List<DirectValueSymbol> Values { get; set; }
+
+        public override void ExecuteBy(VirtualMachine vm)
+        {
+            vm.Execute(this);
+        }
+    }
 }

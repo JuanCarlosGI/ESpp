@@ -15,6 +15,7 @@ main {
 	booleano testNadaBool;
 	cadena testNadaCadena;
 
+	imprimir("hola mundo");
 	dec = 1;
 	entero_1 = 3 + 4 * 5 / 7 % 2 * (3 + 5) - (-dec) + segunda() * aleatorio();
 	entero local;
@@ -23,10 +24,12 @@ main {
 	segundoLocal = 5 * 1.5;
 	primera(entero_1, 3*5);
 	imprimir(entero_1, miEntero2, 5 * 9);
+	elBooleano = verdadero;
 	si (elBooleano) {
-		si (falso) {
+		si (verdadero) {
 			entero ent;
 			decimal dec;
+			dec = 2;
 		}
 
 		local = 0;
@@ -38,7 +41,11 @@ main {
 	sino {
 	}
 
-	mientras (verdadero) {
-		imprimir("verdadero");
+	entero paraMientras;
+	mientras (paraMientras < 10) {
+		cadena res;
+		res = lectura();
+		imprimir("verdadero", aleatorio(),res);
+		paraMientras = paraMientras + 1;
 	}
 }

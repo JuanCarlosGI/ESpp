@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 
 
@@ -89,7 +90,7 @@ public partial class Parser {
 	
 	void ESpp() {
 		Program();
-		var main = currentCodeBlock.SearchForFunctionScope("main"); main.CommandList.ExecuteBy(this); 
+		var main = currentCodeBlock.SearchForFunctionScope("main"); if(errors.count == 0) main.CommandList.ExecuteBy(this); 
 	}
 
 	void Program() {
@@ -181,7 +182,7 @@ public partial class Parser {
 
 	void Bloque(string name, Variable[] parameters) {
 		Expect(20);
-		createNewSymbolTable(name, new List<Variable>(parameters)); 
+		createNewSymbolTable(name, new List<Variable>(parameters)); doPushDefaults(); 
 		while (StartOf(3)) {
 			if (StartOf(1)) {
 				Declaracion();
@@ -199,7 +200,7 @@ public partial class Parser {
 			}
 		}
 		Expect(21);
-		currentCodeBlock = currentCodeBlock.Parent; 
+		doPopLocals(); currentCodeBlock = currentCodeBlock.Parent; 
 	}
 
 	void TipoArr(out int length) {
@@ -214,31 +215,43 @@ public partial class Parser {
 		Expect(5);
 		Expresion();
 		Expect(11);
+		var condition = symbolStack.Pop(); 
 		Bloque("if", new Variable[]{});
+		var ifBlock = currentCodeBlock.Children.Last().CommandList; CommandList elseBlock = null; 
 		if (la.kind == 24) {
 			Get();
 			Bloque("else", new Variable[]{});
+			elseBlock = currentCodeBlock.Children.Last().CommandList; 
 		}
+		doIfElse(condition, ifBlock, elseBlock); 
 	}
 
 	void Ciclo() {
 		Expect(25);
 		Expect(5);
+		createNewSymbolTable("Expression", new List<Variable>()); 
 		Expresion();
+		var expression = currentCodeBlock.CommandList; var result = symbolStack.Pop(); 
 		Expect(11);
+		currentCodeBlock = currentCodeBlock.Parent; 
 		Bloque("while", new Variable[]{});
+		var whileBlock = currentCodeBlock.Children.Last().CommandList; doWhile(expression, result, whileBlock); 
 	}
 
 	void Impresion() {
 		Expect(26);
 		Expect(5);
+		var expressions = new List<DirectValueSymbol>(); 
 		Expresion();
+		expressions.Add(symbolStack.Pop()); 
 		while (la.kind == 10) {
 			Get();
 			Expresion();
+			expressions.Add(symbolStack.Pop()); 
 		}
 		Expect(11);
 		Expect(13);
+		doPrint(expressions); 
 	}
 
 	void Funcion() {
@@ -261,7 +274,7 @@ public partial class Parser {
 
 	void Asignacion() {
 		Variable variable; 
-		    Variable(out variable);
+		Variable(out variable);
 		symbolStack.Push(variable); 
 		Expect(22);
 		Expresion();
@@ -405,10 +418,10 @@ public partial class Parser {
 			sym = constBuilder.StrConstant(t.val); 
 		} else if (la.kind == 40) {
 			Aleatorio();
-			sym = constBuilder.IntConstant("10"); 
+			sym = constBuilder.DecConstant("0"); doRandom(sym); 
 		} else if (la.kind == 41) {
 			Lectura();
-			sym = constBuilder.StrConstant("100"); 
+			sym = constBuilder.StrConstant(""); doRead(sym); 
 		} else if (FollowedByLPar()) {
 			Funcion();
 			sym = constBuilder.IntConstant("1000"); 

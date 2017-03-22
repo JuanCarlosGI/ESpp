@@ -43,7 +43,7 @@ namespace Coco_R
         {
             return new Constant
             {
-                Value = value,
+                Value = value.Length >= 2 ? value.Substring(1,value.Length - 2) : "",
                 Type = Type.Cadena
             };
         }
