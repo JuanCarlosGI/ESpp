@@ -316,9 +316,9 @@ public partial class Parser {
 		string name = t.val; checkVariableExists(name); var symbol = currentCodeBlock.Search(name); variable = symbol as Variable; 
 		if (la.kind == 18) {
 			Get();
-			checkIsArray(name); variable=(symbol as VariableArray).Variables[0]; 
 			Expresion();
 			Expect(19);
+			checkIsArray(name); VariableArray array =(symbol as VariableArray); doAssignIndex(array,symbolStack.Pop()); variable = array; 
 		}
 	}
 

@@ -124,4 +124,15 @@ namespace Coco_R
             vm.Execute(this);
         }
     }
+
+    public class AssignIndex : Command
+    {
+        public VariableArray Array { get; set; }
+        public DirectValueSymbol Index { get; set; }
+
+        public override void ExecuteBy(VirtualMachine vm)
+        {
+            vm.Execute(this);
+        }
+    }
 }

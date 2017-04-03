@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Test Files\ArrayTest.txt" />
     <Content Include="Test Files\FactorialTest.txt" />
   </ItemGroup>
   <ItemGroup>

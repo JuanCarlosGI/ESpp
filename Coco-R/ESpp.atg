@@ -120,8 +120,9 @@ PRODUCTIONS
 	
 	Variable<out Variable variable> = 
 		id							(. string name = t.val; checkVariableExists(name); var symbol = currentCodeBlock.Search(name); variable = symbol as Variable; .) 
-		['['						(. checkIsArray(name); variable=(symbol as VariableArray).Variables[0]; .)
-		 Expresion ']'].
+		['['						
+		 Expresion ']'				(. checkIsArray(name); VariableArray array =(symbol as VariableArray); doAssignIndex(array,symbolStack.Pop()); variable = array; .)
+		 ].
 
 	Expresion =
 		Exp

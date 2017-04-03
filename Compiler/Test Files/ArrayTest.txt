@@ -1,0 +1,13 @@
+﻿variables:
+funciones:
+main {
+	entero[8] miArreglo;
+	entero contador;
+	miArreglo[3] = 9;
+	contador = 0;
+
+	mientras (contador < 8) {
+		imprimir(contador,miArreglo[contador]);
+		contador = contador + 1;
+	}
+}

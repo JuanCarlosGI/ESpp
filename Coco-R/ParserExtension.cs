@@ -293,6 +293,16 @@ namespace Coco_R
             currentCodeBlock.CommandList.Commands.Add(cmd);
         }
 
+        void doAssignIndex(VariableArray array, DirectValueSymbol index)
+        {
+            var cmd = new AssignIndex
+            {
+                Array = array,
+                Index = index
+            };
+            currentCodeBlock.CommandList.Commands.Add(cmd);
+        }
+
         void doPopLocals()
         {
             var cmd = new PopLocals

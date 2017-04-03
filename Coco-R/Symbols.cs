@@ -29,12 +29,12 @@ namespace Coco_R
             }
         }
 
-        public void SaveAndClear(dynamic value)
+        public virtual void SaveAndClear(dynamic value)
         {
             Values.Push(value);
         }
 
-        public void Unroll()
+        public virtual void Unroll()
         {
             Values.Pop();
         }
@@ -47,9 +47,44 @@ namespace Coco_R
        
     }
 
-    public class VariableArray : Symbol
+    public class VariableArray : Variable
     {
         public int Length { get; set; }
+
+        public DirectValueSymbol Index { get; set; }
+
+        public override dynamic Value
+        {
+            get
+            {
+                return Variables[Index.Value].Value;
+            }
+
+            set
+            {
+                Variables[Index.Value].Value = value;
+            }
+        }
+
+        public override void SaveAndClear(dynamic value)
+        {
+            foreach (var variable in Variables)
+            {
+                variable.SaveAndClear(value);
+            }
+
+            //Index.SaveAndClear(value);
+        }
+
+        public override void Unroll()
+        {
+            foreach (var variable in Variables)
+            {
+                variable.Unroll();
+            }
+
+            //Index.Unroll();
+        }
 
         public Variable[] Variables { get; set; }
 
