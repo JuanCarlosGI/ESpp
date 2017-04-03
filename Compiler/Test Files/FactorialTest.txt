@@ -1,6 +1,4 @@
 ﻿variables:
-    entero contadorGlobal;
-
 funciones:
     entero factorial(entero n) {
         entero resultado;
