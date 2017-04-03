@@ -27,22 +27,27 @@ PRODUCTIONS
 
 	Vars = "variables" ':' {Declaracion}.
 	
-	Funs = "funciones" ':' {						(. Type funType; .)
+	Funs = "funciones" ':' {									(. Type funType; .)
 		(
 			Tipo<out funType>
-			|"rutina"								(. funType = Type.Rutina; .)
+			|"rutina"											(. funType = Type.Rutina; .)
 		)
-		id											(. var funName = t.val; .)
-		'('											(. var vars = new List<Variable>(); .)
-		[											(. Type tipo; .)
-			Tipo<out tipo> id						(. vars.Add(new Variable(){Name=t.val, Type=tipo}); .) 
+		id														(. var funName = t.val; .)
+		'('														(. var vars = new List<Variable>(); .)
+		[														(. Type tipo; .)
+			Tipo<out tipo> id									(. vars.Add(new Variable(){Name=t.val, Type=tipo}); .) 
 			{
-				',' Tipo<out tipo> id				(. vars.Add(new Variable(){Name=t.val, Type=tipo}); .) 
+				',' Tipo<out tipo> id							(. vars.Add(new Variable(){Name=t.val, Type=tipo}); .) 
 			}
-		] ')'										(. addFunction(funName, funType, vars); .)
-		Bloque<funName, vars.ToArray()>}.
+		] ')'													(. addFunction(funName, funType, vars); .)
+																(. DirectValueSymbol returns; .)
+		Bloque<funName, vars.ToArray(), funType != Type.Rutina, out returns>
+																(. addReturns(funName, returns); .)
+		}.
 
-	Main = "main" Bloque<"main", new Variable[]{}>.
+
+	Main =					(. DirectValueSymbol dummy; .) 
+		"main" Bloque<"main", new Variable[]{}, false, out dummy>.
 	
 	Declaracion =					(. Type tipo; bool isArr = false; int size = 0; .)
 		Tipo<out tipo> 
@@ -62,16 +67,20 @@ PRODUCTIONS
 
 	TipoArr<out int length> = '[' cteent (. length = int.Parse(t.val); .) ']'.
 	
-	Bloque<string name, Variable[] parameters> =						
+	Bloque<string name, Variable[] parameters, bool isFunction, out DirectValueSymbol returns> =						
 		'{'										(. createNewSymbolTable(name, new List<Variable>(parameters)); doPushDefaults(); .)
+												(. returns = null; .)
 		{
 			Declaracion 
 			| Condicion 
 			| Ciclo 
 			| Impresion 
-			| IF(FollowedByLPar()) Funcion ';' 
+			| IF(FollowedByLPar())							(. Function function; List<DirectValueSymbol> paras; .) 
+				Funcion<out function, out paras> ';'		(. doRoutine(function, paras); .) 
 			| Asignacion} 
-		'}'										(. doPopLocals(); currentCodeBlock = currentCodeBlock.Parent; .)
+			(IF(isFunction) "regresa" Expresion ';'			(. returns = symbolStack.Pop(); currentCodeBlock.Returns = returns; .)
+			|)
+		'}'													(. doPopLocals(); currentCodeBlock = currentCodeBlock.Parent; .)
 		.
 
 	Asignacion =					(. Variable variable; .)
@@ -79,27 +88,28 @@ PRODUCTIONS
 		'=' Expresion ';'			(. doAssign(); .)
 		.
 
-	Funcion = 
+	Funcion<. out Function function, out List<DirectValueSymbol> parameters .> = 
 		id				(. string name = t.val; checkFunctionExists(name); .)
-		'('				(. var parameters = new List<DirectValueSymbol>(); .)
+		'('				(. parameters = new List<DirectValueSymbol>(); .)
 		[ Expresion		(. parameters.Add(symbolStack.Pop()); .)
 		{',' Expresion	(. parameters.Add(symbolStack.Pop()); .)
 		}] ')'			(. checkParamAmount(name, parameters.Count); .)
+						(. function = currentCodeBlock.Search(name) as Function; .)
 		.
 
 	Condicion = 
-		"si" '(' Expresion ')'							(. var condition = symbolStack.Pop(); .)
-		Bloque<"if", new Variable[]{}>					(. var ifBlock = currentCodeBlock.Children.Last().CommandList; CommandList elseBlock = null; .)
+		"si" '(' Expresion ')'							(. var condition = symbolStack.Pop(); DirectValueSymbol returnsDummy; .)
+		Bloque<"if", new Variable[]{}, false, out returnsDummy>					(. var ifBlock = currentCodeBlock.Children.Last().CommandList; CommandList elseBlock = null; .)
 		[
-			"sino" Bloque<"else", new Variable[]{}>		(. elseBlock = currentCodeBlock.Children.Last().CommandList; .)
+			"sino" Bloque<"else", new Variable[]{}, false, out returnsDummy>		(. elseBlock = currentCodeBlock.Children.Last().CommandList; .)
 		]												(. doIfElse(condition, ifBlock, elseBlock); .)
 		.
 	
 	Ciclo = 
-		"mientras" '('							(. createNewSymbolTable("Expression", new List<Variable>()); .) 
+		"mientras" '('							(. createNewSymbolTable("Expression", new List<Variable>());  DirectValueSymbol returnsDummy; .) 
 		Expresion								(. var expression = currentCodeBlock.CommandList; var result = symbolStack.Pop(); .)
 		')'										(. currentCodeBlock = currentCodeBlock.Parent; .)
-		 Bloque<"while", new Variable[]{}>		(. var whileBlock = currentCodeBlock.Children.Last().CommandList; doWhile(expression, result, whileBlock); .)
+		 Bloque<"while", new Variable[]{}, false, out returnsDummy>		(. var whileBlock = currentCodeBlock.Children.Last().CommandList; doWhile(expression, result, whileBlock); .)
 		 .
 	
 	Impresion = "imprimir" '('		(. var expressions = new List<DirectValueSymbol>(); .)
@@ -177,7 +187,8 @@ PRODUCTIONS
 		| ctestr						(. sym = constBuilder.StrConstant(t.val); .)
 		| Aleatorio						(. sym = constBuilder.DecConstant("0"); doRandom(sym); .)
 		| Lectura						(. sym = constBuilder.StrConstant(""); doRead(sym); .)
-		| IF(FollowedByLPar()) Funcion  (. sym = constBuilder.IntConstant("1000"); .)
+		| IF(FollowedByLPar())			(. Function function; List<DirectValueSymbol> parameters; Constant result = new Constant();.)
+			Funcion<out function, out parameters>		(. doFunction(function, parameters, result); sym = result; .)
 		|								(. Variable variable; .)
 			Variable<out variable>		(. sym = variable; .)
 		).

@@ -98,4 +98,30 @@ namespace Coco_R
             vm.Execute(this);
         }
     }
+
+    public class CallFunction : Command
+    {
+        public Function Function { get; set; }
+        public List<DirectValueSymbol> Parameters { get; internal set; }
+        public DirectValueSymbol Result { get; set; }
+
+        public CodeBlock ScopeCalled { get; set; }
+
+        public override void ExecuteBy(VirtualMachine vm)
+        {
+            vm.Execute(this);
+        }
+    }
+
+    public class AssignParam : Command
+    {
+        public DirectValueSymbol Parameter { get; set; }
+
+        public DirectValueSymbol Source { get; set; }
+
+        public override void ExecuteBy(VirtualMachine vm)
+        {
+            vm.Execute(this);
+        }
+    }
 }

@@ -1,0 +1,15 @@
+﻿variables:
+    entero contadorGlobal;
+
+funciones:
+	entero sumaUno(entero n) {
+		regresa n + 1;
+	}
+    
+	entero uno(entero n) {
+        regresa sumaUno(sumaUno(sumaUno(n)));
+    }
+
+main {
+    imprimir("Resultado (4):", uno(1));
+}

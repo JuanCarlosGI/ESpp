@@ -60,6 +60,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="Test Files\FactorialTest.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -71,6 +72,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Test Files\FunctionTest.txt" />
     <Content Include="Test Files\VarDeclarationA.txt" />
     <Content Include="Test Files\ValidTestA.txt" />
   </ItemGroup>

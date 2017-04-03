@@ -54,13 +54,15 @@ namespace Coco_R
 
         public CommandList CommandList = new CommandList();
 
+        public DirectValueSymbol Returns { get; set; }
+
         public void pushDefaultValues()
         {
-            foreach (var obj in hash)
+            foreach (var obj in hash.Values)
             {
-                if (obj is Variable)
+                if (obj is DirectValueSymbol)
                 {
-                    var variable = obj as Variable;
+                    var variable = obj as DirectValueSymbol;
                     variable.SaveAndClear(EsConstantBuilder.DefaultValue(variable.Type));
                 }
             }
@@ -68,11 +70,11 @@ namespace Coco_R
 
         public void popLocalValues()
         {
-            foreach (var obj in hash)
+            foreach (var obj in hash.Values)
             {
-                if (obj is Variable)
+                if (obj is DirectValueSymbol && obj != Returns)
                 {
-                    var variable = obj as Variable;
+                    var variable = obj as DirectValueSymbol;
                     variable.Unroll();
                 }
             }

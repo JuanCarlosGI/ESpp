@@ -1,0 +1,20 @@
+﻿variables:
+    entero contadorGlobal;
+
+funciones:
+    entero factorial(entero n) {
+        entero resultado;
+        si (n <= 1)
+        {
+            resultado = 1;
+        }
+        sino
+        {
+            resultado = n * factorial(n-1);
+        }
+        regresa resultado;
+    }
+
+main {
+    imprimir("Factorial de 3:", factorial(7));
+}

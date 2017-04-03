@@ -89,6 +89,12 @@ namespace Coco_R
             }
         }
 
+        void addReturns(string name, DirectValueSymbol returns)
+        {
+            var function = currentCodeBlock.Search(name) as Function;
+            function.Returns = returns;
+        }
+
         void addFunction(string name, Type tipo, List<Variable> parameters)
         {
             if (!currentCodeBlock.ExistsInScope(name))
@@ -279,7 +285,7 @@ namespace Coco_R
         }
 
         void doPushDefaults()
-        {
+        { 
             var cmd = new PushDefaults
             {
                 CodeBlock = currentCodeBlock
@@ -324,6 +330,88 @@ namespace Coco_R
         {
             var cmd = new Print { Values = values };
             currentCodeBlock.CommandList.Commands.Add(cmd);
+        }
+
+        void doFunction(Function function, List<DirectValueSymbol> parameters, DirectValueSymbol result)
+        {
+            if (function == null)
+            {
+                SemErr("Function does not exist.");
+                return;
+            }
+            if (function.Type == Type.Rutina)
+            {
+                SemErr("Function does not have a return value.");
+                return;
+            }
+            if (function.Parameters.Count != parameters.Count)
+            {
+                SemErr("Wrong amount of arguments.");
+                return;
+            }
+
+            for (int para = 0; para < parameters.Count; para++)
+            {
+                if (cubo[(int)function.Parameters[para].Type, (int)parameters[para].Type, (int)Operator.Asignation] == Type.Error)
+                {
+                    SemErr("Type mismatch");
+                    return;
+                }
+            }
+
+            var cmd = new CallFunction
+            {
+                Function = function,
+                ScopeCalled = currentCodeBlock,
+                Result = result,
+                Parameters = parameters
+            };
+            currentCodeBlock.CommandList.Commands.Add(cmd);
+        }
+
+        void doRoutine(Function function, List<DirectValueSymbol> parameters)
+        {
+            if (function == null)
+            {
+                SemErr("Function does not exist.");
+                return;
+            }
+            if (function.Type != Type.Rutina)
+            {
+                SemErr("Function is not a routine.");
+                return;
+            }
+            if (function.Parameters.Count != parameters.Count)
+            {
+                SemErr("Wrong amount of arguments.");
+                return;
+            }
+
+            for (int para = 0; para < parameters.Count; para++)
+            {
+                if (cubo[(int)function.Parameters[para].Type, (int)parameters[para].Type, (int)Operator.Asignation] == Type.Error)
+                {
+                    SemErr("Type mismatch");
+                    return;
+                }
+            }
+
+            var cmd = new CallFunction
+            {
+                Function = function,
+                ScopeCalled = currentCodeBlock
+            };
+            currentCodeBlock.CommandList.Commands.Add(cmd);
+        }
+        
+        void doAssignParameters(Variable[] parameters)
+        {
+            for(int para = parameters.Length -1; para >= 0; para--)
+            {
+                var parameter = parameters[para];
+                var cmd = new AssignParam { Parameter = parameter };
+                currentCodeBlock.CommandList.Commands.Add(cmd);
+            }
         }
     }
 }

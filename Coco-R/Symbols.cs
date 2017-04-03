@@ -14,16 +14,10 @@ namespace Coco_R
 
     public abstract class DirectValueSymbol : Symbol
     {
-        public virtual dynamic Value { get; set; }
-    }
-
-    class Constant : DirectValueSymbol { }
-
-    public class Variable : DirectValueSymbol
-    {
         private Stack<dynamic> Values = new Stack<dynamic>();
 
-        public override dynamic Value {
+        public virtual dynamic Value
+        {
             get
             {
                 return Values.Peek();
@@ -46,7 +40,14 @@ namespace Coco_R
         }
     }
 
-    class VariableArray : Symbol
+    class Constant : DirectValueSymbol { }
+
+    public class Variable : DirectValueSymbol
+    {
+       
+    }
+
+    public class VariableArray : Symbol
     {
         public int Length { get; set; }
 
@@ -68,8 +69,17 @@ namespace Coco_R
         }
     }
 
-    class Function : Symbol
+    public class Function : Symbol
     {
         public List<Variable> Parameters { get; set; }
+        public DirectValueSymbol Returns { get; set; }
+
+        public CommandList FindCommands(CodeBlock currentCodeBlock)
+        {
+            CodeBlock scope = null;
+            if ((scope = currentCodeBlock.Children.Find(n => n.Name == Name)) != null)
+                return scope.CommandList;
+            else return currentCodeBlock.Parent == null ? null : FindCommands(currentCodeBlock.Parent);
+        }
     }
 }
