@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Coco_R
 {
@@ -14,29 +10,29 @@ namespace Coco_R
 
     public abstract class DirectValueSymbol : Symbol
     {
-        private Stack<dynamic> Values = new Stack<dynamic>();
+        private readonly Stack<dynamic> _values = new Stack<dynamic>();
 
         public virtual dynamic Value
         {
             get
             {
-                return Values.Peek();
+                return _values.Peek();
             }
             set
             {
-                if (Values.Count > 0) Values.Pop();
-                Values.Push(value);
+                if (_values.Count > 0) _values.Pop();
+                _values.Push(value);
             }
         }
 
         public virtual void SaveAndClear(dynamic value)
         {
-            Values.Push(value);
+            _values.Push(value);
         }
 
         public virtual void Unroll()
         {
-            Values.Pop();
+            _values.Pop();
         }
     }
 
@@ -72,8 +68,6 @@ namespace Coco_R
             {
                 variable.SaveAndClear(value);
             }
-
-            //Index.SaveAndClear(value);
         }
 
         public override void Unroll()
@@ -82,8 +76,6 @@ namespace Coco_R
             {
                 variable.Unroll();
             }
-
-            //Index.Unroll();
         }
 
         public Variable[] Variables { get; set; }
@@ -108,13 +100,6 @@ namespace Coco_R
     {
         public List<Variable> Parameters { get; set; }
         public DirectValueSymbol Returns { get; set; }
-
-        public CommandList FindCommands(CodeBlock currentCodeBlock)
-        {
-            CodeBlock scope = null;
-            if ((scope = currentCodeBlock.Children.Find(n => n.Name == Name)) != null)
-                return scope.CommandList;
-            else return currentCodeBlock.Parent == null ? null : FindCommands(currentCodeBlock.Parent);
-        }
+        public CommandList CommandList { get; set; }
     }
 }

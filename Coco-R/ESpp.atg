@@ -20,8 +20,7 @@ TOKENS
 IGNORE eol + '\t'
 
 PRODUCTIONS
-	ESpp = Program	(. var main = _currentCodeBlock.SearchForFunctionScope("main"); if(errors.count == 0) main.CommandList.ExecuteBy(_virtualMachine); .)
-		.
+	ESpp = Program.
 
 	Program	= Vars Funs Main.
 
@@ -42,7 +41,7 @@ PRODUCTIONS
 		] ')'													(. AddFunction(funName, funType, vars); .)
 																(. DirectValueSymbol returns; .)
 		Bloque<funName, vars.ToArray(), funType != Type.Rutina, out returns>
-																(. AddReturns(funName, returns); .)
+																(. AddReturns(funName, returns); LinkFunctionBody(funName); .)
 		}.
 
 

@@ -8,14 +8,14 @@ namespace Coco_R
 {
     public abstract class Command
     {
-        public abstract void ExecuteBy(VirtualMachine vm);
+        public abstract void ExecuteBy(IVirtualMachine vm);
     }
 
     public class CommandList : Command
     {
         public List<Command> Commands { get; set; } = new List<Command>();
 
-        public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); }
+        public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); }
     }
 
     public abstract class BinaryCommand : Command
@@ -24,20 +24,20 @@ namespace Coco_R
         public DirectValueSymbol Op2 { get; set; }
         public DirectValueSymbol Result { get; set; }
     }
-    public class Sum : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class Subtract : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class Divide : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class Multiply : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class Modulo : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class Assign : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class Equals : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class LessThan : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class GreaterThan : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class Different : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class GreaterOrEqualThan : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class LessOrEqualThan : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class And : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
-    public class Or : BinaryCommand { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
+    public class Sum : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class Subtract : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class Divide : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class Multiply : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class Modulo : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class Assign : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class Equals : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class LessThan : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class GreaterThan : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class Different : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class GreaterOrEqualThan : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class LessOrEqualThan : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class And : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class Or : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
 
     public class Conditional : Command
     {
@@ -45,7 +45,7 @@ namespace Coco_R
         public CommandList Else { get; set; }
         public DirectValueSymbol Condition { get; set; }
 
-        public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); }
+        public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); }
     }
 
     public abstract class CodeBlockOperation : Command
@@ -53,15 +53,15 @@ namespace Coco_R
         public CodeBlock CodeBlock { get; set; }
     }
 
-    public class PushDefaults : CodeBlockOperation { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
+    public class PushDefaults : CodeBlockOperation { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
 
-    public class PopLocals : CodeBlockOperation { public override void ExecuteBy(VirtualMachine vm) { vm.Execute(this); } }
+    public class PopLocals : CodeBlockOperation { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
 
     public class Read : Command
     {
         public DirectValueSymbol Result { get; set; }
 
-        public override void ExecuteBy(VirtualMachine vm)
+        public override void ExecuteBy(IVirtualMachine vm)
         {
             vm.Execute(this);
         }
@@ -73,7 +73,7 @@ namespace Coco_R
         public CommandList WhileBlock { get; set; }
         public DirectValueSymbol Result { get; set; }
 
-        public override void ExecuteBy(VirtualMachine vm)
+        public override void ExecuteBy(IVirtualMachine vm)
         {
             vm.Execute(this);
         }
@@ -83,7 +83,7 @@ namespace Coco_R
     {
         public DirectValueSymbol Result { get; set; }
 
-        public override void ExecuteBy(VirtualMachine vm)
+        public override void ExecuteBy(IVirtualMachine vm)
         {
             vm.Execute(this);
         }
@@ -93,7 +93,7 @@ namespace Coco_R
     {
         public List<DirectValueSymbol> Values { get; set; }
 
-        public override void ExecuteBy(VirtualMachine vm)
+        public override void ExecuteBy(IVirtualMachine vm)
         {
             vm.Execute(this);
         }
@@ -107,7 +107,7 @@ namespace Coco_R
 
         public CodeBlock ScopeCalled { get; set; }
 
-        public override void ExecuteBy(VirtualMachine vm)
+        public override void ExecuteBy(IVirtualMachine vm)
         {
             vm.Execute(this);
         }
@@ -119,7 +119,7 @@ namespace Coco_R
 
         public DirectValueSymbol Source { get; set; }
 
-        public override void ExecuteBy(VirtualMachine vm)
+        public override void ExecuteBy(IVirtualMachine vm)
         {
             vm.Execute(this);
         }
@@ -130,7 +130,7 @@ namespace Coco_R
         public VariableArray Array { get; set; }
         public DirectValueSymbol Index { get; set; }
 
-        public override void ExecuteBy(VirtualMachine vm)
+        public override void ExecuteBy(IVirtualMachine vm)
         {
             vm.Execute(this);
         }

@@ -24,8 +24,12 @@
             {
                 var scanner = new Scanner(path);
                 var parser = new Parser(scanner);
-                parser.Parse();
-                Console.WriteLine(parser.errors.count + " errors detected.");
+                var commandList = parser.Parse();
+
+                if (parser.errors.count != 0)
+                    Console.WriteLine(parser.errors.count + " errors detected.");
+                else
+                    commandList.ExecuteBy(new VirtualMachine());
             }
             else
             {

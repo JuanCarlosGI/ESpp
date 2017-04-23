@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Coco_R
 {
-    public class VirtualMachine
+    public class VirtualMachine : IVirtualMachine
     {
         private readonly System.Random _rand = new System.Random();
 
@@ -80,7 +80,7 @@ namespace Coco_R
         }
         public void Execute(CallFunction cmd)
         {
-            var commands = cmd.Function.FindCommands(cmd.ScopeCalled);
+            var commands = cmd.Function.CommandList;
 
             if (commands == null) return;
 

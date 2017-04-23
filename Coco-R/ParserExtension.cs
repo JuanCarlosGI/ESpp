@@ -31,12 +31,6 @@ namespace Coco_R
         private readonly Stack<Operator> _operatorStack = new Stack<Operator>();
 
         /// <summary>
-        /// The virtual machine that will be used at the end of the parsing
-        /// process to execute the code.
-        /// </summary>
-        private readonly VirtualMachine _virtualMachine = new VirtualMachine();
-
-        /// <summary>
         /// Determines whether the next token is a left parenthesis.
         /// </summary>
         /// <returns></returns>
@@ -148,6 +142,14 @@ namespace Coco_R
             }
         }
 
+        private void LinkFunctionBody(string functionName)
+        {
+            var function = _currentCodeBlock.Search(functionName) as Function;
+            var body = _currentCodeBlock.SearchForFunctionScope(functionName).CommandList;
+
+            if (function != null) function.CommandList = body;
+        }
+
         private void CheckParamAmount(string name, int amount)
         {
             var fun = _currentCodeBlock.Search(name) as Function;
@@ -157,7 +159,7 @@ namespace Coco_R
             }
         }
 
-        private bool CheckTypeMismatch(DirectValueSymbol left, DirectValueSymbol right, Operator op, out Type type)
+        private bool CheckTypeMismatch(Symbol left, Symbol right, Operator op, out Type type)
         {
             type = cubo[(int)left.Type, (int)right.Type, (int)op];
             if (type == Type.Error)
@@ -433,7 +435,7 @@ namespace Coco_R
                 return;
             }
 
-            for (int para = 0; para < parameters.Count; para++)
+            for (var para = 0; para < parameters.Count; para++)
             {
                 if (cubo[(int)function.Parameters[para].Type, (int)parameters[para].Type, (int)Operator.Asignation] == Type.Error)
                 {

@@ -103,11 +103,13 @@ public partial class Parser {
 	
 -->productions
 
-	public void Parse() {
+	public CommandList Parse() {
 		la = new Token();
 		la.val = "";		
 		Get();
 -->parseRoot
+		var main = _currentCodeBlock.SearchForFunctionScope("main");
+		return main.CommandList;
 	}
 	
 	static readonly bool[,] set = {

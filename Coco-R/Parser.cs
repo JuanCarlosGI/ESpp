@@ -90,7 +90,6 @@ public partial class Parser {
 	
 	void ESpp() {
 		Program();
-		var main = _currentCodeBlock.SearchForFunctionScope("main"); if(errors.count == 0) main.CommandList.ExecuteBy(_virtualMachine); 
 	}
 
 	void Program() {
@@ -138,7 +137,7 @@ public partial class Parser {
 			AddFunction(funName, funType, vars); 
 			DirectValueSymbol returns; 
 			Bloque(funName, vars.ToArray(), funType != Type.Rutina, out returns);
-			AddReturns(funName, returns); 
+			AddReturns(funName, returns); LinkFunctionBody(funName); 
 		}
 	}
 
@@ -469,13 +468,15 @@ public partial class Parser {
 
 
 
-	public void Parse() {
+	public CommandList Parse() {
 		la = new Token();
 		la.val = "";		
 		Get();
 		ESpp();
 		Expect(0);
 
+		var main = _currentCodeBlock.SearchForFunctionScope("main");
+		return main.CommandList;
 	}
 	
 	static readonly bool[,] set = {

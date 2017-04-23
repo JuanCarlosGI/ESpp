@@ -51,7 +51,7 @@
     <Compile Include="CodeBlock.cs" />
     <Compile Include="Types.cs" />
     <Compile Include="VariableBuilder.cs" />
-    <Compile Include="VirtualMachine.cs" />
+    <Compile Include="IVirtualMachine.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ESpp.atg" />
