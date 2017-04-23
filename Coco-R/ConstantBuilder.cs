@@ -6,27 +6,20 @@ using System.Threading.Tasks;
 
 namespace Coco_R
 {
-    interface ConstantBuilder
+    internal class ConstantBuilder
     {
-        Constant IntConstant(string value);
-        Constant DecConstant(string value);
-        Constant StrConstant(string value);
-        Constant BoolConstant(string value);
-    }
-
-    class EsConstantBuilder : ConstantBuilder
-    {
-        private static readonly int _intDefault = 0;
-        private static readonly double _decDefault = 0.0;
-        private static readonly bool _boolDefault = false;
-        private static readonly string _strDefault = "";
+        private const int IntDefault = 0;
+        private const double DecDefault = 0.0;
+        private const bool BoolDefault = false;
+        private const string StrDefault = "";
 
         public Constant IntConstant(string value)
         {
             return new Constant
             {
                 Value = int.Parse(value),
-                Type = Type.Entero
+                Type = Type.Entero,
+                Name = value
             };
         }
 
@@ -35,7 +28,8 @@ namespace Coco_R
             return new Constant
             {
                 Value = double.Parse(value),
-                Type = Type.Decimal
+                Type = Type.Decimal,
+                Name = value
             };
         }
 
@@ -44,7 +38,8 @@ namespace Coco_R
             return new Constant
             {
                 Value = value.Length >= 2 ? value.Substring(1,value.Length - 2) : "",
-                Type = Type.Cadena
+                Type = Type.Cadena,
+                Name = value
             };
         }
 
@@ -52,17 +47,18 @@ namespace Coco_R
         {
             return new Constant
             {
-                Value = value == "verdadero" ? true : false,
-                Type = Type.Booleano
+                Value = value == "verdadero",
+                Type = Type.Booleano,
+                Name = value
             };
         }
 
         public static object DefaultValue(Type type)
         {
-            if (type == Type.Entero) return _intDefault;
-            if (type == Type.Decimal) return _decDefault;
-            if (type == Type.Cadena) return _strDefault;
-            return _boolDefault;
+            if (type == Type.Entero) return IntDefault;
+            if (type == Type.Decimal) return DecDefault;
+            if (type == Type.Cadena) return StrDefault;
+            return BoolDefault;
         }
     }
 }

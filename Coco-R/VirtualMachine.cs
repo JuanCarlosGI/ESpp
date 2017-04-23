@@ -6,39 +6,9 @@ using System.Threading.Tasks;
 
 namespace Coco_R
 {
-    public interface VirtualMachine
+    public class VirtualMachine
     {
-        void Execute(CommandList commands);
-
-        void Execute(Sum cmd);
-        void Execute(Subtract cmd);
-        void Execute(Divide cmd);
-        void Execute(Multiply cmd);
-        void Execute(Modulo cmd);
-        void Execute(Assign cmd);
-        void Execute(Equals cmd);
-        void Execute(LessThan cmd);
-        void Execute(GreaterThan cmd);
-        void Execute(Different cmd);
-        void Execute(GreaterOrEqualThan cmd);
-        void Execute(LessOrEqualThan cmd);
-        void Execute(And cmd);
-        void Execute(Or cmd);
-        void Execute(Conditional conditional);
-        void Execute(PushDefaults pushDefaults);
-        void Execute(PopLocals popLocals);
-        void Execute(Read lectura);
-        void Execute(While @while);
-        void Execute(Random random);
-        void Execute(Print print);
-        void Execute(CallFunction callFunction);
-        void Execute(AssignParam assignParam);
-        void Execute(AssignIndex assignIndex);
-    }
-
-    public partial class Parser : VirtualMachine
-    {
-        private System.Random _rand = new System.Random();
+        private readonly System.Random _rand = new System.Random();
 
         public void Execute(Subtract cmd)
         {
@@ -79,20 +49,20 @@ namespace Coco_R
         {
             cmd.Result.Value = cmd.Op1.Value || cmd.Op2.Value;
         }
-        public void Execute(PushDefaults pushDefaults)
+        public void Execute(PushDefaults cmd)
         {
-            pushDefaults.CodeBlock.pushDefaultValues();
+            cmd.CodeBlock.pushDefaultValues();
         }
-        public void Execute(Read lectura)
+        public void Execute(Read cmd)
         {
             var line = Console.ReadLine();
 
-            lectura.Result.Value = line;
+            cmd.Result.Value = line;
         }
-        public void Execute(Print print)
+        public void Execute(Print cmd)
         {
             var final = "";
-            foreach(var symbol in print.Values)
+            foreach(var symbol in cmd.Values)
             {
                 final += $"{symbol.Value} " ;
             }
@@ -100,17 +70,17 @@ namespace Coco_R
 
             Console.WriteLine(final);
         }
-        public void Execute(AssignParam assignParam)
+        public void Execute(AssignParam cmd)
         {
-            assignParam.Parameter.Value = assignParam.Source.Value;
+            cmd.Parameter.Value = cmd.Source.Value;
         }
-        public void Execute(AssignIndex assignIndex)
+        public void Execute(AssignIndex cmd)
         {
-            assignIndex.Array.Index = assignIndex.Index;
+            cmd.Array.Index = cmd.Index;
         }
-        public void Execute(CallFunction callFunction)
+        public void Execute(CallFunction cmd)
         {
-            var commands = callFunction.Function.FindCommands(callFunction.ScopeCalled);
+            var commands = cmd.Function.FindCommands(cmd.ScopeCalled);
 
             if (commands == null) return;
 
@@ -121,16 +91,16 @@ namespace Coco_R
                 commands.Commands.RemoveAt(1);
             }
 
-            for (int para = callFunction.Parameters.Count - 1; para >= 0; para--)
+            for (int para = cmd.Parameters.Count - 1; para >= 0; para--)
             {
-                var parameter = callFunction.Function.Parameters[para];
-                var cmd = new AssignParam { Parameter = parameter, Source = callFunction.Parameters[para] };
-                commands.Commands.Insert(1, cmd);
+                var parameter = cmd.Function.Parameters[para];
+                var newCmd = new AssignParam { Parameter = parameter, Source = cmd.Parameters[para] };
+                commands.Commands.Insert(1, newCmd);
             }
 
             Execute(commands);
 
-            for (int para = callFunction.Parameters.Count - 1; para >= 0; para--)
+            for (int para = cmd.Parameters.Count - 1; para >= 0; para--)
             {
                 commands.Commands.RemoveAt(1);
             }
@@ -140,38 +110,38 @@ namespace Coco_R
                 commands.Commands.Insert(1, stack.Pop());
             }
 
-            if (callFunction.Function.Type != Type.Rutina)
+            if (cmd.Function.Type != Type.Rutina)
             {
-                var aux = callFunction.Function.Returns.Value;
-                callFunction.Function.Returns.Unroll();
-                callFunction.Result.Value = aux;
+                var aux = cmd.Function.Returns.Value;
+                cmd.Function.Returns.Unroll();
+                cmd.Result.Value = aux;
             }
         }
-        public void Execute(Random random)
+        public void Execute(Random cmd)
         {
             var result = _rand.Next(int.MaxValue) / (double)int.MaxValue;
 
-            random.Result.Value = result;
+            cmd.Result.Value = result;
         }
-        public void Execute(While @while)
+        public void Execute(While cmd)
         {
-            Execute(@while.Expression);
-            while (@while.Result.Value)
+            Execute(cmd.Expression);
+            while (cmd.Result.Value)
             {
-                Execute(@while.WhileBlock);
-                Execute(@while.Expression);
+                Execute(cmd.WhileBlock);
+                Execute(cmd.Expression);
             }
         }
-        public void Execute(PopLocals popLocals)
+        public void Execute(PopLocals cmd)
         {
-            popLocals.CodeBlock.popLocalValues();
+            cmd.CodeBlock.popLocalValues();
         }
-        public void Execute(Conditional conditional)
+        public void Execute(Conditional cmd)
         {
-            if (conditional.Condition.Value)
-                Execute(conditional.If);
-            else if (conditional.Else != null)
-                Execute(conditional.Else);
+            if (cmd.Condition.Value)
+                Execute(cmd.If);
+            else if (cmd.Else != null)
+                Execute(cmd.Else);
         }
         public void Execute(And cmd)
         {

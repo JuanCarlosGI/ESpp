@@ -98,7 +98,7 @@ namespace Coco_R
                 Variables[i] = new Variable
                 {
                     Type = Type,
-                    Value = EsConstantBuilder.DefaultValue(Type)
+                    Value = ConstantBuilder.DefaultValue(Type)
                 };
             }
         }

@@ -63,7 +63,7 @@ namespace Coco_R
                 if (obj is DirectValueSymbol)
                 {
                     var variable = obj as DirectValueSymbol;
-                    variable.SaveAndClear(EsConstantBuilder.DefaultValue(variable.Type));
+                    variable.SaveAndClear(ConstantBuilder.DefaultValue(variable.Type));
                 }
             }
         }

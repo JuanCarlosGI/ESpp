@@ -50,6 +50,7 @@
     <Compile Include="Symbols.cs" />
     <Compile Include="CodeBlock.cs" />
     <Compile Include="Types.cs" />
+    <Compile Include="VariableBuilder.cs" />
     <Compile Include="VirtualMachine.cs" />
   </ItemGroup>
   <ItemGroup>

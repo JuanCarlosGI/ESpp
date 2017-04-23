@@ -1,28 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Coco_R
 {
     public partial class Parser
     {
-        ConstantBuilder constBuilder = new EsConstantBuilder();
-        CodeBlock currentCodeBlock = new CodeBlock(null, "global");
-        Stack<DirectValueSymbol> symbolStack = new Stack<DirectValueSymbol>();
-        Stack<Operator> operatorStack = new Stack<Operator>();
+        /// <summary>
+        /// Helper used to construct constants easilty.
+        /// </summary>
+        private readonly ConstantBuilder _constBuilder = 
+            new ConstantBuilder();
 
-        int tempCounter = 1;
+        private readonly VariableBuilder _varBuilder = 
+            new VariableBuilder();
 
-        bool FollowedByLPar()
+        /// <summary>
+        /// The current code block that the parser is in. At the end of the
+        /// parsing process, it will be the global context.
+        /// </summary>
+        private CodeBlock _currentCodeBlock = new CodeBlock(null, "global");
+
+        /// <summary>
+        /// The symbol stack to be used during the parsing process.
+        /// </summary>
+        private readonly Stack<DirectValueSymbol> _symbolStack = 
+            new Stack<DirectValueSymbol>();
+
+        /// <summary>
+        /// The operator stack to be used during the parsing process.
+        /// </summary>
+        private readonly Stack<Operator> _operatorStack = new Stack<Operator>();
+
+        /// <summary>
+        /// The virtual machine that will be used at the end of the parsing
+        /// process to execute the code.
+        /// </summary>
+        private readonly VirtualMachine _virtualMachine = new VirtualMachine();
+
+        /// <summary>
+        /// Determines whether the next token is a left parenthesis.
+        /// </summary>
+        /// <returns></returns>
+        private bool FollowedByLPar()
         {
             return scanner.Peek().kind == _lpar;
         }
 
-        void addVariable(string name, Type tipo, bool isArr, int size)
+        /// <summary>
+        /// Attempts to add a variable to the current code block hash, checking
+        /// that it is a valid movement to make.
+        /// </summary>
+        /// <param name="name">The name of the variable to add.</param>
+        /// <param name="tipo">The type of the variable to add.</param>
+        /// <param name="isArr">Boolean determining if the variable is an array
+        /// </param>
+        /// <param name="size">In case of being an array, its size</param>
+        private void AddVariable(string name, Type tipo, bool isArr, int size)
         {
-            if (!currentCodeBlock.ExistsInScope(name))
+            if (!_currentCodeBlock.ExistsInScope(name))
             {
                 if (isArr)
                 {
@@ -31,7 +65,7 @@ namespace Coco_R
                         Name = name,
                         Type = tipo
                     };
-                    currentCodeBlock.Add(symbol);
+                    _currentCodeBlock.Add(symbol);
                 }
                 else
                 {
@@ -39,65 +73,65 @@ namespace Coco_R
                     {
                         Name = name,
                         Type = tipo,
-                        Value = EsConstantBuilder.DefaultValue(tipo)
+                        Value = ConstantBuilder.DefaultValue(tipo)
                     };
-                    currentCodeBlock.Add(symbol);
+                    _currentCodeBlock.Add(symbol);
                 }
             }
             else
                 SemErr($"El nombre {name} ya ha sido declarado en este scope.");
         }
 
-        void checkVariableExists(string name)
+        private void CheckVariableExists(string name)
         {
-            var search = currentCodeBlock.Search(name);
+            var search = _currentCodeBlock.Search(name);
             if (search == null)
                 SemErr($"La variable {name} no ha sido declarada.");
             else if (!(search is Variable))
                 SemErr($"El nombre {name} no se refiere a una variable.");
         }
 
-        void checkFunctionExists(string name)
+        private void CheckFunctionExists(string name)
         {
-            var search = currentCodeBlock.Search(name);
+            var search = _currentCodeBlock.Search(name);
             if (search == null)
                 SemErr($"La función {name} no ha sido declarada.");
             else if (!(search is Function))
                 SemErr($"El nombre {name} no se refiere a una funcion.");
         }
 
-        void checkIsArray(string name)
+        private void CheckIsArray(string name)
         {
-            var symbol = currentCodeBlock.Search(name) as VariableArray;
+            var symbol = _currentCodeBlock.Search(name) as VariableArray;
             if (symbol == null)
                 SemErr($"La variable {name} no es un arreglo.");
         }
 
-        void createNewSymbolTable(string name, List<Variable> parameters)
+        private void CreateNewSymbolTable(string name, List<Variable> parameters)
         {
-            var newTable = new CodeBlock(currentCodeBlock, name);
-            currentCodeBlock.Children.Add(newTable);
-            currentCodeBlock = newTable;
-            addParameters(parameters.ToArray());
+            var newTable = new CodeBlock(_currentCodeBlock, name);
+            _currentCodeBlock.Children.Add(newTable);
+            _currentCodeBlock = newTable;
+            AddParameters(parameters.ToArray());
         }
 
-        void addParameters(Variable[] parameters)
+        private void AddParameters(Variable[] parameters)
         {
             foreach (var variable in parameters)
             {
-                currentCodeBlock.Add(variable);
+                _currentCodeBlock.Add(variable);
             }
         }
 
-        void addReturns(string name, DirectValueSymbol returns)
+        private void AddReturns(string name, DirectValueSymbol returns)
         {
-            var function = currentCodeBlock.Search(name) as Function;
-            function.Returns = returns;
+            var function = _currentCodeBlock.Search(name) as Function;
+            if (function != null) function.Returns = returns;
         }
 
-        void addFunction(string name, Type tipo, List<Variable> parameters)
+        private void AddFunction(string name, Type tipo, List<Variable> parameters)
         {
-            if (!currentCodeBlock.ExistsInScope(name))
+            if (!_currentCodeBlock.ExistsInScope(name))
             {
                 var fun = new Function
                 {
@@ -106,7 +140,7 @@ namespace Coco_R
                     Parameters = parameters
                 };
 
-                currentCodeBlock.Add(fun);
+                _currentCodeBlock.Add(fun);
             }
             else
             {
@@ -114,9 +148,9 @@ namespace Coco_R
             }
         }
 
-        void checkParamAmount(string name, int amount)
+        private void CheckParamAmount(string name, int amount)
         {
-            var fun = currentCodeBlock.Search(name) as Function;
+            var fun = _currentCodeBlock.Search(name) as Function;
             if (fun == null || fun.Parameters.Count != amount)
             {
                 SemErr($"La funcion {name} no tiene {amount} parametros.");
@@ -129,29 +163,24 @@ namespace Coco_R
             if (type == Type.Error)
             {
                 SemErr("Type Mismatch");
-                symbolStack.Push(new Constant { Type = Type.Entero });
+                _symbolStack.Push(new Constant { Type = Type.Entero });
                 return false;
             }
 
             return true;
         }
-
-        string nextTempName()
+        
+        private void DoPendingSum()
         {
-            return $"temp{tempCounter++}";
-        }
-
-        void doPendingSum()
-        {
-            var op2 = symbolStack.Pop();
-            var op1 = symbolStack.Pop();
-            var oper = operatorStack.Pop();
+            var op2 = _symbolStack.Pop();
+            var op1 = _symbolStack.Pop();
+            var oper = _operatorStack.Pop();
 
             Type type;
             if (CheckTypeMismatch(op1,op2,oper,out type))
             {
-                var result = new Constant { Type = type, Name = nextTempName() };
-                currentCodeBlock.Add(result);
+                var result = _varBuilder.NewVariable(type);
+                _currentCodeBlock.Add(result);
                 Command cmd = null;
                 switch (oper)
                 {
@@ -163,22 +192,22 @@ namespace Coco_R
                         break;
                 }
 
-                symbolStack.Push(result);
-                currentCodeBlock.CommandList.Commands.Add(cmd);
+                _symbolStack.Push(result);
+                _currentCodeBlock.CommandList.Commands.Add(cmd);
             }
         }
 
-        void doPendingMultiplication()
+        private void DoPendingMultiplication()
         {
-            var op2 = symbolStack.Pop();
-            var op1 = symbolStack.Pop();
-            var oper = operatorStack.Pop();
+            var op2 = _symbolStack.Pop();
+            var op1 = _symbolStack.Pop();
+            var oper = _operatorStack.Pop();
 
             Type type;
             if (CheckTypeMismatch(op1, op2, oper, out type))
             {
-                var result = new Constant { Type = type, Name = nextTempName() };
-                currentCodeBlock.Add(result);
+                var result = _varBuilder.NewVariable(type);
+                _currentCodeBlock.Add(result);
                 Command cmd = null;
                 switch (oper)
                 {
@@ -193,22 +222,22 @@ namespace Coco_R
                         break;
                 }
 
-                symbolStack.Push(result);
-                currentCodeBlock.CommandList.Commands.Add(cmd);
+                _symbolStack.Push(result);
+                _currentCodeBlock.CommandList.Commands.Add(cmd);
             }
         }
 
-        void doPendingRelational()
+        private void DoPendingRelational()
         {
-            var op2 = symbolStack.Pop();
-            var op1 = symbolStack.Pop();
-            var oper = operatorStack.Pop();
+            var op2 = _symbolStack.Pop();
+            var op1 = _symbolStack.Pop();
+            var oper = _operatorStack.Pop();
 
             Type type;
             if (CheckTypeMismatch(op1, op2, oper, out type))
             {
-                var result = new Constant { Type = type, Name = nextTempName() };
-                currentCodeBlock.Add(result);
+                var result = _varBuilder.NewVariable(type);
+                _currentCodeBlock.Add(result);
                 Command cmd = null;
                 switch (oper)
                 {
@@ -232,22 +261,22 @@ namespace Coco_R
                         break;
                 }
 
-                symbolStack.Push(result);
-                currentCodeBlock.CommandList.Commands.Add(cmd);
+                _symbolStack.Push(result);
+                _currentCodeBlock.CommandList.Commands.Add(cmd);
             }
         }
 
-        void doPendingLogical()
+        private void DoPendingLogical()
         {
-            var op2 = symbolStack.Pop();
-            var op1 = symbolStack.Pop();
-            var oper = operatorStack.Pop();
+            var op2 = _symbolStack.Pop();
+            var op1 = _symbolStack.Pop();
+            var oper = _operatorStack.Pop();
 
             Type type;
             if (CheckTypeMismatch(op1, op2, oper, out type))
             {
-                var result = new Constant { Type = type, Name = nextTempName() };
-                currentCodeBlock.Add(result);
+                var result = _varBuilder.NewVariable(type);
+                _currentCodeBlock.Add(result);
                 Command cmd = null;
                 switch (oper)
                 {
@@ -259,25 +288,25 @@ namespace Coco_R
                         break;
                 }
 
-                symbolStack.Push(result);
-                currentCodeBlock.CommandList.Commands.Add(cmd);
+                _symbolStack.Push(result);
+                _currentCodeBlock.CommandList.Commands.Add(cmd);
             }
         }
 
-        void doAssign()
+        private void DoAssign()
         {
-            var op2 = symbolStack.Pop();
-            var op1 = symbolStack.Pop();
+            var op2 = _symbolStack.Pop();
+            var op1 = _symbolStack.Pop();
 
             Type type;
             if (CheckTypeMismatch(op1, op2, Operator.Asignation, out type))
             {
                 var cmd = new Assign { Op1 = op1, Op2 = op2, Result = op1 };
-                currentCodeBlock.CommandList.Commands.Add(cmd);
+                _currentCodeBlock.CommandList.Commands.Add(cmd);
             }
         }
 
-        void doIfElse(DirectValueSymbol condition, CommandList ifBlock, CommandList elseBlock)
+        private void DoIfElse(DirectValueSymbol condition, CommandList ifBlock, CommandList elseBlock)
         {
             var cmd = new Conditional
             {
@@ -286,44 +315,44 @@ namespace Coco_R
                 Else = elseBlock
             };
 
-            currentCodeBlock.CommandList.Commands.Add(cmd);
+            _currentCodeBlock.CommandList.Commands.Add(cmd);
         }
 
-        void doPushDefaults()
+        private void DoPushDefaults()
         { 
             var cmd = new PushDefaults
             {
-                CodeBlock = currentCodeBlock
+                CodeBlock = _currentCodeBlock
             };
-            currentCodeBlock.CommandList.Commands.Add(cmd);
+            _currentCodeBlock.CommandList.Commands.Add(cmd);
         }
 
-        void doAssignIndex(VariableArray array, DirectValueSymbol index)
+        private void DoAssignIndex(VariableArray array, DirectValueSymbol index)
         {
             var cmd = new AssignIndex
             {
                 Array = array,
                 Index = index
             };
-            currentCodeBlock.CommandList.Commands.Add(cmd);
+            _currentCodeBlock.CommandList.Commands.Add(cmd);
         }
 
-        void doPopLocals()
+        private void DoPopLocals()
         {
             var cmd = new PopLocals
             {
-                CodeBlock = currentCodeBlock
+                CodeBlock = _currentCodeBlock
             };
-            currentCodeBlock.CommandList.Commands.Add(cmd);
+            _currentCodeBlock.CommandList.Commands.Add(cmd);
         }
 
-        void doRead(DirectValueSymbol result)
+        private void DoRead(DirectValueSymbol result)
         {
             var cmd = new Read { Result = result };
-            currentCodeBlock.CommandList.Commands.Add(cmd);
+            _currentCodeBlock.CommandList.Commands.Add(cmd);
         }
 
-        void doWhile(CommandList expression, DirectValueSymbol result, CommandList whileBlock)
+        private void DoWhile(CommandList expression, DirectValueSymbol result, CommandList whileBlock)
         {
             if (result.Type != Type.Booleano)
             {
@@ -332,22 +361,22 @@ namespace Coco_R
             }
 
             var cmd = new While { Expression = expression, WhileBlock = whileBlock, Result = result };
-            currentCodeBlock.CommandList.Commands.Add(cmd);
+            _currentCodeBlock.CommandList.Commands.Add(cmd);
         }
 
-        void doRandom(DirectValueSymbol result)
+        private void DoRandom(DirectValueSymbol result)
         {
             var cmd = new Random { Result = result };
-            currentCodeBlock.CommandList.Commands.Add(cmd);
+            _currentCodeBlock.CommandList.Commands.Add(cmd);
         }
 
-        void doPrint(List<DirectValueSymbol> values)
+        private void DoPrint(List<DirectValueSymbol> values)
         {
             var cmd = new Print { Values = values };
-            currentCodeBlock.CommandList.Commands.Add(cmd);
+            _currentCodeBlock.CommandList.Commands.Add(cmd);
         }
 
-        void doFunction(Function function, List<DirectValueSymbol> parameters, DirectValueSymbol result)
+        private void DoFunction(Function function, List<DirectValueSymbol> parameters, DirectValueSymbol result)
         {
             if (function == null)
             {
@@ -365,7 +394,7 @@ namespace Coco_R
                 return;
             }
 
-            for (int para = 0; para < parameters.Count; para++)
+            for (var para = 0; para < parameters.Count; para++)
             {
                 if (cubo[(int)function.Parameters[para].Type, (int)parameters[para].Type, (int)Operator.Asignation] == Type.Error)
                 {
@@ -374,17 +403,19 @@ namespace Coco_R
                 }
             }
 
+            result.Type = function.Type;
+
             var cmd = new CallFunction
             {
                 Function = function,
-                ScopeCalled = currentCodeBlock,
+                ScopeCalled = _currentCodeBlock,
                 Result = result,
                 Parameters = parameters
             };
-            currentCodeBlock.CommandList.Commands.Add(cmd);
+            _currentCodeBlock.CommandList.Commands.Add(cmd);
         }
 
-        void doRoutine(Function function, List<DirectValueSymbol> parameters)
+        private void DoRoutine(Function function, List<DirectValueSymbol> parameters)
         {
             if (function == null)
             {
@@ -414,19 +445,9 @@ namespace Coco_R
             var cmd = new CallFunction
             {
                 Function = function,
-                ScopeCalled = currentCodeBlock
+                ScopeCalled = _currentCodeBlock
             };
-            currentCodeBlock.CommandList.Commands.Add(cmd);
-        }
-        
-        void doAssignParameters(Variable[] parameters)
-        {
-            for(int para = parameters.Length -1; para >= 0; para--)
-            {
-                var parameter = parameters[para];
-                var cmd = new AssignParam { Parameter = parameter };
-                currentCodeBlock.CommandList.Commands.Add(cmd);
-            }
+            _currentCodeBlock.CommandList.Commands.Add(cmd);
         }
     }
 }

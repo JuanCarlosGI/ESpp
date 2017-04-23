@@ -4,7 +4,7 @@ funciones:
         entero resultado;
         si (n <= 1)
         {
-            resultado = 1 + "hola";
+            resultado = 1;
         }
         sino
         {

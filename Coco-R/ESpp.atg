@@ -20,7 +20,7 @@ TOKENS
 IGNORE eol + '\t'
 
 PRODUCTIONS
-	ESpp = Program	(. var main = currentCodeBlock.SearchForFunctionScope("main"); if(errors.count == 0) main.CommandList.ExecuteBy(this); .)
+	ESpp = Program	(. var main = _currentCodeBlock.SearchForFunctionScope("main"); if(errors.count == 0) main.CommandList.ExecuteBy(_virtualMachine); .)
 		.
 
 	Program	= Vars Funs Main.
@@ -39,10 +39,10 @@ PRODUCTIONS
 			{
 				',' Tipo<out tipo> id							(. vars.Add(new Variable(){Name=t.val, Type=tipo}); .) 
 			}
-		] ')'													(. addFunction(funName, funType, vars); .)
+		] ')'													(. AddFunction(funName, funType, vars); .)
 																(. DirectValueSymbol returns; .)
 		Bloque<funName, vars.ToArray(), funType != Type.Rutina, out returns>
-																(. addReturns(funName, returns); .)
+																(. AddReturns(funName, returns); .)
 		}.
 
 
@@ -52,8 +52,8 @@ PRODUCTIONS
 	Declaracion =					(. Type tipo; bool isArr = false; int size = 0; .)
 		Tipo<out tipo> 
 		[ TipoArr<out size>			(. isArr = true; .)
-		] id						(. addVariable(t.val, tipo, isArr, size); .) 
-		{ ',' id					(. addVariable(t.val, tipo, isArr, size); .) 
+		] id						(. AddVariable(t.val, tipo, isArr, size); .) 
+		{ ',' id					(. AddVariable(t.val, tipo, isArr, size); .) 
 		} ';'.
 
 	Tipo<out Type tipo> =	(. Type tipoAux = Type.Error; .)
@@ -68,7 +68,7 @@ PRODUCTIONS
 	TipoArr<out int length> = '[' cteent (. length = int.Parse(t.val); .) ']'.
 	
 	Bloque<string name, Variable[] parameters, bool isFunction, out DirectValueSymbol returns> =						
-		'{'										(. createNewSymbolTable(name, new List<Variable>(parameters)); doPushDefaults(); .)
+		'{'										(. CreateNewSymbolTable(name, new List<Variable>(parameters)); DoPushDefaults(); .)
 												(. returns = null; .)
 		{
 			Declaracion 
@@ -76,120 +76,120 @@ PRODUCTIONS
 			| Ciclo 
 			| Impresion 
 			| IF(FollowedByLPar())							(. Function function; List<DirectValueSymbol> paras; .) 
-				Funcion<out function, out paras> ';'		(. doRoutine(function, paras); .) 
+				Funcion<out function, out paras> ';'		(. DoRoutine(function, paras); .) 
 			| Asignacion} 
-			(IF(isFunction) "regresa" Expresion ';'			(. returns = symbolStack.Pop(); currentCodeBlock.Returns = returns; .)
+			(IF(isFunction) "regresa" Expresion ';'			(. returns = _symbolStack.Pop(); _currentCodeBlock.Returns = returns; .)
 			|)
-		'}'													(. doPopLocals(); currentCodeBlock = currentCodeBlock.Parent; .)
+		'}'													(. DoPopLocals(); _currentCodeBlock = _currentCodeBlock.Parent; .)
 		.
 
 	Asignacion =					(. Variable variable; .)
-		Variable<out variable>		(. symbolStack.Push(variable); .)
-		'=' Expresion ';'			(. doAssign(); .)
+		Variable<out variable>		(. _symbolStack.Push(variable); .)
+		'=' Expresion ';'			(. DoAssign(); .)
 		.
 
 	Funcion<. out Function function, out List<DirectValueSymbol> parameters .> = 
-		id				(. string name = t.val; checkFunctionExists(name); .)
+		id				(. string name = t.val; CheckFunctionExists(name); .)
 		'('				(. parameters = new List<DirectValueSymbol>(); .)
-		[ Expresion		(. parameters.Add(symbolStack.Pop()); .)
-		{',' Expresion	(. parameters.Add(symbolStack.Pop()); .)
-		}] ')'			(. checkParamAmount(name, parameters.Count); .)
-						(. function = currentCodeBlock.Search(name) as Function; .)
+		[ Expresion		(. parameters.Add(_symbolStack.Pop()); .)
+		{',' Expresion	(. parameters.Add(_symbolStack.Pop()); .)
+		}] ')'			(. CheckParamAmount(name, parameters.Count); .)
+						(. function = _currentCodeBlock.Search(name) as Function; .)
 		.
 
 	Condicion = 
-		"si" '(' Expresion ')'							(. var condition = symbolStack.Pop(); DirectValueSymbol returnsDummy; .)
-		Bloque<"if", new Variable[]{}, false, out returnsDummy>					(. var ifBlock = currentCodeBlock.Children.Last().CommandList; CommandList elseBlock = null; .)
+		"si" '(' Expresion ')'							(. var condition = _symbolStack.Pop(); DirectValueSymbol returnsDummy; .)
+		Bloque<"if", new Variable[]{}, false, out returnsDummy>					(. var ifBlock = _currentCodeBlock.Children.Last().CommandList; CommandList elseBlock = null; .)
 		[
-			"sino" Bloque<"else", new Variable[]{}, false, out returnsDummy>		(. elseBlock = currentCodeBlock.Children.Last().CommandList; .)
-		]												(. doIfElse(condition, ifBlock, elseBlock); .)
+			"sino" Bloque<"else", new Variable[]{}, false, out returnsDummy>		(. elseBlock = _currentCodeBlock.Children.Last().CommandList; .)
+		]												(. DoIfElse(condition, ifBlock, elseBlock); .)
 		.
 	
 	Ciclo = 
-		"mientras" '('							(. createNewSymbolTable("Expression", new List<Variable>());  DirectValueSymbol returnsDummy; .) 
-		Expresion								(. var expression = currentCodeBlock.CommandList; var result = symbolStack.Pop(); .)
-		')'										(. currentCodeBlock = currentCodeBlock.Parent; .)
-		 Bloque<"while", new Variable[]{}, false, out returnsDummy>		(. var whileBlock = currentCodeBlock.Children.Last().CommandList; doWhile(expression, result, whileBlock); .)
+		"mientras" '('							(. CreateNewSymbolTable("Expression", new List<Variable>());  DirectValueSymbol returnsDummy; .) 
+		Expresion								(. var expression = _currentCodeBlock.CommandList; var result = _symbolStack.Pop(); .)
+		')'										(. _currentCodeBlock = _currentCodeBlock.Parent; .)
+		 Bloque<"while", new Variable[]{}, false, out returnsDummy>		(. var whileBlock = _currentCodeBlock.Children.Last().CommandList; DoWhile(expression, result, whileBlock); .)
 		 .
 	
 	Impresion = "imprimir" '('		(. var expressions = new List<DirectValueSymbol>(); .)
-		Expresion					(. expressions.Add(symbolStack.Pop()); .)
-		{',' Expresion				(. expressions.Add(symbolStack.Pop()); .)
-		} ')' ';'					(. doPrint(expressions); .)
+		Expresion					(. expressions.Add(_symbolStack.Pop()); .)
+		{',' Expresion				(. expressions.Add(_symbolStack.Pop()); .)
+		} ')' ';'					(. DoPrint(expressions); .)
 		.
 	
 	Variable<out Variable variable> = 
-		id							(. string name = t.val; checkVariableExists(name); var symbol = currentCodeBlock.Search(name); variable = symbol as Variable; .) 
+		id							(. string name = t.val; CheckVariableExists(name); var symbol = _currentCodeBlock.Search(name); variable = symbol as Variable; .) 
 		['['						
-		 Expresion ']'				(. checkIsArray(name); VariableArray array =(symbol as VariableArray); doAssignIndex(array,symbolStack.Pop()); variable = array; .)
+		 Expresion ']'				(. CheckIsArray(name); VariableArray array =(symbol as VariableArray); DoAssignIndex(array,_symbolStack.Pop()); variable = array; .)
 		 ].
 
 	Expresion =
 		Exp
 		{
 			(
-				"&&"	(. operatorStack.Push(Operator.And); .)
-				|"||"	(. operatorStack.Push(Operator.Or); .)
+				"&&"	(. _operatorStack.Push(Operator.And); .)
+				|"||"	(. _operatorStack.Push(Operator.Or); .)
 			) 
-			Exp			(. doPendingLogical(); .)
+			Exp			(. DoPendingLogical(); .)
 		}.
 	
 	Exp = 
 		Expt
 		[
 			(
-				'>'		(. operatorStack.Push(Operator.GreaterThan); .)
-				|'<'	(. operatorStack.Push(Operator.LessThan); .)
-				|">="	(. operatorStack.Push(Operator.GreaterEqual); .)
-				|"<="	(. operatorStack.Push(Operator.LessEqual); .)
-				|"<>"	(. operatorStack.Push(Operator.Different); .)
-				|"=="	(. operatorStack.Push(Operator.Equality); .)
+				'>'		(. _operatorStack.Push(Operator.GreaterThan); .)
+				|'<'	(. _operatorStack.Push(Operator.LessThan); .)
+				|">="	(. _operatorStack.Push(Operator.GreaterEqual); .)
+				|"<="	(. _operatorStack.Push(Operator.LessEqual); .)
+				|"<>"	(. _operatorStack.Push(Operator.Different); .)
+				|"=="	(. _operatorStack.Push(Operator.Equality); .)
 			) 
-			Expt		(. doPendingRelational(); .)
+			Expt		(. DoPendingRelational(); .)
 		].
 	
 	Expt = 
 		Termino
 		{
 			(
-				'+'		(. operatorStack.Push(Operator.Sum); .) 
-				| '-'	(. operatorStack.Push(Operator.Minus); .)
+				'+'		(. _operatorStack.Push(Operator.Sum); .) 
+				| '-'	(. _operatorStack.Push(Operator.Minus); .)
 			) 
-			Termino		(. doPendingSum(); .)
+			Termino		(. DoPendingSum(); .)
 		}.
 	
 	Termino = 
 		Factor
 		{
 			(
-				'*'		(. operatorStack.Push(Operator.Multiply); .) 
-				|'/'	(. operatorStack.Push(Operator.Divide); .)
-				|'%'	(. operatorStack.Push(Operator.Modulo); .)
+				'*'		(. _operatorStack.Push(Operator.Multiply); .) 
+				|'/'	(. _operatorStack.Push(Operator.Divide); .)
+				|'%'	(. _operatorStack.Push(Operator.Modulo); .)
 			) 
-			Factor		(. doPendingMultiplication(); .)
+			Factor		(. DoPendingMultiplication(); .)
 		}.
 	
 	Factor = 
 		(
-			'('				(. operatorStack.Push(Operator.FakeLimit); .)
+			'('				(. _operatorStack.Push(Operator.FakeLimit); .)
 			Expresion 
-			')'				(. operatorStack.Pop(); .)
+			')'				(. _operatorStack.Pop(); .)
 		) 
 		| 
 		(
 			[('+' | '-')]			(. DirectValueSymbol symbol; .)
-			Constante<out symbol>	(. symbolStack.Push(symbol); .)
+			Constante<out symbol>	(. _symbolStack.Push(symbol); .)
 		).
 	
 	Constante<out DirectValueSymbol sym> = (. sym = null; .)
-		(cteent							(. sym = constBuilder.IntConstant(t.val); .)
-		| ctedbl						(. sym = constBuilder.DecConstant(t.val); .)
-		| Ctebol						(. sym = constBuilder.BoolConstant(t.val); .)
-		| ctestr						(. sym = constBuilder.StrConstant(t.val); .)
-		| Aleatorio						(. sym = constBuilder.DecConstant("0"); doRandom(sym); .)
-		| Lectura						(. sym = constBuilder.StrConstant(""); doRead(sym); .)
-		| IF(FollowedByLPar())			(. Function function; List<DirectValueSymbol> parameters; Constant result = new Constant{Name = nextTempName()};.)
-			Funcion<out function, out parameters>		(. doFunction(function, parameters, result); sym = result; currentCodeBlock.Add(sym); .)
+		(cteent							(. sym = _constBuilder.IntConstant(t.val); .)
+		| ctedbl						(. sym = _constBuilder.DecConstant(t.val); .)
+		| Ctebol						(. sym = _constBuilder.BoolConstant(t.val); .)
+		| ctestr						(. sym = _constBuilder.StrConstant(t.val); .)
+		| Aleatorio						(. sym = _constBuilder.DecConstant("0"); DoRandom(sym); .)
+		| Lectura						(. sym = _constBuilder.StrConstant(""); DoRead(sym); .)
+		| IF(FollowedByLPar())			(. Function function; List<DirectValueSymbol> parameters;.)
+			Funcion<out function, out parameters>		(. var result = _varBuilder.NewVariable(function.Type); DoFunction(function, parameters, result); sym = result; _currentCodeBlock.Add(sym); .)
 		|								(. Variable variable; .)
 			Variable<out variable>		(. sym = variable; .)
 		).

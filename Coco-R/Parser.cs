@@ -90,7 +90,7 @@ public partial class Parser {
 	
 	void ESpp() {
 		Program();
-		var main = currentCodeBlock.SearchForFunctionScope("main"); if(errors.count == 0) main.CommandList.ExecuteBy(this); 
+		var main = _currentCodeBlock.SearchForFunctionScope("main"); if(errors.count == 0) main.CommandList.ExecuteBy(_virtualMachine); 
 	}
 
 	void Program() {
@@ -135,10 +135,10 @@ public partial class Parser {
 				}
 			}
 			Expect(11);
-			addFunction(funName, funType, vars); 
+			AddFunction(funName, funType, vars); 
 			DirectValueSymbol returns; 
 			Bloque(funName, vars.ToArray(), funType != Type.Rutina, out returns);
-			addReturns(funName, returns); 
+			AddReturns(funName, returns); 
 		}
 	}
 
@@ -156,11 +156,11 @@ public partial class Parser {
 			isArr = true; 
 		}
 		Expect(1);
-		addVariable(t.val, tipo, isArr, size); 
+		AddVariable(t.val, tipo, isArr, size); 
 		while (la.kind == 10) {
 			Get();
 			Expect(1);
-			addVariable(t.val, tipo, isArr, size); 
+			AddVariable(t.val, tipo, isArr, size); 
 		}
 		Expect(13);
 	}
@@ -185,7 +185,7 @@ public partial class Parser {
 
 	void Bloque(string name, Variable[] parameters, bool isFunction, out DirectValueSymbol returns) {
 		Expect(20);
-		createNewSymbolTable(name, new List<Variable>(parameters)); doPushDefaults(); 
+		CreateNewSymbolTable(name, new List<Variable>(parameters)); DoPushDefaults(); 
 		returns = null; 
 		while (StartOf(3)) {
 			if (StartOf(1)) {
@@ -200,7 +200,7 @@ public partial class Parser {
 				Function function; List<DirectValueSymbol> paras; 
 				Funcion(out function, out paras);
 				Expect(13);
-				doRoutine(function, paras); 
+				DoRoutine(function, paras); 
 			} else {
 				Asignacion();
 			}
@@ -209,11 +209,11 @@ public partial class Parser {
 			Expect(21);
 			Expresion();
 			Expect(13);
-			returns = symbolStack.Pop(); currentCodeBlock.Returns = returns; 
+			returns = _symbolStack.Pop(); _currentCodeBlock.Returns = returns; 
 		} else if (la.kind == 22) {
 		} else SynErr(47);
 		Expect(22);
-		doPopLocals(); currentCodeBlock = currentCodeBlock.Parent; 
+		DoPopLocals(); _currentCodeBlock = _currentCodeBlock.Parent; 
 	}
 
 	void TipoArr(out int length) {
@@ -228,27 +228,27 @@ public partial class Parser {
 		Expect(5);
 		Expresion();
 		Expect(11);
-		var condition = symbolStack.Pop(); DirectValueSymbol returnsDummy; 
+		var condition = _symbolStack.Pop(); DirectValueSymbol returnsDummy; 
 		Bloque("if", new Variable[]{}, false, out returnsDummy);
-		var ifBlock = currentCodeBlock.Children.Last().CommandList; CommandList elseBlock = null; 
+		var ifBlock = _currentCodeBlock.Children.Last().CommandList; CommandList elseBlock = null; 
 		if (la.kind == 25) {
 			Get();
 			Bloque("else", new Variable[]{}, false, out returnsDummy);
-			elseBlock = currentCodeBlock.Children.Last().CommandList; 
+			elseBlock = _currentCodeBlock.Children.Last().CommandList; 
 		}
-		doIfElse(condition, ifBlock, elseBlock); 
+		DoIfElse(condition, ifBlock, elseBlock); 
 	}
 
 	void Ciclo() {
 		Expect(26);
 		Expect(5);
-		createNewSymbolTable("Expression", new List<Variable>());  DirectValueSymbol returnsDummy; 
+		CreateNewSymbolTable("Expression", new List<Variable>());  DirectValueSymbol returnsDummy; 
 		Expresion();
-		var expression = currentCodeBlock.CommandList; var result = symbolStack.Pop(); 
+		var expression = _currentCodeBlock.CommandList; var result = _symbolStack.Pop(); 
 		Expect(11);
-		currentCodeBlock = currentCodeBlock.Parent; 
+		_currentCodeBlock = _currentCodeBlock.Parent; 
 		Bloque("while", new Variable[]{}, false, out returnsDummy);
-		var whileBlock = currentCodeBlock.Children.Last().CommandList; doWhile(expression, result, whileBlock); 
+		var whileBlock = _currentCodeBlock.Children.Last().CommandList; DoWhile(expression, result, whileBlock); 
 	}
 
 	void Impresion() {
@@ -256,44 +256,44 @@ public partial class Parser {
 		Expect(5);
 		var expressions = new List<DirectValueSymbol>(); 
 		Expresion();
-		expressions.Add(symbolStack.Pop()); 
+		expressions.Add(_symbolStack.Pop()); 
 		while (la.kind == 10) {
 			Get();
 			Expresion();
-			expressions.Add(symbolStack.Pop()); 
+			expressions.Add(_symbolStack.Pop()); 
 		}
 		Expect(11);
 		Expect(13);
-		doPrint(expressions); 
+		DoPrint(expressions); 
 	}
 
 	void Funcion(out Function function, out List<DirectValueSymbol> parameters ) {
 		Expect(1);
-		string name = t.val; checkFunctionExists(name); 
+		string name = t.val; CheckFunctionExists(name); 
 		Expect(5);
 		parameters = new List<DirectValueSymbol>(); 
 		if (StartOf(4)) {
 			Expresion();
-			parameters.Add(symbolStack.Pop()); 
+			parameters.Add(_symbolStack.Pop()); 
 			while (la.kind == 10) {
 				Get();
 				Expresion();
-				parameters.Add(symbolStack.Pop()); 
+				parameters.Add(_symbolStack.Pop()); 
 			}
 		}
 		Expect(11);
-		checkParamAmount(name, parameters.Count); 
-		function = currentCodeBlock.Search(name) as Function; 
+		CheckParamAmount(name, parameters.Count); 
+		function = _currentCodeBlock.Search(name) as Function; 
 	}
 
 	void Asignacion() {
 		Variable variable; 
 		Variable(out variable);
-		symbolStack.Push(variable); 
+		_symbolStack.Push(variable); 
 		Expect(23);
 		Expresion();
 		Expect(13);
-		doAssign(); 
+		DoAssign(); 
 	}
 
 	void Expresion() {
@@ -301,24 +301,24 @@ public partial class Parser {
 		while (la.kind == 28 || la.kind == 29) {
 			if (la.kind == 28) {
 				Get();
-				operatorStack.Push(Operator.And); 
+				_operatorStack.Push(Operator.And); 
 			} else {
 				Get();
-				operatorStack.Push(Operator.Or); 
+				_operatorStack.Push(Operator.Or); 
 			}
 			Exp();
-			doPendingLogical(); 
+			DoPendingLogical(); 
 		}
 	}
 
 	void Variable(out Variable variable) {
 		Expect(1);
-		string name = t.val; checkVariableExists(name); var symbol = currentCodeBlock.Search(name); variable = symbol as Variable; 
+		string name = t.val; CheckVariableExists(name); var symbol = _currentCodeBlock.Search(name); variable = symbol as Variable; 
 		if (la.kind == 18) {
 			Get();
 			Expresion();
 			Expect(19);
-			checkIsArray(name); VariableArray array =(symbol as VariableArray); doAssignIndex(array,symbolStack.Pop()); variable = array; 
+			CheckIsArray(name); VariableArray array =(symbol as VariableArray); DoAssignIndex(array,_symbolStack.Pop()); variable = array; 
 		}
 	}
 
@@ -328,37 +328,37 @@ public partial class Parser {
 			switch (la.kind) {
 			case 30: {
 				Get();
-				operatorStack.Push(Operator.GreaterThan); 
+				_operatorStack.Push(Operator.GreaterThan); 
 				break;
 			}
 			case 31: {
 				Get();
-				operatorStack.Push(Operator.LessThan); 
+				_operatorStack.Push(Operator.LessThan); 
 				break;
 			}
 			case 32: {
 				Get();
-				operatorStack.Push(Operator.GreaterEqual); 
+				_operatorStack.Push(Operator.GreaterEqual); 
 				break;
 			}
 			case 33: {
 				Get();
-				operatorStack.Push(Operator.LessEqual); 
+				_operatorStack.Push(Operator.LessEqual); 
 				break;
 			}
 			case 34: {
 				Get();
-				operatorStack.Push(Operator.Different); 
+				_operatorStack.Push(Operator.Different); 
 				break;
 			}
 			case 35: {
 				Get();
-				operatorStack.Push(Operator.Equality); 
+				_operatorStack.Push(Operator.Equality); 
 				break;
 			}
 			}
 			Expt();
-			doPendingRelational(); 
+			DoPendingRelational(); 
 		}
 	}
 
@@ -367,13 +367,13 @@ public partial class Parser {
 		while (la.kind == 36 || la.kind == 37) {
 			if (la.kind == 36) {
 				Get();
-				operatorStack.Push(Operator.Sum); 
+				_operatorStack.Push(Operator.Sum); 
 			} else {
 				Get();
-				operatorStack.Push(Operator.Minus); 
+				_operatorStack.Push(Operator.Minus); 
 			}
 			Termino();
-			doPendingSum(); 
+			DoPendingSum(); 
 		}
 	}
 
@@ -382,26 +382,26 @@ public partial class Parser {
 		while (la.kind == 38 || la.kind == 39 || la.kind == 40) {
 			if (la.kind == 38) {
 				Get();
-				operatorStack.Push(Operator.Multiply); 
+				_operatorStack.Push(Operator.Multiply); 
 			} else if (la.kind == 39) {
 				Get();
-				operatorStack.Push(Operator.Divide); 
+				_operatorStack.Push(Operator.Divide); 
 			} else {
 				Get();
-				operatorStack.Push(Operator.Modulo); 
+				_operatorStack.Push(Operator.Modulo); 
 			}
 			Factor();
-			doPendingMultiplication(); 
+			DoPendingMultiplication(); 
 		}
 	}
 
 	void Factor() {
 		if (la.kind == 5) {
 			Get();
-			operatorStack.Push(Operator.FakeLimit); 
+			_operatorStack.Push(Operator.FakeLimit); 
 			Expresion();
 			Expect(11);
-			operatorStack.Pop(); 
+			_operatorStack.Pop(); 
 		} else if (StartOf(6)) {
 			if (la.kind == 36 || la.kind == 37) {
 				if (la.kind == 36) {
@@ -412,7 +412,7 @@ public partial class Parser {
 			}
 			DirectValueSymbol symbol; 
 			Constante(out symbol);
-			symbolStack.Push(symbol); 
+			_symbolStack.Push(symbol); 
 		} else SynErr(48);
 	}
 
@@ -420,26 +420,26 @@ public partial class Parser {
 		sym = null; 
 		if (la.kind == 3) {
 			Get();
-			sym = constBuilder.IntConstant(t.val); 
+			sym = _constBuilder.IntConstant(t.val); 
 		} else if (la.kind == 4) {
 			Get();
-			sym = constBuilder.DecConstant(t.val); 
+			sym = _constBuilder.DecConstant(t.val); 
 		} else if (la.kind == 43 || la.kind == 44) {
 			Ctebol();
-			sym = constBuilder.BoolConstant(t.val); 
+			sym = _constBuilder.BoolConstant(t.val); 
 		} else if (la.kind == 2) {
 			Get();
-			sym = constBuilder.StrConstant(t.val); 
+			sym = _constBuilder.StrConstant(t.val); 
 		} else if (la.kind == 41) {
 			Aleatorio();
-			sym = constBuilder.DecConstant("0"); doRandom(sym); 
+			sym = _constBuilder.DecConstant("0"); DoRandom(sym); 
 		} else if (la.kind == 42) {
 			Lectura();
-			sym = constBuilder.StrConstant(""); doRead(sym); 
+			sym = _constBuilder.StrConstant(""); DoRead(sym); 
 		} else if (FollowedByLPar()) {
-			Function function; List<DirectValueSymbol> parameters; Constant result = new Constant{Name = nextTempName()};
+			Function function; List<DirectValueSymbol> parameters;
 			Funcion(out function, out parameters);
-			doFunction(function, parameters, result); sym = result; currentCodeBlock.Add(sym); 
+			var result = _varBuilder.NewVariable(function.Type); DoFunction(function, parameters, result); sym = result; _currentCodeBlock.Add(sym); 
 		} else if (la.kind == 1) {
 			Variable variable; 
 			Variable(out variable);
