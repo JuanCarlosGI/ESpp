@@ -129,6 +129,7 @@ namespace Coco_R
             if (type == Type.Error)
             {
                 SemErr("Type Mismatch");
+                symbolStack.Push(new Constant { Type = Type.Entero });
                 return false;
             }
 
@@ -150,6 +151,7 @@ namespace Coco_R
             if (CheckTypeMismatch(op1,op2,oper,out type))
             {
                 var result = new Constant { Type = type, Name = nextTempName() };
+                currentCodeBlock.Add(result);
                 Command cmd = null;
                 switch (oper)
                 {
@@ -176,6 +178,7 @@ namespace Coco_R
             if (CheckTypeMismatch(op1, op2, oper, out type))
             {
                 var result = new Constant { Type = type, Name = nextTempName() };
+                currentCodeBlock.Add(result);
                 Command cmd = null;
                 switch (oper)
                 {
@@ -205,6 +208,7 @@ namespace Coco_R
             if (CheckTypeMismatch(op1, op2, oper, out type))
             {
                 var result = new Constant { Type = type, Name = nextTempName() };
+                currentCodeBlock.Add(result);
                 Command cmd = null;
                 switch (oper)
                 {
@@ -243,6 +247,7 @@ namespace Coco_R
             if (CheckTypeMismatch(op1, op2, oper, out type))
             {
                 var result = new Constant { Type = type, Name = nextTempName() };
+                currentCodeBlock.Add(result);
                 Command cmd = null;
                 switch (oper)
                 {

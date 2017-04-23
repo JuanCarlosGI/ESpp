@@ -4,7 +4,7 @@ funciones:
         entero resultado;
         si (n <= 1)
         {
-            resultado = 1;
+            resultado = 1 + "hola";
         }
         sino
         {
@@ -14,5 +14,5 @@ funciones:
     }
 
 main {
-    imprimir("Factorial de 3:", factorial(7));
+    imprimir("Factorial de 7:", factorial(7));
 }

@@ -437,9 +437,9 @@ public partial class Parser {
 			Lectura();
 			sym = constBuilder.StrConstant(""); doRead(sym); 
 		} else if (FollowedByLPar()) {
-			Function function; List<DirectValueSymbol> parameters; Constant result = new Constant();
+			Function function; List<DirectValueSymbol> parameters; Constant result = new Constant{Name = nextTempName()};
 			Funcion(out function, out parameters);
-			doFunction(function, parameters, result); sym = result; 
+			doFunction(function, parameters, result); sym = result; currentCodeBlock.Add(sym); 
 		} else if (la.kind == 1) {
 			Variable variable; 
 			Variable(out variable);

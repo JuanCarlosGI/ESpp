@@ -188,8 +188,8 @@ PRODUCTIONS
 		| ctestr						(. sym = constBuilder.StrConstant(t.val); .)
 		| Aleatorio						(. sym = constBuilder.DecConstant("0"); doRandom(sym); .)
 		| Lectura						(. sym = constBuilder.StrConstant(""); doRead(sym); .)
-		| IF(FollowedByLPar())			(. Function function; List<DirectValueSymbol> parameters; Constant result = new Constant();.)
-			Funcion<out function, out parameters>		(. doFunction(function, parameters, result); sym = result; .)
+		| IF(FollowedByLPar())			(. Function function; List<DirectValueSymbol> parameters; Constant result = new Constant{Name = nextTempName()};.)
+			Funcion<out function, out parameters>		(. doFunction(function, parameters, result); sym = result; currentCodeBlock.Add(sym); .)
 		|								(. Variable variable; .)
 			Variable<out variable>		(. sym = variable; .)
 		).

@@ -104,12 +104,10 @@ namespace Coco_R
         {
             assignParam.Parameter.Value = assignParam.Source.Value;
         }
-
         public void Execute(AssignIndex assignIndex)
         {
             assignIndex.Array.Index = assignIndex.Index;
         }
-
         public void Execute(CallFunction callFunction)
         {
             var commands = callFunction.Function.FindCommands(callFunction.ScopeCalled);
