@@ -186,10 +186,11 @@ namespace Coco_R
         /// <param name="functionName">The name of the function</param>
         private void LinkFunctionBody(string functionName)
         {
-            var function = _currentScope.Search(functionName) as Function;
-            var body = _currentScope.SearchForFunctionScope(functionName).CommandList;
+            var function = _currentScope.ExistsInScope(functionName) ? _currentScope.Search(functionName) as Function : null;
+            if (function == null) return;
 
-            if (function != null) function.CommandList = body;
+            var body = _currentScope.SearchForFunctionScope(functionName).CommandList;
+            function.CommandList = body;
         }
 
         /// <summary>
@@ -223,6 +224,25 @@ namespace Coco_R
             SemErr("Type Mismatch");
             _symbolStack.Push(new Constant { Type = Type.Entero });
             return false;
+        }
+
+        /// <summary>
+        /// Validates that a function has a retrun value and a routine doesn't.
+        /// </summary>
+        /// <param name="should">Value indicating whether its a function.</param>
+        /// <param name="has">Value indicating whether it has a return.</param>
+        private void ValidateHasReturn(bool should, bool has)
+        {
+            if (should)
+            {
+                if (!has)
+                    SemErr("La función debe de tener un valor de retorno.");
+            }
+            else
+            {
+                if (has)
+                    SemErr("Las rutinas no pueden tener valor de retorno.");
+            }
         }
     }
 }

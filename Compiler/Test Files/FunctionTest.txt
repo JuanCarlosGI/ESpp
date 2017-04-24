@@ -10,6 +10,8 @@ funciones:
         regresa sumaUno(sumaUno(sumaUno(n)));
     }
 
+	rutina dos(){ }
+
 main {
     imprimir("Resultado (4):", uno(1));
 }

@@ -204,15 +204,15 @@ public partial class Parser {
 				Asignacion();
 			}
 		}
-		if (isFunction) {
-			Expect(21);
+		var hasReturn = false; 
+		if (la.kind == 21) {
+			Get();
 			Expresion();
 			Expect(13);
-			returns = _symbolStack.Pop(); _currentScope.Returns = returns; 
-		} else if (la.kind == 22) {
-		} else SynErr(47);
+			hasReturn = true; returns = _symbolStack.Pop(); _currentScope.Returns = returns; 
+		}
 		Expect(22);
-		DoPopLocals(); _currentScope = _currentScope.Parent; 
+		ValidateHasReturn(isFunction, hasReturn); DoPopLocals(); _currentScope = _currentScope.Parent; 
 	}
 
 	void TipoArr(out int length) {
@@ -414,7 +414,7 @@ public partial class Parser {
 			DirectValueSymbol symbol; 
 			Constante(out symbol);
 			_symbolStack.Push(symbol); 
-		} else SynErr(48);
+		} else SynErr(47);
 		if(negative) doNegative(); 
 	}
 
@@ -446,7 +446,7 @@ public partial class Parser {
 			Variable variable; 
 			Variable(out variable);
 			sym = variable; 
-		} else SynErr(49);
+		} else SynErr(48);
 	}
 
 	void Ctebol() {
@@ -454,7 +454,7 @@ public partial class Parser {
 			Get();
 		} else if (la.kind == 44) {
 			Get();
-		} else SynErr(50);
+		} else SynErr(49);
 	}
 
 	void Aleatorio() {
@@ -550,10 +550,9 @@ public class Errors {
 			case 44: s = "\"falso\" expected"; break;
 			case 45: s = "??? expected"; break;
 			case 46: s = "invalid Tipo"; break;
-			case 47: s = "invalid Bloque"; break;
-			case 48: s = "invalid Factor"; break;
-			case 49: s = "invalid Constante"; break;
-			case 50: s = "invalid Ctebol"; break;
+			case 47: s = "invalid Factor"; break;
+			case 48: s = "invalid Constante"; break;
+			case 49: s = "invalid Ctebol"; break;
 
 			default: s = "error " + n; break;
 		}

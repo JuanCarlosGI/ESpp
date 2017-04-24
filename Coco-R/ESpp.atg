@@ -76,10 +76,10 @@ PRODUCTIONS
 			| Impresion 
 			| IF(FollowedByLPar())							(. Function function; List<DirectValueSymbol> paras; .) 
 				Funcion<out function, out paras> ';'		(. DoRoutine(function, paras); .) 
-			| Asignacion} 
-			(IF(isFunction) "regresa" Expresion ';'			(. returns = _symbolStack.Pop(); _currentScope.Returns = returns; .)
-			|)
-		'}'													(. DoPopLocals(); _currentScope = _currentScope.Parent; .)
+			| Asignacion
+		}														(. var hasReturn = false; .)
+		[ "regresa" Expresion ';'								(. hasReturn = true; returns = _symbolStack.Pop(); _currentScope.Returns = returns; .)
+		] '}'													(. ValidateHasReturn(isFunction, hasReturn); DoPopLocals(); _currentScope = _currentScope.Parent; .)
 		.
 
 	Asignacion =					(. Variable variable; .)
