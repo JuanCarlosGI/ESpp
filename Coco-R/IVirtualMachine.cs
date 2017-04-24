@@ -12,7 +12,6 @@
         void Execute(PushDefaults cmd);
         void Execute(Read cmd);
         void Execute(Print cmd);
-        void Execute(AssignParam cmd);
         void Execute(AssignIndex cmd);
         void Execute(CallFunction cmd);
         void Execute(Random cmd);

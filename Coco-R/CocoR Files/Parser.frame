@@ -108,7 +108,7 @@ public partial class Parser {
 		la.val = "";		
 		Get();
 -->parseRoot
-		var main = _currentCodeBlock.SearchForFunctionScope("main");
+		var main = _currentScope.SearchForFunctionScope("main");
 		return main.CommandList;
 	}
 	

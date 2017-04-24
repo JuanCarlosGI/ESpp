@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Coco_R;
+using Random = Coco_R.Random;
+using Type = Coco_R.Type;
 
-namespace Coco_R
+namespace Compiler
 {
     public class VirtualMachine : IVirtualMachine
     {
@@ -20,16 +20,22 @@ namespace Coco_R
         }
         public void Execute(Assign cmd)
         {
-            switch (cmd.Result.Type)
+            switch (cmd.Recipient.Type)
             {
                 case Type.Entero:
-                    cmd.Result.Value = (int)cmd.Op2.Value;
+                    cmd.Recipient.Value = (int)cmd.Source.Value;
                     break;
                 case Type.Decimal:
-                    cmd.Result.Value = (double)cmd.Op2.Value;
+                    cmd.Recipient.Value = (double)cmd.Source.Value;
+                    break;
+                case Type.Booleano:
+                    cmd.Recipient.Value = (bool)cmd.Source.Value;
+                    break;
+                case Type.Cadena:
+                    cmd.Recipient.Value = (string)cmd.Source.Value;
                     break;
                 default:
-                    cmd.Result.Value = cmd.Op2.Value;
+                    cmd.Recipient.Value = cmd.Source.Value;
                     break;
             }
         }
@@ -51,7 +57,7 @@ namespace Coco_R
         }
         public void Execute(PushDefaults cmd)
         {
-            cmd.CodeBlock.pushDefaultValues();
+            cmd.Scope.PushDefaultValues();
         }
         public void Execute(Read cmd)
         {
@@ -70,10 +76,7 @@ namespace Coco_R
 
             Console.WriteLine(final);
         }
-        public void Execute(AssignParam cmd)
-        {
-            cmd.Parameter.Value = cmd.Source.Value;
-        }
+
         public void Execute(AssignIndex cmd)
         {
             cmd.Array.Index = cmd.Index;
@@ -84,17 +87,17 @@ namespace Coco_R
 
             if (commands == null) return;
 
-            Stack<AssignParam> stack = new Stack<AssignParam>();
-            while (commands.Commands[1] is AssignParam)
+            Stack<Assign> stack = new Stack<Assign>();
+            while (commands.Commands[1] is Assign)
             {
-                stack.Push(commands.Commands[1] as AssignParam);
+                stack.Push((Assign)commands.Commands[1]);
                 commands.Commands.RemoveAt(1);
             }
 
             for (int para = cmd.Parameters.Count - 1; para >= 0; para--)
             {
                 var parameter = cmd.Function.Parameters[para];
-                var newCmd = new AssignParam { Parameter = parameter, Source = cmd.Parameters[para] };
+                var newCmd = new Assign { Recipient = parameter, Source = cmd.Parameters[para] };
                 commands.Commands.Insert(1, newCmd);
             }
 
@@ -134,7 +137,7 @@ namespace Coco_R
         }
         public void Execute(PopLocals cmd)
         {
-            cmd.CodeBlock.popLocalValues();
+            cmd.Scope.PopLocalValues();
         }
         public void Execute(Conditional cmd)
         {

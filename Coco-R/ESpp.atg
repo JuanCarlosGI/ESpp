@@ -77,9 +77,9 @@ PRODUCTIONS
 			| IF(FollowedByLPar())							(. Function function; List<DirectValueSymbol> paras; .) 
 				Funcion<out function, out paras> ';'		(. DoRoutine(function, paras); .) 
 			| Asignacion} 
-			(IF(isFunction) "regresa" Expresion ';'			(. returns = _symbolStack.Pop(); _currentCodeBlock.Returns = returns; .)
+			(IF(isFunction) "regresa" Expresion ';'			(. returns = _symbolStack.Pop(); _currentScope.Returns = returns; .)
 			|)
-		'}'													(. DoPopLocals(); _currentCodeBlock = _currentCodeBlock.Parent; .)
+		'}'													(. DoPopLocals(); _currentScope = _currentScope.Parent; .)
 		.
 
 	Asignacion =					(. Variable variable; .)
@@ -93,22 +93,22 @@ PRODUCTIONS
 		[ Expresion		(. parameters.Add(_symbolStack.Pop()); .)
 		{',' Expresion	(. parameters.Add(_symbolStack.Pop()); .)
 		}] ')'			(. CheckParamAmount(name, parameters.Count); .)
-						(. function = _currentCodeBlock.Search(name) as Function; .)
+						(. function = _currentScope.Search(name) as Function; .)
 		.
 
 	Condicion = 
 		"si" '(' Expresion ')'							(. var condition = _symbolStack.Pop(); DirectValueSymbol returnsDummy; .)
-		Bloque<"if", new Variable[]{}, false, out returnsDummy>					(. var ifBlock = _currentCodeBlock.Children.Last().CommandList; CommandList elseBlock = null; .)
+		Bloque<"if", new Variable[]{}, false, out returnsDummy>					(. var ifBlock = _currentScope.Children.Last().CommandList; CommandList elseBlock = null; .)
 		[
-			"sino" Bloque<"else", new Variable[]{}, false, out returnsDummy>		(. elseBlock = _currentCodeBlock.Children.Last().CommandList; .)
+			"sino" Bloque<"else", new Variable[]{}, false, out returnsDummy>		(. elseBlock = _currentScope.Children.Last().CommandList; .)
 		]												(. DoIfElse(condition, ifBlock, elseBlock); .)
 		.
 	
 	Ciclo = 
 		"mientras" '('							(. CreateNewSymbolTable("Expression", new List<Variable>());  DirectValueSymbol returnsDummy; .) 
-		Expresion								(. var expression = _currentCodeBlock.CommandList; var result = _symbolStack.Pop(); .)
-		')'										(. _currentCodeBlock = _currentCodeBlock.Parent; .)
-		 Bloque<"while", new Variable[]{}, false, out returnsDummy>		(. var whileBlock = _currentCodeBlock.Children.Last().CommandList; DoWhile(expression, result, whileBlock); .)
+		Expresion								(. var expression = _currentScope.CommandList; var result = _symbolStack.Pop(); .)
+		')'										(. _currentScope = _currentScope.Parent; .)
+		 Bloque<"while", new Variable[]{}, false, out returnsDummy>		(. var whileBlock = _currentScope.Children.Last().CommandList; DoWhile(expression, result, whileBlock); .)
 		 .
 	
 	Impresion = "imprimir" '('		(. var expressions = new List<DirectValueSymbol>(); .)
@@ -118,7 +118,7 @@ PRODUCTIONS
 		.
 	
 	Variable<out Variable variable> = 
-		id							(. string name = t.val; CheckVariableExists(name); var symbol = _currentCodeBlock.Search(name); variable = symbol as Variable; .) 
+		id							(. string name = t.val; CheckVariableExists(name); var symbol = _currentScope.Search(name); variable = symbol as Variable; .) 
 		['['						
 		 Expresion ']'				(. CheckIsArray(name); VariableArray array =(symbol as VariableArray); DoAssignIndex(array,_symbolStack.Pop()); variable = array; .)
 		 ].
@@ -188,7 +188,7 @@ PRODUCTIONS
 		| Aleatorio						(. sym = _constBuilder.DecConstant("0"); DoRandom(sym); .)
 		| Lectura						(. sym = _constBuilder.StrConstant(""); DoRead(sym); .)
 		| IF(FollowedByLPar())			(. Function function; List<DirectValueSymbol> parameters;.)
-			Funcion<out function, out parameters>		(. var result = _varBuilder.NewVariable(function.Type); DoFunction(function, parameters, result); sym = result; _currentCodeBlock.Add(sym); .)
+			Funcion<out function, out parameters>		(. var result = _varBuilder.NewVariable(function.Type); DoFunction(function, parameters, result); sym = result; _currentScope.Add(sym); .)
 		|								(. Variable variable; .)
 			Variable<out variable>		(. sym = variable; .)
 		).

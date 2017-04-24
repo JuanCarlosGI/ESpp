@@ -27,7 +27,7 @@
                 var commandList = parser.Parse();
 
                 if (parser.errors.count != 0)
-                    Console.WriteLine(parser.errors.count + " errors detected.");
+                    Console.WriteLine(parser.errors.count + " errores detectados.");
                 else
                     commandList.ExecuteBy(new VirtualMachine());
             }

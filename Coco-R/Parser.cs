@@ -208,11 +208,11 @@ public partial class Parser {
 			Expect(21);
 			Expresion();
 			Expect(13);
-			returns = _symbolStack.Pop(); _currentCodeBlock.Returns = returns; 
+			returns = _symbolStack.Pop(); _currentScope.Returns = returns; 
 		} else if (la.kind == 22) {
 		} else SynErr(47);
 		Expect(22);
-		DoPopLocals(); _currentCodeBlock = _currentCodeBlock.Parent; 
+		DoPopLocals(); _currentScope = _currentScope.Parent; 
 	}
 
 	void TipoArr(out int length) {
@@ -229,11 +229,11 @@ public partial class Parser {
 		Expect(11);
 		var condition = _symbolStack.Pop(); DirectValueSymbol returnsDummy; 
 		Bloque("if", new Variable[]{}, false, out returnsDummy);
-		var ifBlock = _currentCodeBlock.Children.Last().CommandList; CommandList elseBlock = null; 
+		var ifBlock = _currentScope.Children.Last().CommandList; CommandList elseBlock = null; 
 		if (la.kind == 25) {
 			Get();
 			Bloque("else", new Variable[]{}, false, out returnsDummy);
-			elseBlock = _currentCodeBlock.Children.Last().CommandList; 
+			elseBlock = _currentScope.Children.Last().CommandList; 
 		}
 		DoIfElse(condition, ifBlock, elseBlock); 
 	}
@@ -243,11 +243,11 @@ public partial class Parser {
 		Expect(5);
 		CreateNewSymbolTable("Expression", new List<Variable>());  DirectValueSymbol returnsDummy; 
 		Expresion();
-		var expression = _currentCodeBlock.CommandList; var result = _symbolStack.Pop(); 
+		var expression = _currentScope.CommandList; var result = _symbolStack.Pop(); 
 		Expect(11);
-		_currentCodeBlock = _currentCodeBlock.Parent; 
+		_currentScope = _currentScope.Parent; 
 		Bloque("while", new Variable[]{}, false, out returnsDummy);
-		var whileBlock = _currentCodeBlock.Children.Last().CommandList; DoWhile(expression, result, whileBlock); 
+		var whileBlock = _currentScope.Children.Last().CommandList; DoWhile(expression, result, whileBlock); 
 	}
 
 	void Impresion() {
@@ -282,7 +282,7 @@ public partial class Parser {
 		}
 		Expect(11);
 		CheckParamAmount(name, parameters.Count); 
-		function = _currentCodeBlock.Search(name) as Function; 
+		function = _currentScope.Search(name) as Function; 
 	}
 
 	void Asignacion() {
@@ -312,7 +312,7 @@ public partial class Parser {
 
 	void Variable(out Variable variable) {
 		Expect(1);
-		string name = t.val; CheckVariableExists(name); var symbol = _currentCodeBlock.Search(name); variable = symbol as Variable; 
+		string name = t.val; CheckVariableExists(name); var symbol = _currentScope.Search(name); variable = symbol as Variable; 
 		if (la.kind == 18) {
 			Get();
 			Expresion();
@@ -438,7 +438,7 @@ public partial class Parser {
 		} else if (FollowedByLPar()) {
 			Function function; List<DirectValueSymbol> parameters;
 			Funcion(out function, out parameters);
-			var result = _varBuilder.NewVariable(function.Type); DoFunction(function, parameters, result); sym = result; _currentCodeBlock.Add(sym); 
+			var result = _varBuilder.NewVariable(function.Type); DoFunction(function, parameters, result); sym = result; _currentScope.Add(sym); 
 		} else if (la.kind == 1) {
 			Variable variable; 
 			Variable(out variable);
@@ -475,7 +475,7 @@ public partial class Parser {
 		ESpp();
 		Expect(0);
 
-		var main = _currentCodeBlock.SearchForFunctionScope("main");
+		var main = _currentScope.SearchForFunctionScope("main");
 		return main.CommandList;
 	}
 	
