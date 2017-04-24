@@ -1,4 +1,7 @@
-﻿namespace Compiler
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace Compiler
 {
     using Coco_R;
     using System;
@@ -8,6 +11,11 @@
     {
         static void Main(string[] args)
         {
+            var frm = new Form();
+            frm.Name = "Result";
+            var pb = new PictureBox() { ImageLocation = @"C:\Users\juanc\Desktop\download.jpg", SizeMode = PictureBoxSizeMode.StretchImage, Size = frm.ClientSize};
+            frm.Controls.Add(pb);
+            frm.ShowDialog();
 #if DEBUG
             Console.Write("File address: ");
             args = new[] { Console.ReadLine() };
@@ -35,6 +43,7 @@
             {
                 Console.WriteLine("Archivo no encontrado.");
             }
+
         }
     }
 }
