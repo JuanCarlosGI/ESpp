@@ -300,9 +300,9 @@ namespace Coco_R
         public VariableArray Array { get; set; }
 
         /// <summary>
-        /// Gets or sets the symbol where the index value will be obtained.
+        /// Gets or sets the symbols where the index value will be obtained.
         /// </summary>
-        public DirectValueSymbol Index { get; set; }
+        public List<DirectValueSymbol> Indexes { get; set; }
 
         public override void ExecuteBy(IVirtualMachine vm)
         {

@@ -48,11 +48,11 @@ PRODUCTIONS
 	Main =					(. DirectValueSymbol dummy; .) 
 		"main" Bloque<"main", new Variable[]{}, false, out dummy>.
 	
-	Declaracion =					(. Type tipo; bool isArr = false; int size = 0; .)
+	Declaracion =					(. Type tipo; bool isArr = false; List<int> sizes = null; .)
 		Tipo<out tipo> 
-		[ TipoArr<out size>			(. isArr = true; .)
-		] id						(. AddVariable(t.val, tipo, isArr, size); .) 
-		{ ',' id					(. AddVariable(t.val, tipo, isArr, size); .) 
+		[ TipoArr<out sizes>		(. isArr = true; .)
+		] id						(. AddVariable(t.val, tipo, isArr, sizes); .) 
+		{ ',' id					(. AddVariable(t.val, tipo, isArr, sizes); .) 
 		} ';'.
 
 	Tipo<out Type tipo> =	(. Type tipoAux = Type.Error; .)
@@ -64,7 +64,12 @@ PRODUCTIONS
 		)					(. tipo = tipoAux; .)	
 		.
 
-	TipoArr<out int length> = '[' cteent (. length = int.Parse(t.val); .) ']'.
+	TipoArr<.out List<int> lengths.> =						(. lengths = new List<int>(); .)
+									'[' cteent				(. lengths.Add(int.Parse(t.val)); .)
+									{ 
+										',' cteent			(. lengths.Add(int.Parse(t.val)); .) 
+									} 
+									']'.
 	
 	Bloque<string name, Variable[] parameters, bool isFunction, out DirectValueSymbol returns> =						
 		'{'										(. CreateNewScope(name, new List<Variable>(parameters)); DoPushDefaults(); .)
@@ -119,8 +124,12 @@ PRODUCTIONS
 	
 	Variable<out Variable variable> = 
 		id							(. string name = t.val; CheckVariableExists(name); var symbol = _currentScope.Search(name); variable = symbol as Variable; .) 
-		['['						
-		 Expresion ']'				(. CheckIsArray(name); VariableArray array =(symbol as VariableArray); DoAssignIndex(array,_symbolStack.Pop()); variable = array; .)
+		['['						(. var indexes = new List<DirectValueSymbol>(); .)
+		 Expresion					(. indexes.Add(_symbolStack.Pop() as DirectValueSymbol); .)
+		 { 
+			',' Expresion			(. indexes.Add(_symbolStack.Pop() as DirectValueSymbol); .)
+		} 
+		']'							(. CheckIsArray(name); VariableArray array =(symbol as VariableArray); DoAssignIndex(array,indexes); variable = array; .)
 		 ].
 
 	Expresion =

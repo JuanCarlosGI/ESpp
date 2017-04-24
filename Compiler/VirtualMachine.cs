@@ -96,8 +96,9 @@ namespace Compiler
 
         public void Execute(AssignIndex cmd)
         {
-            cmd.Array.Index = cmd.Index;
+            cmd.Array.Indexes = cmd.Indexes;
         }
+
         public void Execute(CallFunction cmd)
         {
             var commands = cmd.Function.CommandList;

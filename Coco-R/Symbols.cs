@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Coco_R
 {
@@ -79,15 +81,15 @@ namespace Coco_R
     public class VariableArray : Variable
     {
         /// <summary>
-        /// Gets or sets the length of the array.
+        /// Gets or sets the lengths of the array.
         /// </summary>
-        public int Length { get; set; }
+        public List<int> Lengths { get; set; }
 
         /// <summary>
         /// The symbol that will provide the index when accessing the value of
         /// the array.
         /// </summary>
-        public DirectValueSymbol Index { get; set; }
+        public List<DirectValueSymbol> Indexes { get; set; }
 
         /// <summary>
         /// Gets or sets the value of the variable according to the index.
@@ -96,13 +98,30 @@ namespace Coco_R
         {
             get
             {
-                return Variables[Index.Value].Value;
+                return Variables[GetActualIndex()].Value;
             }
 
             set
             {
-                Variables[Index.Value].Value = value;
+                Variables[GetActualIndex()].Value = value;
             }
+        }
+
+        private int GetActualIndex()
+        {
+            var accum = 0;
+            for (var i = 0; i < Indexes.Count; i++)
+            {
+                var value = Indexes[i].Value;
+                if (value < 0 || value >= Lengths[i])
+                {
+                    throw new Exception("Out of bounds.");
+                }
+
+                accum = accum * Lengths[i] + value;
+            }
+
+            return accum;
         }
 
         /// <summary>
@@ -138,13 +157,14 @@ namespace Coco_R
         /// <summary>
         /// Inicializes a new instance of the <see cref="VariableArray"/> class.
         /// </summary>
-        /// <param name="length">The length of the array.</param>
-        public VariableArray(int length)
+        /// <param name="lengths">The lengths of the array.</param>
+        public VariableArray(List<int> lengths)
         {
-            Length = length;
-            Variables = new Variable[length];
+            Lengths = lengths;
+            var totalLength = lengths.Aggregate((accum, next) => accum * next);
+            Variables = new Variable[totalLength];
 
-            for (var i = 0; i < length; i++)
+            for (var i = 0; i < totalLength; i++)
             {
                 Variables[i] = new Variable
                 {

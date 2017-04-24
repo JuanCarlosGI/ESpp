@@ -51,13 +51,13 @@ namespace Coco_R
         /// <param name="isArr">Boolean determining if the variable is an array
         /// </param>
         /// <param name="size">In case of being an array, its size</param>
-        private void AddVariable(string name, Type tipo, bool isArr, int size)
+        private void AddVariable(string name, Type tipo, bool isArr, List<int> sizes)
         {
             if (!_currentScope.ExistsInScope(name))
             {
                 if (isArr)
                 {
-                    Symbol symbol = new VariableArray(size)
+                    Symbol symbol = new VariableArray(sizes)
                     {
                         Name = name,
                         Type = tipo

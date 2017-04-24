@@ -148,18 +148,18 @@ public partial class Parser {
 	}
 
 	void Declaracion() {
-		Type tipo; bool isArr = false; int size = 0; 
+		Type tipo; bool isArr = false; List<int> sizes = null; 
 		Tipo(out tipo);
 		if (la.kind == 18) {
-			TipoArr(out size);
+			TipoArr(out sizes);
 			isArr = true; 
 		}
 		Expect(1);
-		AddVariable(t.val, tipo, isArr, size); 
+		AddVariable(t.val, tipo, isArr, sizes); 
 		while (la.kind == 10) {
 			Get();
 			Expect(1);
-			AddVariable(t.val, tipo, isArr, size); 
+			AddVariable(t.val, tipo, isArr, sizes); 
 		}
 		Expect(13);
 	}
@@ -215,10 +215,16 @@ public partial class Parser {
 		ValidateHasReturn(isFunction, hasReturn); DoPopLocals(); _currentScope = _currentScope.Parent; 
 	}
 
-	void TipoArr(out int length) {
+	void TipoArr(out List<int> lengths) {
+		lengths = new List<int>(); 
 		Expect(18);
 		Expect(3);
-		length = int.Parse(t.val); 
+		lengths.Add(int.Parse(t.val)); 
+		while (la.kind == 10) {
+			Get();
+			Expect(3);
+			lengths.Add(int.Parse(t.val)); 
+		}
 		Expect(19);
 	}
 
@@ -315,9 +321,16 @@ public partial class Parser {
 		string name = t.val; CheckVariableExists(name); var symbol = _currentScope.Search(name); variable = symbol as Variable; 
 		if (la.kind == 18) {
 			Get();
+			var indexes = new List<DirectValueSymbol>(); 
 			Expresion();
+			indexes.Add(_symbolStack.Pop() as DirectValueSymbol); 
+			while (la.kind == 10) {
+				Get();
+				Expresion();
+				indexes.Add(_symbolStack.Pop() as DirectValueSymbol); 
+			}
 			Expect(19);
-			CheckIsArray(name); VariableArray array =(symbol as VariableArray); DoAssignIndex(array,_symbolStack.Pop()); variable = array; 
+			CheckIsArray(name); VariableArray array =(symbol as VariableArray); DoAssignIndex(array,indexes); variable = array; 
 		}
 	}
 

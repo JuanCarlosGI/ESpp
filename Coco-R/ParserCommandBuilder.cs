@@ -203,13 +203,19 @@ namespace Coco_R
         /// Builds a new cAssignIndex command
         /// </summary>
         /// <param name="array">Array to be assigned.</param>
-        /// <param name="index">The index</param>
-        private void DoAssignIndex(VariableArray array, DirectValueSymbol index)
+        /// <param name="indexes">The indexes</param>
+        private void DoAssignIndex(VariableArray array, List<DirectValueSymbol> indexes)
         {
+            if (array.Lengths.Count != indexes.Count)
+            {
+                SemErr("Cantidad de dimensiones incorrecta.");
+                return;
+            }
+
             var cmd = new AssignIndex
             {
                 Array = array,
-                Index = index
+                Indexes = indexes
             };
             _currentScope.CommandList.Commands.Add(cmd);
         }

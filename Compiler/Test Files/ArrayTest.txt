@@ -1,13 +1,36 @@
 ﻿variables:
 funciones:
 main {
-	entero[8] miArreglo;
-	entero contador;
-	miArreglo[3] = 9;
-	contador = 0;
+	entero[10,3,4] cubo;
 
-	mientras (contador < 8) {
-		imprimir(contador,miArreglo[contador]);
-		contador = contador + 1;
+	entero a, b, c;
+
+	a = 0;
+	mientras (a < 10) {
+		b= 0;
+		mientras (b < 3) {
+			c = 0;
+			mientras (c < 4) {
+				cubo[a,b,c] = a*b*c;
+				c = c + 1;
+			}
+			b = b + 1;
+		}
+		a = a + 1;
 	}
+
+	a = 0;
+	mientras (a < 10) {
+		b=0;
+		mientras (b < 3) {
+			c=0;
+			mientras (c < 4) {
+				imprimir("cubo[", a,b,c,"] =",cubo[a,b,c]);
+				c = c + 1;
+			}
+			b = b + 1;
+		}
+		a = a + 1;
+	}
+	cubo[10,-1,0] = 1;
 }
