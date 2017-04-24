@@ -33,10 +33,8 @@ namespace Coco_R
 
         public CodeBlock SearchForFunctionScope(string name)
         {
-            if (Parent != null)
-                return Parent.SearchForFunctionScope(name);
-
-            return Children.Find(c => c.Name == name);
+            var block = Children.Find(c => c.Name == name);
+            return block ?? Parent?.SearchForFunctionScope(name);
         }
 
         public void Add(Symbol symbol)
