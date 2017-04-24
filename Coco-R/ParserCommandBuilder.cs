@@ -363,5 +363,32 @@ namespace Coco_R
             };
             _currentScope.CommandList.Commands.Add(cmd);
         }
+
+        /// <summary>
+        /// Creates necessary commands to make a value negative.
+        /// </summary>
+        private void doNegative()
+        {
+            var value = _symbolStack.Pop();
+
+            if (value.Type != Type.Entero && value.Type != Type.Decimal)
+            {
+                SemErr("Esta variable no puede ser negativa.");
+            }
+
+
+            var zero = _constBuilder.IntConstant("0");
+            var result = _varBuilder.NewVariable(value.Type);
+
+            var cmd = new Subtract
+            {
+                Op1 = zero,
+                Op2 = value,
+                Result = result
+            };
+
+            _currentScope.CommandList.Commands.Add(cmd);
+            _symbolStack.Push(result);
+        }
     }
 }

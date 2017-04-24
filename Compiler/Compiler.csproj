@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Test Files\FunctionTest.txt" />
+    <Content Include="Test Files\NegativeTest.txt" />
     <Content Include="Test Files\VarDeclarationA.txt" />
     <Content Include="Test Files\ValidTestA.txt" />
   </ItemGroup>

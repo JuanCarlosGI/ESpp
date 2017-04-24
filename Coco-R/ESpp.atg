@@ -67,7 +67,7 @@ PRODUCTIONS
 	TipoArr<out int length> = '[' cteent (. length = int.Parse(t.val); .) ']'.
 	
 	Bloque<string name, Variable[] parameters, bool isFunction, out DirectValueSymbol returns> =						
-		'{'										(. CreateNewSymbolTable(name, new List<Variable>(parameters)); DoPushDefaults(); .)
+		'{'										(. CreateNewScope(name, new List<Variable>(parameters)); DoPushDefaults(); .)
 												(. returns = null; .)
 		{
 			Declaracion 
@@ -105,7 +105,7 @@ PRODUCTIONS
 		.
 	
 	Ciclo = 
-		"mientras" '('							(. CreateNewSymbolTable("Expression", new List<Variable>());  DirectValueSymbol returnsDummy; .) 
+		"mientras" '('							(. CreateNewScope("Expression", new List<Variable>());  DirectValueSymbol returnsDummy; .) 
 		Expresion								(. var expression = _currentScope.CommandList; var result = _symbolStack.Pop(); .)
 		')'										(. _currentScope = _currentScope.Parent; .)
 		 Bloque<"while", new Variable[]{}, false, out returnsDummy>		(. var whileBlock = _currentScope.Children.Last().CommandList; DoWhile(expression, result, whileBlock); .)
@@ -168,17 +168,19 @@ PRODUCTIONS
 			Factor		(. DoPendingMultiplication(); .)
 		}.
 	
-	Factor = 
-		(
+	Factor =				(. var negative = false; .)
+		[('+' | '-'			(. negative = true; .)
+		)]
+		((
 			'('				(. _operatorStack.Push(Operator.FakeLimit); .)
 			Expresion 
 			')'				(. _operatorStack.Pop(); .)
 		) 
 		| 
-		(
-			[('+' | '-')]			(. DirectValueSymbol symbol; .)
+		(							(. DirectValueSymbol symbol; .)
 			Constante<out symbol>	(. _symbolStack.Push(symbol); .)
-		).
+		))							(. if(negative) doNegative(); .)
+		.
 	
 	Constante<out DirectValueSymbol sym> = (. sym = null; .)
 		(cteent							(. sym = _constBuilder.IntConstant(t.val); .)

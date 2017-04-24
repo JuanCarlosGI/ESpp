@@ -395,6 +395,15 @@ public partial class Parser {
 	}
 
 	void Factor() {
+		var negative = false; 
+		if (la.kind == 36 || la.kind == 37) {
+			if (la.kind == 36) {
+				Get();
+			} else {
+				Get();
+				negative = true; 
+			}
+		}
 		if (la.kind == 5) {
 			Get();
 			_operatorStack.Push(Operator.FakeLimit); 
@@ -402,17 +411,11 @@ public partial class Parser {
 			Expect(11);
 			_operatorStack.Pop(); 
 		} else if (StartOf(6)) {
-			if (la.kind == 36 || la.kind == 37) {
-				if (la.kind == 36) {
-					Get();
-				} else {
-					Get();
-				}
-			}
 			DirectValueSymbol symbol; 
 			Constante(out symbol);
 			_symbolStack.Push(symbol); 
 		} else SynErr(48);
+		if(negative) doNegative(); 
 	}
 
 	void Constante(out DirectValueSymbol sym) {
@@ -486,7 +489,7 @@ public partial class Parser {
 		{_x,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _T,_x,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
 		{_x,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_T,_x,_x, _x,_T,_T,_T, _T,_x,_x},
 		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _T,_T,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
-		{_x,_T,_T,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_T,_x,_x, _x,_T,_T,_T, _T,_x,_x}
+		{_x,_T,_T,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_T,_T, _T,_x,_x}
 
 	};
 } // end Parser
