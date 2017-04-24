@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Command.cs" />
     <Compile Include="ConstantBuilder.cs" />
+    <Compile Include="ParserCommandBuilder.cs" />
     <Compile Include="ParserExtension.cs" />
     <Compile Include="SemanticCube.cs" />
     <Compile Include="Scanner.cs" />

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Coco_R
+﻿namespace Coco_R
 {
+    /// <summary>
+    /// Types to be used by the compiler.
+    /// </summary>
     public enum Type
     {
         Entero,
@@ -16,6 +13,9 @@ namespace Coco_R
         Error
     }
 
+    /// <summary>
+    /// Operators to be used by the compiler.
+    /// </summary>
     public enum Operator
     {
         Sum,

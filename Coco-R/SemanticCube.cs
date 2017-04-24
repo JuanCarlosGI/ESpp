@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Coco_R
+﻿namespace Coco_R
 {
     public partial class Parser
     {
-        public Type[,,] cubo =
+        /// <summary>
+        /// Semantic cube to determine result type for all operations.
+        /// </summary>
+        public Type[,,] Cube =
         {
             {
                 // Entero vs entero

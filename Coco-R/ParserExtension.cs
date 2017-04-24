@@ -10,6 +10,9 @@ namespace Coco_R
         private readonly ConstantBuilder _constBuilder = 
             new ConstantBuilder();
 
+        /// <summary>
+        /// Helper used to construct variables easily.
+        /// </summary>
         private readonly VariableBuilder _varBuilder = 
             new VariableBuilder();
 
@@ -76,6 +79,10 @@ namespace Coco_R
                 SemErr($"El nombre {name} ya ha sido declarado en este scope.");
         }
 
+        /// <summary>
+        /// Checks that a variable exists within the current available scopes.
+        /// </summary>
+        /// <param name="name">The name of a variable.</param>
         private void CheckVariableExists(string name)
         {
             var search = _currentScope.Search(name);
@@ -85,6 +92,10 @@ namespace Coco_R
                 SemErr($"El nombre {name} no se refiere a una variable.");
         }
 
+        /// <summary>
+        /// Checks that a function exists within the current available scopes.
+        /// </summary>
+        /// <param name="name">The name of the function.</param>
         private void CheckFunctionExists(string name)
         {
             var search = _currentScope.Search(name);
@@ -94,6 +105,11 @@ namespace Coco_R
                 SemErr($"El nombre {name} no se refiere a una funcion.");
         }
 
+        /// <summary>
+        /// Checks that a variable array exists within the current available
+        /// scopes.
+        /// </summary>
+        /// <param name="name">The name of the variable array.</param>
         private void CheckIsArray(string name)
         {
             var symbol = _currentScope.Search(name) as VariableArray;
@@ -101,14 +117,24 @@ namespace Coco_R
                 SemErr($"La variable {name} no es un arreglo.");
         }
 
-        private void CreateNewSymbolTable(string name, List<Variable> parameters)
+        /// <summary>
+        /// Creates a new scope within the current scope, and adds all its
+        /// parameters to its hash.
+        /// </summary>
+        /// <param name="name">The name of the new scope.</param>
+        /// <param name="parameters">The list of parameters to be added.</param>
+        private void CreateNewScope(string name, List<Variable> parameters)
         {
-            var newTable = new Scope(_currentScope, name);
-            _currentScope.Children.Add(newTable);
-            _currentScope = newTable;
+            var newScope = new Scope(_currentScope, name);
+            _currentScope.Children.Add(newScope);
+            _currentScope = newScope;
             AddParameters(parameters.ToArray());
         }
 
+        /// <summary>
+        /// Adds an array of parameters to the hash of the current scope.
+        /// </summary>
+        /// <param name="parameters"></param>
         private void AddParameters(Variable[] parameters)
         {
             foreach (var variable in parameters)
@@ -117,12 +143,24 @@ namespace Coco_R
             }
         }
 
+        /// <summary>
+        /// Updates a function object to include its return symbol.
+        /// </summary>
+        /// <param name="name">Name of the function to update.</param>
+        /// <param name="returns">The symbol with the return value.</param>
         private void AddReturns(string name, DirectValueSymbol returns)
         {
             var function = _currentScope.Search(name) as Function;
             if (function != null) function.Returns = returns;
         }
 
+        /// <summary>
+        /// Adds a function to the current scope.
+        /// </summary>
+        /// <param name="name">Name of the function</param>
+        /// <param name="tipo">Return type of the function.</param>
+        /// <param name="parameters">The parameters that the function will
+        /// receive.</param>
         private void AddFunction(string name, Type tipo, List<Variable> parameters)
         {
             if (!_currentScope.ExistsInScope(name))
@@ -142,6 +180,10 @@ namespace Coco_R
             }
         }
 
+        /// <summary>
+        /// Links a function symbol with its body, by adding the command list.
+        /// </summary>
+        /// <param name="functionName">The name of the function</param>
         private void LinkFunctionBody(string functionName)
         {
             var function = _currentScope.Search(functionName) as Function;
@@ -150,6 +192,11 @@ namespace Coco_R
             if (function != null) function.CommandList = body;
         }
 
+        /// <summary>
+        /// Checks that a function has a certain amount of parameters.
+        /// </summary>
+        /// <param name="name">Name of the function.</param>
+        /// <param name="amount">Amount of parameters.</param>
         private void CheckParamAmount(string name, int amount)
         {
             var fun = _currentScope.Search(name) as Function;
@@ -159,297 +206,23 @@ namespace Coco_R
             }
         }
 
+        /// <summary>
+        /// Determines whether the operation is valid and the return type of
+        /// the operation given its operands.
+        /// </summary>
+        /// <param name="left">The operand on the left.</param>
+        /// <param name="right">The operand on the right.</param>
+        /// <param name="op">The operator</param>
+        /// <param name="type">The resulting type.</param>
+        /// <returns></returns>
         private bool CheckTypeMismatch(Symbol left, Symbol right, Operator op, out Type type)
         {
-            type = cubo[(int)left.Type, (int)right.Type, (int)op];
-            if (type == Type.Error)
-            {
-                SemErr("Type Mismatch");
-                _symbolStack.Push(new Constant { Type = Type.Entero });
-                return false;
-            }
+            type = Cube[(int)left.Type, (int)right.Type, (int)op];
+            if (type != Type.Error) return true;
 
-            return true;
-        }
-        
-        private void DoPendingSum()
-        {
-            var op2 = _symbolStack.Pop();
-            var op1 = _symbolStack.Pop();
-            var oper = _operatorStack.Pop();
-
-            Type type;
-            if (CheckTypeMismatch(op1,op2,oper,out type))
-            {
-                var result = _varBuilder.NewVariable(type);
-                _currentScope.Add(result);
-                Command cmd = null;
-                switch (oper)
-                {
-                    case Operator.Sum:
-                        cmd = new Sum { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                    case Operator.Minus:
-                        cmd = new Subtract { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                }
-
-                _symbolStack.Push(result);
-                _currentScope.CommandList.Commands.Add(cmd);
-            }
-        }
-
-        private void DoPendingMultiplication()
-        {
-            var op2 = _symbolStack.Pop();
-            var op1 = _symbolStack.Pop();
-            var oper = _operatorStack.Pop();
-
-            Type type;
-            if (CheckTypeMismatch(op1, op2, oper, out type))
-            {
-                var result = _varBuilder.NewVariable(type);
-                _currentScope.Add(result);
-                Command cmd = null;
-                switch (oper)
-                {
-                    case Operator.Multiply:
-                        cmd = new Multiply { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                    case Operator.Divide:
-                        cmd = new Divide { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                    case Operator.Modulo:
-                        cmd = new Modulo { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                }
-
-                _symbolStack.Push(result);
-                _currentScope.CommandList.Commands.Add(cmd);
-            }
-        }
-
-        private void DoPendingRelational()
-        {
-            var op2 = _symbolStack.Pop();
-            var op1 = _symbolStack.Pop();
-            var oper = _operatorStack.Pop();
-
-            Type type;
-            if (CheckTypeMismatch(op1, op2, oper, out type))
-            {
-                var result = _varBuilder.NewVariable(type);
-                _currentScope.Add(result);
-                Command cmd = null;
-                switch (oper)
-                {
-                    case Operator.LessThan:
-                        cmd = new LessThan { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                    case Operator.GreaterThan:
-                        cmd = new GreaterThan { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                    case Operator.Equality:
-                        cmd = new Equals { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                    case Operator.LessEqual:
-                        cmd = new LessOrEqualThan { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                    case Operator.GreaterEqual:
-                        cmd = new GreaterOrEqualThan { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                    case Operator.Different:
-                        cmd = new Different { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                }
-
-                _symbolStack.Push(result);
-                _currentScope.CommandList.Commands.Add(cmd);
-            }
-        }
-
-        private void DoPendingLogical()
-        {
-            var op2 = _symbolStack.Pop();
-            var op1 = _symbolStack.Pop();
-            var oper = _operatorStack.Pop();
-
-            Type type;
-            if (CheckTypeMismatch(op1, op2, oper, out type))
-            {
-                var result = _varBuilder.NewVariable(type);
-                _currentScope.Add(result);
-                Command cmd = null;
-                switch (oper)
-                {
-                    case Operator.And:
-                        cmd = new And { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                    case Operator.Or:
-                        cmd = new Or { Op1 = op1, Op2 = op2, Result = result };
-                        break;
-                }
-
-                _symbolStack.Push(result);
-                _currentScope.CommandList.Commands.Add(cmd);
-            }
-        }
-
-        private void DoAssign()
-        {
-            var source = _symbolStack.Pop();
-            var recipient = _symbolStack.Pop();
-
-            Type type;
-            if (CheckTypeMismatch(recipient, source, Operator.Asignation, out type))
-            {
-                var cmd = new Assign { Recipient = recipient, Source = source };
-                _currentScope.CommandList.Commands.Add(cmd);
-            }
-        }
-
-        private void DoIfElse(DirectValueSymbol condition, CommandList ifBlock, CommandList elseBlock)
-        {
-            var cmd = new Conditional
-            {
-                Condition = condition,
-                If = ifBlock,
-                Else = elseBlock
-            };
-
-            _currentScope.CommandList.Commands.Add(cmd);
-        }
-
-        private void DoPushDefaults()
-        { 
-            var cmd = new PushDefaults
-            {
-                Scope = _currentScope
-            };
-            _currentScope.CommandList.Commands.Add(cmd);
-        }
-
-        private void DoAssignIndex(VariableArray array, DirectValueSymbol index)
-        {
-            var cmd = new AssignIndex
-            {
-                Array = array,
-                Index = index
-            };
-            _currentScope.CommandList.Commands.Add(cmd);
-        }
-
-        private void DoPopLocals()
-        {
-            var cmd = new PopLocals
-            {
-                Scope = _currentScope
-            };
-            _currentScope.CommandList.Commands.Add(cmd);
-        }
-
-        private void DoRead(DirectValueSymbol result)
-        {
-            var cmd = new Read { Result = result };
-            _currentScope.CommandList.Commands.Add(cmd);
-        }
-
-        private void DoWhile(CommandList expression, DirectValueSymbol result, CommandList whileBlock)
-        {
-            if (result.Type != Type.Booleano)
-            {
-                SemErr("Type mismatch");
-                return;
-            }
-
-            var cmd = new While { Expression = expression, WhileBlock = whileBlock, Result = result };
-            _currentScope.CommandList.Commands.Add(cmd);
-        }
-
-        private void DoRandom(DirectValueSymbol result)
-        {
-            var cmd = new Random { Result = result };
-            _currentScope.CommandList.Commands.Add(cmd);
-        }
-
-        private void DoPrint(List<DirectValueSymbol> values)
-        {
-            var cmd = new Print { Values = values };
-            _currentScope.CommandList.Commands.Add(cmd);
-        }
-
-        private void DoFunction(Function function, List<DirectValueSymbol> parameters, DirectValueSymbol result)
-        {
-            if (function == null)
-            {
-                SemErr("Function does not exist.");
-                return;
-            }
-            if (function.Type == Type.Rutina)
-            {
-                SemErr("Function does not have a return value.");
-                return;
-            }
-            if (function.Parameters.Count != parameters.Count)
-            {
-                SemErr("Wrong amount of arguments.");
-                return;
-            }
-
-            for (var para = 0; para < parameters.Count; para++)
-            {
-                if (cubo[(int)function.Parameters[para].Type, (int)parameters[para].Type, (int)Operator.Asignation] == Type.Error)
-                {
-                    SemErr("Type mismatch");
-                    return;
-                }
-            }
-
-            result.Type = function.Type;
-
-            var cmd = new CallFunction
-            {
-                Function = function,
-                ScopeCalled = _currentScope,
-                Result = result,
-                Parameters = parameters
-            };
-            _currentScope.CommandList.Commands.Add(cmd);
-        }
-
-        private void DoRoutine(Function function, List<DirectValueSymbol> parameters)
-        {
-            if (function == null)
-            {
-                SemErr("Function does not exist.");
-                return;
-            }
-            if (function.Type != Type.Rutina)
-            {
-                SemErr("Function is not a routine.");
-                return;
-            }
-            if (function.Parameters.Count != parameters.Count)
-            {
-                SemErr("Wrong amount of arguments.");
-                return;
-            }
-
-            for (var para = 0; para < parameters.Count; para++)
-            {
-                if (cubo[(int)function.Parameters[para].Type, (int)parameters[para].Type, (int)Operator.Asignation] == Type.Error)
-                {
-                    SemErr("Type mismatch");
-                    return;
-                }
-            }
-
-            var cmd = new CallFunction
-            {
-                Function = function,
-                ScopeCalled = _currentScope
-            };
-            _currentScope.CommandList.Commands.Add(cmd);
+            SemErr("Type Mismatch");
+            _symbolStack.Push(new Constant { Type = Type.Entero });
+            return false;
         }
     }
 }

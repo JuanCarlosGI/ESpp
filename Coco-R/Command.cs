@@ -163,7 +163,7 @@ namespace Coco_R
     /// <summary>
     /// Class representing a command that will be executed over a scope.
     /// </summary>
-    public abstract class CodeBlockOperation : Command
+    public abstract class ScopeOperation : Command
     {
         /// <summary>
         /// Gets or sets the scope that the command will affect.
@@ -175,13 +175,13 @@ namespace Coco_R
     /// Class representing a command that will push new default values into the
     /// scope's symbols.
     /// </summary>
-    public class PushDefaults : CodeBlockOperation { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class PushDefaults : ScopeOperation { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
 
     /// <summary>
     /// Class representing a command that will pop current values from the
     /// scope's symbols.
     /// </summary>
-    public class PopLocals : CodeBlockOperation { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
+    public class PopLocals : ScopeOperation { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
 
     /// <summary>
     /// Class representing a Read command.
@@ -294,7 +294,14 @@ namespace Coco_R
     /// </summary>
     public class AssignIndex : Command
     {
+        /// <summary>
+        /// Gets or sets the array object that will be assigned.
+        /// </summary>
         public VariableArray Array { get; set; }
+
+        /// <summary>
+        /// Gets or sets the symbol where the index value will be obtained.
+        /// </summary>
         public DirectValueSymbol Index { get; set; }
 
         public override void ExecuteBy(IVirtualMachine vm)

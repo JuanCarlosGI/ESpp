@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace Coco_R
+﻿namespace Coco_R
 {
     /// <summary>
     /// Class in charge of building variables.

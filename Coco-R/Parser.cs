@@ -184,7 +184,7 @@ public partial class Parser {
 
 	void Bloque(string name, Variable[] parameters, bool isFunction, out DirectValueSymbol returns) {
 		Expect(20);
-		CreateNewSymbolTable(name, new List<Variable>(parameters)); DoPushDefaults(); 
+		CreateNewScope(name, new List<Variable>(parameters)); DoPushDefaults(); 
 		returns = null; 
 		while (StartOf(3)) {
 			if (StartOf(1)) {
@@ -241,7 +241,7 @@ public partial class Parser {
 	void Ciclo() {
 		Expect(26);
 		Expect(5);
-		CreateNewSymbolTable("Expression", new List<Variable>());  DirectValueSymbol returnsDummy; 
+		CreateNewScope("Expression", new List<Variable>());  DirectValueSymbol returnsDummy; 
 		Expresion();
 		var expression = _currentScope.CommandList; var result = _symbolStack.Pop(); 
 		Expect(11);
