@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using Coco_R;
 using Random = Coco_R.Random;
 using Type = Coco_R.Type;
@@ -9,6 +10,22 @@ namespace Compiler
     public class VirtualMachine : IVirtualMachine
     {
         private readonly System.Random _rand = new System.Random();
+
+        /// <summary>
+        /// Gets the resulting image from the virtual machine.
+        /// </summary>
+        public Image Image { get; }
+
+        /// <summary>
+        /// The graphics object from the image.
+        /// </summary>
+        private Graphics _graphics;
+
+        public VirtualMachine()
+        {
+            Image = new Bitmap(1000, 1000);
+             _graphics = Graphics.FromImage(Image);
+        }
 
         public void Execute(Subtract cmd)
         {
@@ -182,5 +199,12 @@ namespace Compiler
                 command.ExecuteBy(this);
             }
         }
+
+        /*
+        public void Execute(DrawLine cmd)
+        {
+           _graphics.DrawLine(new Pen(Color.Black, 3), cmd.x1.Value, cmd.y1.Value, cmd.x2.Value, cmd.y2.Value );
+        }
+        */
     }
 }

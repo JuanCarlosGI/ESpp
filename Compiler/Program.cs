@@ -1,4 +1,7 @@
-﻿namespace Compiler
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace Compiler
 {
     using Coco_R;
     using System;
@@ -29,7 +32,14 @@
                 if (parser.errors.count != 0)
                     Console.WriteLine(parser.errors.count + " errores detectados.");
                 else
-                    commandList.ExecuteBy(new VirtualMachine());
+                {
+                    var vm = new VirtualMachine();
+                    commandList.ExecuteBy(vm);
+                    var frm = new Form { ClientSize = new Size(500, 500) };
+                    var pb = new PictureBox { Image = vm.Image, Size = frm.ClientSize };
+                    frm.Controls.Add(pb);
+                    frm.ShowDialog();
+                }
             }
             else
             {
