@@ -22,26 +22,9 @@ IGNORE eol + '\t'
 PRODUCTIONS
 	ESpp = Program.
 
-	Program	= Vars [Firmas] Funs Main.
+	Program	= Vars Funs Main.
 
 	Vars = "variables" ':' {Declaracion}.
-	
-	Firmas = "firmas" ':' {Firma}.
-
-	Firma = 													(. Type funType = Type.Error; .)
-		(
-			Tipo<out funType>
-			|"rutina"											(. funType = Type.Rutina; .)
-		)
-		id														(. var funName = t.val; .)
-		'('														(. var vars = new List<Variable>(); .)
-		[														(. Type tipo; .)
-			Tipo<out tipo> id									(. vars.Add(new Variable(){Name=t.val, Type=tipo}); .) 
-			{
-				',' Tipo<out tipo> id							(. vars.Add(new Variable(){Name=t.val, Type=tipo}); .) 
-			}
-		] ')'													(. AddFunction(funName, funType, vars); .)
-		';'.
 
 	Funs = "funciones" ':' {DeclaracionFunc}					(. CheckFunctionsNoBody(); .)
 	.
@@ -59,9 +42,12 @@ PRODUCTIONS
 				',' Tipo<out tipo> id							(. vars.Add(new Variable(){Name=t.val, Type=tipo}); .) 
 			}
 		] ')'													(. AddFunction(funName, funType, vars); .)
-																(. DirectValueSymbol returns; .)
+
+		(														(. DirectValueSymbol returns; .)
 		Bloque<funName, vars.ToArray(), funType != Type.Rutina, out returns>
 																(. AddReturns(funName, returns); LinkFunctionBody(funName); .)
+		| ';'
+		)
 		.
 
 
@@ -103,7 +89,7 @@ PRODUCTIONS
 			| IF(FollowedByLPar())							(. Function function; List<DirectValueSymbol> paras; .) 
 				Funcion<out function, out paras> ';'		(. DoRoutine(function, paras); .) 
 			| Asignacion
-		}														(. var hasReturn = false; .)
+		}														(. CheckFunctionsNoBody(); var hasReturn = false; .)
 		[ "regresa" Expresion ';'								(. hasReturn = true; returns = _symbolStack.Pop(); _currentScope.Returns = returns; .)
 		] '}'													(. ValidateHasReturn(isFunction, hasReturn); DoPopLocals(); _currentScope = _currentScope.Parent; .)
 		.

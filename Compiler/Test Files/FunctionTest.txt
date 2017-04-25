@@ -1,11 +1,9 @@
 ﻿variables:
     entero contadorGlobal;
 
-firmas:
-	rutina dos();
-	rutina dos();
-
 funciones:
+	rutina dos();
+	rutina dos();
 	entero sumaUno(entero n) {
 		regresa n + 1;
 	}
@@ -23,9 +21,11 @@ funciones:
 main {
     imprimir("Resultado (6):", uno(1));
 	si (verdadero) {
+		entero tres();
 		rutina aux(entero n){
-			imprimir(n);
+			imprimir(n, tres());
 		}
+		entero tres(){regresa 3;}
 
 		entero veinticuatro;
 		veinticuatro = 24;
