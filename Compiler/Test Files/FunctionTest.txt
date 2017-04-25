@@ -1,22 +1,22 @@
-﻿variables:
-    entero contadorGlobal;
-
-funciones:
-	rutina dos();
-	rutina dos();
-	entero sumaUno(entero n) {
-		regresa n + 1;
-	}
-    
-	entero uno(entero n) {
-		dos();
-		entero dos() { regresa 2; }
-        regresa sumaUno(sumaUno(sumaUno(n))) + dos();
-    }
-
-	rutina dos(){ 
-		imprimir("dos");
-	}
+﻿entero contadorGlobal;
+rutina dos();
+entero sumaUno(entero n) {
+	regresa n + 1;
+}
+rutina dos();
+cadena miString;
+entero uno(entero n) {
+	miString = "";
+	dos();
+	entero dos();
+    entero resultado;
+	resultado = sumaUno(sumaUno(sumaUno(n))) + dos();
+	entero dos() { regresa 2; }
+	regresa resultado;
+}
+rutina dos(){ 
+	imprimir("dos");
+}
 
 main {
     imprimir("Resultado (6):", uno(1));
@@ -26,9 +26,11 @@ main {
 			imprimir(n, tres());
 		}
 		entero tres(){regresa 3;}
-
+		contadorGlobal = 1;
+		imprimir("contadorGlobal:", contadorGlobal);
 		entero veinticuatro;
 		veinticuatro = 24;
+		miString = "hola";
 		aux(veinticuatro);
 	}
 	dos();

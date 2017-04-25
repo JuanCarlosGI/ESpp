@@ -22,12 +22,12 @@ IGNORE eol + '\t'
 PRODUCTIONS
 	ESpp = Program.
 
-	Program	= Vars Funs Main.
-
-	Vars = "variables" ':' {Declaracion}.
-
-	Funs = "funciones" ':' {DeclaracionFunc}					(. CheckFunctionsNoBody(); .)
-	.
+	Program	= 
+		{
+			IF(DoubleFollowedByLPar()) DeclaracionFunc
+			| Declaracion 
+		}												(. CheckFunctionsNoBody(); .) 
+		Main.
 
 	DeclaracionFunc =											(. Type funType = Type.Error; .)
 		(
