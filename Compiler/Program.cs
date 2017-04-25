@@ -27,15 +27,25 @@ namespace Compiler
             {
                 var scanner = new Scanner(path);
                 var parser = new Parser(scanner);
-                var commandList = parser.Parse();
-
-                if (parser.errors.count != 0)
+                CommandList commandList = null;
+                try
+                {
+                    commandList = parser.Parse();
+                }
+                catch (Exception e)
+                {
+#if DEBUG
+                    Console.WriteLine("Exception during parsing process:");
+                    Console.WriteLine(e);
+#endif
+                }
+                if (parser.errors.count != 0 || commandList == null)
                     Console.WriteLine(parser.errors.count + " errores detectados.");
                 else
                 {
                     var vm = new VirtualMachine();
                     commandList.ExecuteBy(vm);
-                    var frm = new Form { ClientSize = new Size(500, 500) };
+                    var frm = new Form { ClientSize = new Size(500, 500), Text = @"Resultado", Icon = Properties.Resources.Logo};
                     var pb = new PictureBox { Image = vm.Image, Size = frm.ClientSize };
                     frm.Controls.Add(pb);
                     frm.ShowDialog();

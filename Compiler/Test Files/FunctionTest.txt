@@ -29,7 +29,8 @@ entero sumaDos(entero n){
 
 main {
 	hacerUnaCosa(5);
+	imprimir("");
 	hacerTodo(5);
-
+	imprimir("");
 	imprimir("(2)", sumaDos(0));
 }
