@@ -195,14 +195,20 @@ namespace Coco_R
                 }
                 else if (func.Type == tipo && parameters.Count == func.Parameters.Count)
                 {
+                    bool success = true;
                     for (var param = 0; param < parameters.Count; param++)
                     {
                         if (parameters[param].Type != func.Parameters[param].Type ||
                             parameters[param].Name != func.Parameters[param].Name)
                         {
                             SemErr("La firma no coincide con una declarada anteriormente.");
+                            success = false;
                             break;
                         }  
+                    }
+                    if (success)
+                    {
+                        func.Parameters = parameters;
                     }
                     return;
                 }
