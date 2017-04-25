@@ -188,7 +188,25 @@ namespace Coco_R
             }
             else
             {
-                SemErr($"El nombre {name} ya ha sido declarado en este scope.");
+                var func = _currentScope.Search(name) as Function;
+                if (func == null || func.CommandList != null)
+                {
+                    SemErr($"El nombre {name} ya ha sido declarado en este scope.");
+                }
+                else if (func.Type == tipo && parameters.Count == func.Parameters.Count)
+                {
+                    for (var param = 0; param < parameters.Count; param++)
+                    {
+                        if (parameters[param].Type != func.Parameters[param].Type ||
+                            parameters[param].Name != func.Parameters[param].Name)
+                        {
+                            SemErr("La firma no coincide con una declarada anteriormente.");
+                            break;
+                        }  
+                    }
+                    return;
+                }
+                SemErr("La firma no coincide con una declarada anteriormente.");
             }
         }
 
@@ -254,6 +272,22 @@ namespace Coco_R
             {
                 if (has)
                     SemErr("Las rutinas no pueden tener valor de retorno.");
+            }
+        }
+
+        /// <summary>
+        /// Checks that no function is left without a body because of signatures.
+        /// </summary>
+        private void CheckFunctionsNoBody()
+        {
+            foreach (var symbol in _currentScope.Symbols)
+            {
+                var function = symbol as Function;
+                if (function == null) continue;
+                if (function.CommandList == null)
+                {
+                    SemErr($"No se declaró el cuerpo de la funcion {function.Name}");
+                }
             }
         }
     }

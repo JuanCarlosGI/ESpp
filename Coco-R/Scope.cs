@@ -41,6 +41,11 @@ namespace Coco_R
         private readonly Hashtable _hash = new Hashtable();
 
         /// <summary>
+        /// Gets all the symbols in the hash.
+        /// </summary>
+        public ICollection Symbols => _hash.Values;
+
+        /// <summary>
         /// Seaches for a symbol in all available scopes prioritizing the 
         /// current scope and working its way up to the global scope.
         /// </summary>

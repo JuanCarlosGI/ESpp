@@ -1,12 +1,17 @@
 ﻿variables:
     entero contadorGlobal;
 
+firmas:
+	rutina dos();
+	rutina dos();
+
 funciones:
 	entero sumaUno(entero n) {
 		regresa n + 1;
 	}
     
 	entero uno(entero n) {
+		dos();
 		entero dos() { regresa 2; }
         regresa sumaUno(sumaUno(sumaUno(n))) + dos();
     }

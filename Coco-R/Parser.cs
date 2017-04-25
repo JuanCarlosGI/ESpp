@@ -16,7 +16,7 @@ public partial class Parser {
 	public const int _cteent = 3;
 	public const int _ctedbl = 4;
 	public const int _lpar = 5;
-	public const int maxT = 45;
+	public const int maxT = 46;
 
 	const bool _T = true;
 	const bool _x = false;
@@ -94,6 +94,9 @@ public partial class Parser {
 
 	void Program() {
 		Vars();
+		if (la.kind == 8) {
+			Firmas();
+		}
 		Funs();
 		Main();
 	}
@@ -106,24 +109,33 @@ public partial class Parser {
 		}
 	}
 
-	void Funs() {
+	void Firmas() {
 		Expect(8);
+		Expect(7);
+		while (StartOf(2)) {
+			Firma();
+		}
+	}
+
+	void Funs() {
+		Expect(13);
 		Expect(7);
 		while (StartOf(2)) {
 			DeclaracionFunc();
 		}
+		CheckFunctionsNoBody(); 
 	}
 
 	void Main() {
 		DirectValueSymbol dummy; 
-		Expect(12);
+		Expect(14);
 		Bloque("main", new Variable[]{}, false, out dummy);
 	}
 
 	void Declaracion() {
 		Type tipo; bool isArr = false; List<int> sizes = null; 
 		Tipo(out tipo);
-		if (la.kind == 18) {
+		if (la.kind == 19) {
 			TipoArr(out sizes);
 			isArr = true; 
 		}
@@ -134,7 +146,54 @@ public partial class Parser {
 			Expect(1);
 			AddVariable(t.val, tipo, isArr, sizes); 
 		}
-		Expect(13);
+		Expect(12);
+	}
+
+	void Firma() {
+		Type funType = Type.Error; 
+		if (StartOf(1)) {
+			Tipo(out funType);
+		} else if (la.kind == 9) {
+			Get();
+			funType = Type.Rutina; 
+		} else SynErr(47);
+		Expect(1);
+		var funName = t.val; 
+		Expect(5);
+		var vars = new List<Variable>(); 
+		if (StartOf(1)) {
+			Type tipo; 
+			Tipo(out tipo);
+			Expect(1);
+			vars.Add(new Variable(){Name=t.val, Type=tipo}); 
+			while (la.kind == 10) {
+				Get();
+				Tipo(out tipo);
+				Expect(1);
+				vars.Add(new Variable(){Name=t.val, Type=tipo}); 
+			}
+		}
+		Expect(11);
+		AddFunction(funName, funType, vars); 
+		Expect(12);
+	}
+
+	void Tipo(out Type tipo) {
+		Type tipoAux = Type.Error; 
+		if (la.kind == 15) {
+			Get();
+			tipoAux = Type.Entero; 
+		} else if (la.kind == 16) {
+			Get();
+			tipoAux = Type.Decimal; 
+		} else if (la.kind == 17) {
+			Get();
+			tipoAux = Type.Booleano; 
+		} else if (la.kind == 18) {
+			Get();
+			tipoAux = Type.Cadena; 
+		} else SynErr(48);
+		tipo = tipoAux; 
 	}
 
 	void DeclaracionFunc() {
@@ -144,7 +203,7 @@ public partial class Parser {
 		} else if (la.kind == 9) {
 			Get();
 			funType = Type.Rutina; 
-		} else SynErr(46);
+		} else SynErr(49);
 		Expect(1);
 		var funName = t.val; 
 		Expect(5);
@@ -168,26 +227,8 @@ public partial class Parser {
 		AddReturns(funName, returns); LinkFunctionBody(funName); 
 	}
 
-	void Tipo(out Type tipo) {
-		Type tipoAux = Type.Error; 
-		if (la.kind == 14) {
-			Get();
-			tipoAux = Type.Entero; 
-		} else if (la.kind == 15) {
-			Get();
-			tipoAux = Type.Decimal; 
-		} else if (la.kind == 16) {
-			Get();
-			tipoAux = Type.Booleano; 
-		} else if (la.kind == 17) {
-			Get();
-			tipoAux = Type.Cadena; 
-		} else SynErr(47);
-		tipo = tipoAux; 
-	}
-
 	void Bloque(string name, Variable[] parameters, bool isFunction, out DirectValueSymbol returns) {
-		Expect(20);
+		Expect(21);
 		CreateNewScope(name, new List<Variable>(parameters)); DoPushDefaults(); 
 		returns = null; 
 		while (StartOf(3)) {
@@ -195,35 +236,35 @@ public partial class Parser {
 				DeclaracionFunc();
 			} else if (StartOf(1)) {
 				Declaracion();
-			} else if (la.kind == 24) {
+			} else if (la.kind == 25) {
 				Condicion();
-			} else if (la.kind == 26) {
-				Ciclo();
 			} else if (la.kind == 27) {
+				Ciclo();
+			} else if (la.kind == 28) {
 				Impresion();
 			} else if (FollowedByLPar()) {
 				Function function; List<DirectValueSymbol> paras; 
 				Funcion(out function, out paras);
-				Expect(13);
+				Expect(12);
 				DoRoutine(function, paras); 
 			} else {
 				Asignacion();
 			}
 		}
 		var hasReturn = false; 
-		if (la.kind == 21) {
+		if (la.kind == 22) {
 			Get();
 			Expresion();
-			Expect(13);
+			Expect(12);
 			hasReturn = true; returns = _symbolStack.Pop(); _currentScope.Returns = returns; 
 		}
-		Expect(22);
+		Expect(23);
 		ValidateHasReturn(isFunction, hasReturn); DoPopLocals(); _currentScope = _currentScope.Parent; 
 	}
 
 	void TipoArr(out List<int> lengths) {
 		lengths = new List<int>(); 
-		Expect(18);
+		Expect(19);
 		Expect(3);
 		lengths.Add(int.Parse(t.val)); 
 		while (la.kind == 10) {
@@ -231,18 +272,18 @@ public partial class Parser {
 			Expect(3);
 			lengths.Add(int.Parse(t.val)); 
 		}
-		Expect(19);
+		Expect(20);
 	}
 
 	void Condicion() {
-		Expect(24);
+		Expect(25);
 		Expect(5);
 		Expresion();
 		Expect(11);
 		var condition = _symbolStack.Pop(); DirectValueSymbol returnsDummy; 
 		Bloque("if", new Variable[]{}, false, out returnsDummy);
 		var ifBlock = _currentScope.Children.Last().CommandList; CommandList elseBlock = null; 
-		if (la.kind == 25) {
+		if (la.kind == 26) {
 			Get();
 			Bloque("else", new Variable[]{}, false, out returnsDummy);
 			elseBlock = _currentScope.Children.Last().CommandList; 
@@ -251,7 +292,7 @@ public partial class Parser {
 	}
 
 	void Ciclo() {
-		Expect(26);
+		Expect(27);
 		Expect(5);
 		CreateNewScope("Expression", new List<Variable>());  DirectValueSymbol returnsDummy; 
 		Expresion();
@@ -263,7 +304,7 @@ public partial class Parser {
 	}
 
 	void Impresion() {
-		Expect(27);
+		Expect(28);
 		Expect(5);
 		var expressions = new List<DirectValueSymbol>(); 
 		Expresion();
@@ -274,7 +315,7 @@ public partial class Parser {
 			expressions.Add(_symbolStack.Pop()); 
 		}
 		Expect(11);
-		Expect(13);
+		Expect(12);
 		DoPrint(expressions); 
 	}
 
@@ -301,16 +342,16 @@ public partial class Parser {
 		Variable variable; 
 		Variable(out variable);
 		_symbolStack.Push(variable); 
-		Expect(23);
+		Expect(24);
 		Expresion();
-		Expect(13);
+		Expect(12);
 		DoAssign(); 
 	}
 
 	void Expresion() {
 		Exp();
-		while (la.kind == 28 || la.kind == 29) {
-			if (la.kind == 28) {
+		while (la.kind == 29 || la.kind == 30) {
+			if (la.kind == 29) {
 				Get();
 				_operatorStack.Push(Operator.And); 
 			} else {
@@ -325,7 +366,7 @@ public partial class Parser {
 	void Variable(out Variable variable) {
 		Expect(1);
 		string name = t.val; CheckVariableExists(name); var symbol = _currentScope.Search(name); variable = symbol as Variable; 
-		if (la.kind == 18) {
+		if (la.kind == 19) {
 			Get();
 			var indexes = new List<DirectValueSymbol>(); 
 			Expresion();
@@ -335,7 +376,7 @@ public partial class Parser {
 				Expresion();
 				indexes.Add(_symbolStack.Pop() as DirectValueSymbol); 
 			}
-			Expect(19);
+			Expect(20);
 			CheckIsArray(name); VariableArray array =(symbol as VariableArray); DoAssignIndex(array,indexes); variable = array; 
 		}
 	}
@@ -344,32 +385,32 @@ public partial class Parser {
 		Expt();
 		if (StartOf(5)) {
 			switch (la.kind) {
-			case 30: {
+			case 31: {
 				Get();
 				_operatorStack.Push(Operator.GreaterThan); 
 				break;
 			}
-			case 31: {
+			case 32: {
 				Get();
 				_operatorStack.Push(Operator.LessThan); 
 				break;
 			}
-			case 32: {
+			case 33: {
 				Get();
 				_operatorStack.Push(Operator.GreaterEqual); 
 				break;
 			}
-			case 33: {
+			case 34: {
 				Get();
 				_operatorStack.Push(Operator.LessEqual); 
 				break;
 			}
-			case 34: {
+			case 35: {
 				Get();
 				_operatorStack.Push(Operator.Different); 
 				break;
 			}
-			case 35: {
+			case 36: {
 				Get();
 				_operatorStack.Push(Operator.Equality); 
 				break;
@@ -382,8 +423,8 @@ public partial class Parser {
 
 	void Expt() {
 		Termino();
-		while (la.kind == 36 || la.kind == 37) {
-			if (la.kind == 36) {
+		while (la.kind == 37 || la.kind == 38) {
+			if (la.kind == 37) {
 				Get();
 				_operatorStack.Push(Operator.Sum); 
 			} else {
@@ -397,11 +438,11 @@ public partial class Parser {
 
 	void Termino() {
 		Factor();
-		while (la.kind == 38 || la.kind == 39 || la.kind == 40) {
-			if (la.kind == 38) {
+		while (la.kind == 39 || la.kind == 40 || la.kind == 41) {
+			if (la.kind == 39) {
 				Get();
 				_operatorStack.Push(Operator.Multiply); 
-			} else if (la.kind == 39) {
+			} else if (la.kind == 40) {
 				Get();
 				_operatorStack.Push(Operator.Divide); 
 			} else {
@@ -415,8 +456,8 @@ public partial class Parser {
 
 	void Factor() {
 		var negative = false; 
-		if (la.kind == 36 || la.kind == 37) {
-			if (la.kind == 36) {
+		if (la.kind == 37 || la.kind == 38) {
+			if (la.kind == 37) {
 				Get();
 			} else {
 				Get();
@@ -433,7 +474,7 @@ public partial class Parser {
 			DirectValueSymbol symbol; 
 			Constante(out symbol);
 			_symbolStack.Push(symbol); 
-		} else SynErr(48);
+		} else SynErr(50);
 		if(negative) DoNegative(); 
 	}
 
@@ -445,16 +486,16 @@ public partial class Parser {
 		} else if (la.kind == 4) {
 			Get();
 			sym = _constBuilder.DecConstant(t.val); 
-		} else if (la.kind == 43 || la.kind == 44) {
+		} else if (la.kind == 44 || la.kind == 45) {
 			Ctebol();
 			sym = _constBuilder.BoolConstant(t.val); 
 		} else if (la.kind == 2) {
 			Get();
 			sym = _constBuilder.StrConstant(t.val); 
-		} else if (la.kind == 41) {
+		} else if (la.kind == 42) {
 			Aleatorio();
 			sym = _constBuilder.DecConstant("0"); DoRandom(sym); 
-		} else if (la.kind == 42) {
+		} else if (la.kind == 43) {
 			Lectura();
 			sym = _constBuilder.StrConstant(""); DoRead(sym); 
 		} else if (FollowedByLPar()) {
@@ -465,25 +506,25 @@ public partial class Parser {
 			Variable variable; 
 			Variable(out variable);
 			sym = variable; 
-		} else SynErr(49);
+		} else SynErr(51);
 	}
 
 	void Ctebol() {
-		if (la.kind == 43) {
+		if (la.kind == 44) {
 			Get();
-		} else if (la.kind == 44) {
+		} else if (la.kind == 45) {
 			Get();
-		} else SynErr(50);
+		} else SynErr(52);
 	}
 
 	void Aleatorio() {
-		Expect(41);
+		Expect(42);
 		Expect(5);
 		Expect(11);
 	}
 
 	void Lectura() {
-		Expect(42);
+		Expect(43);
 		Expect(5);
 		Expect(11);
 	}
@@ -502,13 +543,13 @@ public partial class Parser {
 	}
 	
 	static readonly bool[,] set = {
-		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
-		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
-		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_x,_x, _x,_x,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
-		{_x,_T,_x,_x, _x,_x,_x,_x, _x,_T,_x,_x, _x,_x,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _T,_x,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
-		{_x,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_T,_x,_x, _x,_T,_T,_T, _T,_x,_x},
-		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _T,_T,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
-		{_x,_T,_T,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_T,_T, _T,_x,_x}
+		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
+		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
+		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_x,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
+		{_x,_T,_x,_x, _x,_x,_x,_x, _x,_T,_x,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_T,_x,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
+		{_x,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_T,_x, _x,_x,_T,_T, _T,_T,_x,_x},
+		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
+		{_x,_T,_T,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _T,_T,_x,_x}
 
 	};
 } // end Parser
@@ -530,49 +571,51 @@ public class Errors {
 			case 5: s = "lpar expected"; break;
 			case 6: s = "\"variables\" expected"; break;
 			case 7: s = "\":\" expected"; break;
-			case 8: s = "\"funciones\" expected"; break;
+			case 8: s = "\"firmas\" expected"; break;
 			case 9: s = "\"rutina\" expected"; break;
 			case 10: s = "\",\" expected"; break;
 			case 11: s = "\")\" expected"; break;
-			case 12: s = "\"main\" expected"; break;
-			case 13: s = "\";\" expected"; break;
-			case 14: s = "\"entero\" expected"; break;
-			case 15: s = "\"decimal\" expected"; break;
-			case 16: s = "\"booleano\" expected"; break;
-			case 17: s = "\"cadena\" expected"; break;
-			case 18: s = "\"[\" expected"; break;
-			case 19: s = "\"]\" expected"; break;
-			case 20: s = "\"{\" expected"; break;
-			case 21: s = "\"regresa\" expected"; break;
-			case 22: s = "\"}\" expected"; break;
-			case 23: s = "\"=\" expected"; break;
-			case 24: s = "\"si\" expected"; break;
-			case 25: s = "\"sino\" expected"; break;
-			case 26: s = "\"mientras\" expected"; break;
-			case 27: s = "\"imprimir\" expected"; break;
-			case 28: s = "\"&&\" expected"; break;
-			case 29: s = "\"||\" expected"; break;
-			case 30: s = "\">\" expected"; break;
-			case 31: s = "\"<\" expected"; break;
-			case 32: s = "\">=\" expected"; break;
-			case 33: s = "\"<=\" expected"; break;
-			case 34: s = "\"<>\" expected"; break;
-			case 35: s = "\"==\" expected"; break;
-			case 36: s = "\"+\" expected"; break;
-			case 37: s = "\"-\" expected"; break;
-			case 38: s = "\"*\" expected"; break;
-			case 39: s = "\"/\" expected"; break;
-			case 40: s = "\"%\" expected"; break;
-			case 41: s = "\"aleatorio\" expected"; break;
-			case 42: s = "\"lectura\" expected"; break;
-			case 43: s = "\"verdadero\" expected"; break;
-			case 44: s = "\"falso\" expected"; break;
-			case 45: s = "??? expected"; break;
-			case 46: s = "invalid DeclaracionFunc"; break;
-			case 47: s = "invalid Tipo"; break;
-			case 48: s = "invalid Factor"; break;
-			case 49: s = "invalid Constante"; break;
-			case 50: s = "invalid Ctebol"; break;
+			case 12: s = "\";\" expected"; break;
+			case 13: s = "\"funciones\" expected"; break;
+			case 14: s = "\"main\" expected"; break;
+			case 15: s = "\"entero\" expected"; break;
+			case 16: s = "\"decimal\" expected"; break;
+			case 17: s = "\"booleano\" expected"; break;
+			case 18: s = "\"cadena\" expected"; break;
+			case 19: s = "\"[\" expected"; break;
+			case 20: s = "\"]\" expected"; break;
+			case 21: s = "\"{\" expected"; break;
+			case 22: s = "\"regresa\" expected"; break;
+			case 23: s = "\"}\" expected"; break;
+			case 24: s = "\"=\" expected"; break;
+			case 25: s = "\"si\" expected"; break;
+			case 26: s = "\"sino\" expected"; break;
+			case 27: s = "\"mientras\" expected"; break;
+			case 28: s = "\"imprimir\" expected"; break;
+			case 29: s = "\"&&\" expected"; break;
+			case 30: s = "\"||\" expected"; break;
+			case 31: s = "\">\" expected"; break;
+			case 32: s = "\"<\" expected"; break;
+			case 33: s = "\">=\" expected"; break;
+			case 34: s = "\"<=\" expected"; break;
+			case 35: s = "\"<>\" expected"; break;
+			case 36: s = "\"==\" expected"; break;
+			case 37: s = "\"+\" expected"; break;
+			case 38: s = "\"-\" expected"; break;
+			case 39: s = "\"*\" expected"; break;
+			case 40: s = "\"/\" expected"; break;
+			case 41: s = "\"%\" expected"; break;
+			case 42: s = "\"aleatorio\" expected"; break;
+			case 43: s = "\"lectura\" expected"; break;
+			case 44: s = "\"verdadero\" expected"; break;
+			case 45: s = "\"falso\" expected"; break;
+			case 46: s = "??? expected"; break;
+			case 47: s = "invalid Firma"; break;
+			case 48: s = "invalid Tipo"; break;
+			case 49: s = "invalid DeclaracionFunc"; break;
+			case 50: s = "invalid Factor"; break;
+			case 51: s = "invalid Constante"; break;
+			case 52: s = "invalid Ctebol"; break;
 
 			default: s = "error " + n; break;
 		}

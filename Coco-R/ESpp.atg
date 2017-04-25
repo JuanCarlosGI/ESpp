@@ -22,11 +22,29 @@ IGNORE eol + '\t'
 PRODUCTIONS
 	ESpp = Program.
 
-	Program	= Vars Funs Main.
+	Program	= Vars [Firmas] Funs Main.
 
 	Vars = "variables" ':' {Declaracion}.
 	
-	Funs = "funciones" ':' {DeclaracionFunc}.
+	Firmas = "firmas" ':' {Firma}.
+
+	Firma = 													(. Type funType = Type.Error; .)
+		(
+			Tipo<out funType>
+			|"rutina"											(. funType = Type.Rutina; .)
+		)
+		id														(. var funName = t.val; .)
+		'('														(. var vars = new List<Variable>(); .)
+		[														(. Type tipo; .)
+			Tipo<out tipo> id									(. vars.Add(new Variable(){Name=t.val, Type=tipo}); .) 
+			{
+				',' Tipo<out tipo> id							(. vars.Add(new Variable(){Name=t.val, Type=tipo}); .) 
+			}
+		] ')'													(. AddFunction(funName, funType, vars); .)
+		';'.
+
+	Funs = "funciones" ':' {DeclaracionFunc}					(. CheckFunctionsNoBody(); .)
+	.
 
 	DeclaracionFunc =											(. Type funType = Type.Error; .)
 		(
