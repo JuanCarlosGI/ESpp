@@ -36,9 +36,21 @@ namespace Coco_R
         /// <summary>
         /// Determines whether the next token is a left parenthesis.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>If it is true</returns>
         private bool FollowedByLPar()
         {
+            scanner.ResetPeek();
+            return scanner.Peek().kind == _lpar;
+        }
+
+        /// <summary>
+        /// Determines whether the next next token is a left parenthesis.
+        /// </summary>
+        /// <returns>If it is true</returns>
+        private bool DoubleFollowedByLPar()
+        {
+            scanner.ResetPeek();
+            scanner.Peek();
             return scanner.Peek().kind == _lpar;
         }
 
@@ -50,7 +62,7 @@ namespace Coco_R
         /// <param name="tipo">The type of the variable to add.</param>
         /// <param name="isArr">Boolean determining if the variable is an array
         /// </param>
-        /// <param name="size">In case of being an array, its size</param>
+        /// <param name="sizes">In case of being an array, its size</param>
         private void AddVariable(string name, Type tipo, bool isArr, List<int> sizes)
         {
             if (!_currentScope.ExistsInScope(name))

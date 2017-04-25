@@ -365,7 +365,8 @@ namespace Coco_R
             var cmd = new CallFunction
             {
                 Function = function,
-                ScopeCalled = _currentScope
+                ScopeCalled = _currentScope,
+                Parameters = parameters
             };
             _currentScope.CommandList.Commands.Add(cmd);
         }
@@ -373,7 +374,7 @@ namespace Coco_R
         /// <summary>
         /// Creates necessary commands to make a value negative.
         /// </summary>
-        private void doNegative()
+        private void DoNegative()
         {
             var value = _symbolStack.Pop();
 

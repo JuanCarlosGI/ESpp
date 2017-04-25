@@ -110,34 +110,7 @@ public partial class Parser {
 		Expect(8);
 		Expect(7);
 		while (StartOf(2)) {
-			Type funType; 
-			if (StartOf(1)) {
-				Tipo(out funType);
-			} else {
-				Get();
-				funType = Type.Rutina; 
-			}
-			Expect(1);
-			var funName = t.val; 
-			Expect(5);
-			var vars = new List<Variable>(); 
-			if (StartOf(1)) {
-				Type tipo; 
-				Tipo(out tipo);
-				Expect(1);
-				vars.Add(new Variable(){Name=t.val, Type=tipo}); 
-				while (la.kind == 10) {
-					Get();
-					Tipo(out tipo);
-					Expect(1);
-					vars.Add(new Variable(){Name=t.val, Type=tipo}); 
-				}
-			}
-			Expect(11);
-			AddFunction(funName, funType, vars); 
-			DirectValueSymbol returns; 
-			Bloque(funName, vars.ToArray(), funType != Type.Rutina, out returns);
-			AddReturns(funName, returns); LinkFunctionBody(funName); 
+			DeclaracionFunc();
 		}
 	}
 
@@ -164,6 +137,37 @@ public partial class Parser {
 		Expect(13);
 	}
 
+	void DeclaracionFunc() {
+		Type funType = Type.Error; 
+		if (StartOf(1)) {
+			Tipo(out funType);
+		} else if (la.kind == 9) {
+			Get();
+			funType = Type.Rutina; 
+		} else SynErr(46);
+		Expect(1);
+		var funName = t.val; 
+		Expect(5);
+		var vars = new List<Variable>(); 
+		if (StartOf(1)) {
+			Type tipo; 
+			Tipo(out tipo);
+			Expect(1);
+			vars.Add(new Variable(){Name=t.val, Type=tipo}); 
+			while (la.kind == 10) {
+				Get();
+				Tipo(out tipo);
+				Expect(1);
+				vars.Add(new Variable(){Name=t.val, Type=tipo}); 
+			}
+		}
+		Expect(11);
+		AddFunction(funName, funType, vars); 
+		DirectValueSymbol returns; 
+		Bloque(funName, vars.ToArray(), funType != Type.Rutina, out returns);
+		AddReturns(funName, returns); LinkFunctionBody(funName); 
+	}
+
 	void Tipo(out Type tipo) {
 		Type tipoAux = Type.Error; 
 		if (la.kind == 14) {
@@ -178,7 +182,7 @@ public partial class Parser {
 		} else if (la.kind == 17) {
 			Get();
 			tipoAux = Type.Cadena; 
-		} else SynErr(46);
+		} else SynErr(47);
 		tipo = tipoAux; 
 	}
 
@@ -187,7 +191,9 @@ public partial class Parser {
 		CreateNewScope(name, new List<Variable>(parameters)); DoPushDefaults(); 
 		returns = null; 
 		while (StartOf(3)) {
-			if (StartOf(1)) {
+			if (DoubleFollowedByLPar()) {
+				DeclaracionFunc();
+			} else if (StartOf(1)) {
 				Declaracion();
 			} else if (la.kind == 24) {
 				Condicion();
@@ -427,8 +433,8 @@ public partial class Parser {
 			DirectValueSymbol symbol; 
 			Constante(out symbol);
 			_symbolStack.Push(symbol); 
-		} else SynErr(47);
-		if(negative) doNegative(); 
+		} else SynErr(48);
+		if(negative) DoNegative(); 
 	}
 
 	void Constante(out DirectValueSymbol sym) {
@@ -459,7 +465,7 @@ public partial class Parser {
 			Variable variable; 
 			Variable(out variable);
 			sym = variable; 
-		} else SynErr(48);
+		} else SynErr(49);
 	}
 
 	void Ctebol() {
@@ -467,7 +473,7 @@ public partial class Parser {
 			Get();
 		} else if (la.kind == 44) {
 			Get();
-		} else SynErr(49);
+		} else SynErr(50);
 	}
 
 	void Aleatorio() {
@@ -499,7 +505,7 @@ public partial class Parser {
 		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
 		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
 		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_x,_x, _x,_x,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
-		{_x,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _T,_x,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
+		{_x,_T,_x,_x, _x,_x,_x,_x, _x,_T,_x,_x, _x,_x,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _T,_x,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
 		{_x,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_T,_x,_x, _x,_T,_T,_T, _T,_x,_x},
 		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _T,_T,_T,_T, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x},
 		{_x,_T,_T,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_T,_T, _T,_x,_x}
@@ -562,10 +568,11 @@ public class Errors {
 			case 43: s = "\"verdadero\" expected"; break;
 			case 44: s = "\"falso\" expected"; break;
 			case 45: s = "??? expected"; break;
-			case 46: s = "invalid Tipo"; break;
-			case 47: s = "invalid Factor"; break;
-			case 48: s = "invalid Constante"; break;
-			case 49: s = "invalid Ctebol"; break;
+			case 46: s = "invalid DeclaracionFunc"; break;
+			case 47: s = "invalid Tipo"; break;
+			case 48: s = "invalid Factor"; break;
+			case 49: s = "invalid Constante"; break;
+			case 50: s = "invalid Ctebol"; break;
 
 			default: s = "error " + n; break;
 		}

@@ -7,11 +7,24 @@ funciones:
 	}
     
 	entero uno(entero n) {
-        regresa sumaUno(sumaUno(sumaUno(n)));
+		entero dos() { regresa 2; }
+        regresa sumaUno(sumaUno(sumaUno(n))) + dos();
     }
 
-	rutina dos(){ }
+	rutina dos(){ 
+		imprimir("dos");
+	}
 
 main {
-    imprimir("Resultado (4):", uno(1));
+    imprimir("Resultado (6):", uno(1));
+	si (verdadero) {
+		rutina aux(entero n){
+			imprimir(n);
+		}
+
+		entero veinticuatro;
+		veinticuatro = 24;
+		aux(veinticuatro);
+	}
+	dos();
 }

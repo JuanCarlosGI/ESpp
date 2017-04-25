@@ -26,7 +26,9 @@ PRODUCTIONS
 
 	Vars = "variables" ':' {Declaracion}.
 	
-	Funs = "funciones" ':' {									(. Type funType; .)
+	Funs = "funciones" ':' {DeclaracionFunc}.
+
+	DeclaracionFunc =											(. Type funType = Type.Error; .)
 		(
 			Tipo<out funType>
 			|"rutina"											(. funType = Type.Rutina; .)
@@ -42,7 +44,7 @@ PRODUCTIONS
 																(. DirectValueSymbol returns; .)
 		Bloque<funName, vars.ToArray(), funType != Type.Rutina, out returns>
 																(. AddReturns(funName, returns); LinkFunctionBody(funName); .)
-		}.
+		.
 
 
 	Main =					(. DirectValueSymbol dummy; .) 
@@ -75,7 +77,8 @@ PRODUCTIONS
 		'{'										(. CreateNewScope(name, new List<Variable>(parameters)); DoPushDefaults(); .)
 												(. returns = null; .)
 		{
-			Declaracion 
+			IF(DoubleFollowedByLPar()) DeclaracionFunc
+			| Declaracion 
 			| Condicion 
 			| Ciclo 
 			| Impresion 
@@ -188,7 +191,7 @@ PRODUCTIONS
 		| 
 		(							(. DirectValueSymbol symbol; .)
 			Constante<out symbol>	(. _symbolStack.Push(symbol); .)
-		))							(. if(negative) doNegative(); .)
+		))							(. if(negative) DoNegative(); .)
 		.
 	
 	Constante<out DirectValueSymbol sym> = (. sym = null; .)
