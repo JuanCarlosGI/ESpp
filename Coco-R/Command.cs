@@ -135,6 +135,86 @@ namespace Coco_R
     public class Or : BinaryCommand { public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); } }
 
     /// <summary>
+    /// Class representing the attributes of a line
+    /// </summary>
+    public class Line : Command
+    {
+        public DirectValueSymbol Color { get; set; }
+        public DirectValueSymbol Thickness { get; set; }
+        public DirectValueSymbol X1 { get; set; }
+        public DirectValueSymbol Y1 { get; set; }
+        public DirectValueSymbol X2 { get; set; }
+        public DirectValueSymbol Y2 { get; set; }
+        public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); }
+    }
+
+    /// <summary>
+    /// Class representing the attributes of an arc
+    /// </summary>
+    public class Arc : Command
+    {
+        public DirectValueSymbol Color { get; set; }
+        public DirectValueSymbol Thickness { get; set; }
+        public DirectValueSymbol X { get; set; }
+        public DirectValueSymbol Y { get; set; }
+        public DirectValueSymbol Width { get; set; }
+        public DirectValueSymbol Height { get; set; }
+        public DirectValueSymbol StartAngle { get; set; }
+        public DirectValueSymbol FinalAngle { get; set; }
+        public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); }
+    }
+
+    /// <summary>
+    /// Class representing the attributes of a rectangle
+    /// </summary>
+    public class Rectan : Command
+    {
+        public DirectValueSymbol BackgroundColor { get; set; }
+        public DirectValueSymbol LineColor { get; set; }
+        public DirectValueSymbol Thickness { get; set; }
+        public DirectValueSymbol X { get; set; }
+        public DirectValueSymbol Y { get; set; }
+        public DirectValueSymbol Width { get; set; }
+        public DirectValueSymbol Height { get; set; }
+
+        public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); }
+    }
+
+    /// <summary>
+    /// Class representing the attributes of an ellipse
+    /// </summary>
+    public class Ellipse : Command
+    {
+        public DirectValueSymbol BackgroundColor { get; set; }
+        public DirectValueSymbol LineColor { get; set; }
+        public DirectValueSymbol Thickness { get; set; }
+        public DirectValueSymbol X { get; set; }
+        public DirectValueSymbol Y { get; set; }
+        public DirectValueSymbol Width { get; set; }
+        public DirectValueSymbol Height { get; set; }
+
+        public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); }
+    }
+
+    /// <summary>
+    /// Class representing the attributes of a rectangle
+    /// </summary>
+    public class Triangle : Command
+    {
+        public DirectValueSymbol BackgroundColor { get; set; }
+        public DirectValueSymbol LineColor { get; set; }
+        public DirectValueSymbol Thickness { get; set; }
+        public DirectValueSymbol X1 { get; set; }
+        public DirectValueSymbol Y1 { get; set; }
+        public DirectValueSymbol X2 { get; set; }
+        public DirectValueSymbol Y2 { get; set; }
+        public DirectValueSymbol X3 { get; set; }
+        public DirectValueSymbol Y3 { get; set; }
+        public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); }
+    }
+
+
+    /// <summary>
     /// Class representing an IF statement command.
     /// </summary>
     public class Conditional : Command

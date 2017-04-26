@@ -1,0 +1,39 @@
+entero contadorGlobal;
+rutina dos();
+entero sumaUno(entero n) {
+	regresa n + 1;
+}
+rutina dos();
+cadena miString;
+entero uno(entero n) {
+	dos();
+	entero dos() { regresa 2; }
+    regresa sumaUno(sumaUno(sumaUno(n))) + dos();
+}
+rutina dos(){ 
+	imprimir("dos");
+}
+
+main {
+    imprimir("Resultado (6):", uno(1));
+	si (verdadero) {
+		entero tres();
+		rutina aux(entero n){
+			imprimir(n, tres());
+		}
+		entero tres(){regresa 3;}
+		contadorGlobal = 1;
+		imprimir("contadorGlobal:", contadorGlobal);
+		entero veinticuatro;
+		veinticuatro = 24;
+		aux(veinticuatro);
+
+		dibujarLinea("azul",1,0,0,500,500);
+		dibujarLinea("azul",5,500,0,0,500);
+		dibujarArco("negro",2,0,0,50,400,0,156);
+		dibujarRectangulo("negro","negro",5,100,130,50,50);
+		dibujarElipse("negro","negro",10,200,130,100,200);
+		dibujarTriangulo("negro","negro",20,0,500,30,500,15,470);
+	}
+	dos();
+}

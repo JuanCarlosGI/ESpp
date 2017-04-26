@@ -49,6 +49,7 @@ namespace Compiler
                     var pb = new PictureBox { Image = vm.Image, Size = frm.ClientSize };
                     frm.Controls.Add(pb);
                     frm.ShowDialog();
+
                 }
             }
             else

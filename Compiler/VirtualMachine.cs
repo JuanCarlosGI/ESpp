@@ -201,11 +201,51 @@ namespace Compiler
             }
         }
 
-        /*
-        public void Execute(DrawLine cmd)
+        public void Execute(Line cmd)
         {
-           _graphics.DrawLine(new Pen(Color.Black, 3), cmd.x1.Value, cmd.y1.Value, cmd.x2.Value, cmd.y2.Value );
+            _graphics.DrawLine(new Pen(Color.Blue, cmd.Thickness.Value), cmd.X1.Value, cmd.Y1.Value, cmd.X2.Value, cmd.Y2.Value);
         }
-        */
-    }
+
+        public void Execute(Arc cmd)
+        {
+            _graphics.DrawArc(new Pen(Color.Pink, cmd.Thickness.Value), cmd.X.Value, cmd.Y.Value, cmd.Width.Value, cmd.Height.Value, cmd.StartAngle.Value, cmd.FinalAngle.Value);
+        }
+
+        public void Execute(Rectan cmd)
+        {
+            Rectangle rect = new Rectangle(cmd.X.Value, cmd.Y.Value, cmd.Width.Value, cmd.Height.Value);
+            _graphics.DrawRectangle(new Pen(Color.Green, cmd.Thickness.Value), rect);
+            _graphics.FillRectangle(new SolidBrush(Color.Purple), rect);
+        }
+
+        public void Execute(Ellipse cmd)
+        {
+            Rectangle rect = new Rectangle(cmd.X.Value, cmd.Y.Value, cmd.Width.Value, cmd.Height.Value);
+            _graphics.DrawEllipse(new Pen(Color.Red, cmd.Thickness.Value), rect);
+            _graphics.FillEllipse(new SolidBrush(Color.Blue), rect);
+        }
+
+        public void Execute(Triangle cmd)
+        {
+            PointF point1 = new PointF(cmd.X1.Value, cmd.Y1.Value);
+            PointF point2 = new PointF(cmd.X2.Value, cmd.Y2.Value);
+            PointF point3 = new PointF(cmd.X3.Value, cmd.Y3.Value);
+
+            PointF[] curvePoints =
+             {
+                 point1,
+                 point2,
+                 point3,
+             };
+            _graphics.DrawPolygon(new Pen(Color.Yellow, cmd.Thickness.Value), curvePoints);
+            _graphics.FillPolygon(new SolidBrush(Color.Orange), curvePoints);
+        }
+
+            /*
+            public void Execute(DrawLine cmd)
+            {
+               _graphics.DrawLine(new Pen(Color.Black, 3), cmd.x1.Value, cmd.y1.Value, cmd.x2.Value, cmd.y2.Value );
+            }
+            */
+        }
 }

@@ -84,7 +84,12 @@ PRODUCTIONS
 			IF(DoubleFollowedByLPar()) DeclaracionFunc
 			| Declaracion 
 			| Condicion 
-			| Ciclo 
+			| Ciclo
+			| DrawLine 
+			| DrawArc
+			| DrawRec
+			| DrawEllipse
+			| DrawTriangle
 			| Impresion 
 			| IF(FollowedByLPar())							(. Function function; List<DirectValueSymbol> paras; .) 
 				Funcion<out function, out paras> ';'		(. DoRoutine(function, paras); .) 
@@ -138,6 +143,63 @@ PRODUCTIONS
 		} 
 		']'							(. CheckIsArray(name); VariableArray array =(symbol as VariableArray); DoAssignIndex(array,indexes); variable = array; .)
 		 ].
+
+	DrawLine = 
+		"dibujarLinea" '(' Expresion (. var lineColor = _symbolStack.Pop(); .)
+							',' Expresion (. var thickness = _symbolStack.Pop(); .)
+							',' Expresion (. var x1 = _symbolStack.Pop(); .)
+							',' Expresion (. var y1 = _symbolStack.Pop(); .)
+							',' Expresion (. var x2 = _symbolStack.Pop(); .)
+							',' Expresion (. var y2 = _symbolStack.Pop(); .)
+						')' ';' (. DoLine(lineColor, thickness, x1, y1, x2, y2); .)
+	.
+
+	DrawArc =
+		"dibujarArco" '(' Expresion (. var lineColor = _symbolStack.Pop(); .)
+						',' Expresion (. var thickness = _symbolStack.Pop(); .)
+						',' Expresion (. var x = _symbolStack.Pop(); .)
+						',' Expresion (. var y = _symbolStack.Pop(); .)
+						',' Expresion (. var width = _symbolStack.Pop(); .)
+						',' Expresion (. var height = _symbolStack.Pop(); .)
+						',' Expresion (. var startAngle = _symbolStack.Pop(); .)
+						',' Expresion (. var finalAngle = _symbolStack.Pop(); .)
+					')' ';' (. DoArc(lineColor, thickness, x, y, width, height, startAngle, finalAngle); .)
+	.
+
+	DrawRec =
+		"dibujarRectangulo" '(' Expresion (. var backgroundColor = _symbolStack.Pop(); .)
+								',' Expresion (. var lineColor = _symbolStack.Pop(); .)
+								',' Expresion (. var thickness = _symbolStack.Pop(); .)
+								',' Expresion (. var x = _symbolStack.Pop(); .)
+								',' Expresion (. var y = _symbolStack.Pop(); .)
+								',' Expresion (. var width = _symbolStack.Pop(); .)
+								',' Expresion (. var height = _symbolStack.Pop(); .)
+							')' ';' (. DoRectangle(backgroundColor, lineColor, thickness, x, y, width, height); .)
+	.
+
+	DrawEllipse =
+		"dibujarElipse" '(' Expresion (. var backgroundColor = _symbolStack.Pop(); .)
+							',' Expresion (. var lineColor = _symbolStack.Pop(); .)
+							',' Expresion (. var thickness = _symbolStack.Pop(); .)
+							',' Expresion (. var x = _symbolStack.Pop(); .)
+							',' Expresion (. var y = _symbolStack.Pop(); .)
+							',' Expresion (. var width = _symbolStack.Pop(); .)
+							',' Expresion (. var height = _symbolStack.Pop(); .)
+						')' ';' (. DoEllipse(backgroundColor, lineColor, thickness, x, y, width, height); .)
+	.
+
+	DrawTriangle =
+		"dibujarTriangulo" '(' Expresion (. var backgroundColor = _symbolStack.Pop(); .)
+								',' Expresion (. var lineColor = _symbolStack.Pop(); .)
+								',' Expresion (. var thickness = _symbolStack.Pop(); .)
+								',' Expresion (. var x1 = _symbolStack.Pop(); .)
+								',' Expresion (. var y1 = _symbolStack.Pop(); .)
+								',' Expresion (. var x2 = _symbolStack.Pop(); .)
+								',' Expresion (. var y2 = _symbolStack.Pop(); .)
+								',' Expresion (. var x3 = _symbolStack.Pop(); .)
+								',' Expresion (. var y3 = _symbolStack.Pop(); .)
+							')' ';' (. DoTriangle(backgroundColor, lineColor, thickness, x1, y1, x2, y2, x3, y3); .)
+	.
 
 	Expresion =
 		Exp

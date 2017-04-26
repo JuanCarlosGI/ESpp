@@ -243,6 +243,279 @@ namespace Coco_R
         }
 
         /// <summary>
+        /// Builds a new dibujarTriangulo command and adds it to current scope
+        /// </summary>
+        /// <param name="backgroundColor"></param>
+        /// <param name="lineColor"></param>
+        /// <param name="thickness"></param>
+        /// <param name="x1"></param>
+        /// <param name="y1"></param>
+        /// <param name="x2"></param>
+        /// <param name="y2"></param>
+        /// <param name="x3"></param>
+        /// <param name="y3"></param>
+        void DoTriangle(DirectValueSymbol backgroundColor, DirectValueSymbol lineColor, DirectValueSymbol thickness, DirectValueSymbol x1, DirectValueSymbol y1, DirectValueSymbol x2, DirectValueSymbol y2, DirectValueSymbol x3, DirectValueSymbol y3)
+        {
+            if (backgroundColor.Type != Type.Cadena)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (lineColor.Type != Type.Cadena)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (thickness.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (x1.Type != Type.Decimal && x1.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (y1.Type != Type.Decimal && y1.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (x2.Type != Type.Decimal && x2.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (y2.Type != Type.Decimal && y2.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (x3.Type != Type.Decimal && x3.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (y3.Type != Type.Decimal && y3.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+
+            var cmd = new Triangle { BackgroundColor = backgroundColor, LineColor = lineColor, Thickness = thickness, X1 = x1, Y1 = y1, X2 = x2, Y2 = y2, X3 = x3, Y3 = y3 };
+            _currentScope.CommandList.Commands.Add(cmd);
+        }
+
+        /// <summary>
+        /// Builds a new dibujarElipse command and adds it to current scope
+        /// </summary>
+        /// <param name="backgroundColor"></param>
+        /// <param name="lineColor"></param>
+        /// <param name="thickness"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        void DoEllipse(DirectValueSymbol backgroundColor, DirectValueSymbol lineColor, DirectValueSymbol thickness, DirectValueSymbol x, DirectValueSymbol y, DirectValueSymbol width, DirectValueSymbol height)
+        {
+            if (backgroundColor.Type != Type.Cadena)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (lineColor.Type != Type.Cadena)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (thickness.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (x.Type != Type.Decimal && x.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (y.Type != Type.Decimal && y.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (width.Type != Type.Decimal && width.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (height.Type != Type.Decimal && height.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+
+            var cmd = new Ellipse { BackgroundColor = backgroundColor, LineColor = lineColor, Thickness = thickness, X = x, Y = y, Width = width, Height = height };
+            _currentScope.CommandList.Commands.Add(cmd);
+        }
+
+        /// <summary>
+        /// Builds a new dibujarRectangle command and adds it to current scope
+        /// </summary>
+        /// <param name="backgroundColor"></param>
+        /// <param name="lineColor"></param>
+        /// <param name="thickness"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        void DoRectangle(DirectValueSymbol backgroundColor, DirectValueSymbol lineColor, DirectValueSymbol thickness, DirectValueSymbol x, DirectValueSymbol y, DirectValueSymbol width, DirectValueSymbol height)
+        {
+            if (backgroundColor.Type != Type.Cadena)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (lineColor.Type != Type.Cadena)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (thickness.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (x.Type != Type.Decimal && x.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (y.Type != Type.Decimal && y.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (width.Type != Type.Decimal && width.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (height.Type != Type.Decimal && height.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+
+            var cmd = new Rectan { BackgroundColor = backgroundColor, LineColor = lineColor, Thickness = thickness, X = x, Y = y, Width = width, Height = height };
+            _currentScope.CommandList.Commands.Add(cmd);
+        }
+
+        /// <summary>
+        /// Builds a new dibujarArco command and adds it to current scope
+        /// </summary>
+        /// <param name="lineColor"></param>
+        /// <param name="thickness"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="startAngle"></param>
+        /// <param name="finalAngle"></param>
+        void DoArc(DirectValueSymbol lineColor, DirectValueSymbol thickness, DirectValueSymbol x, DirectValueSymbol y, DirectValueSymbol width, DirectValueSymbol height, DirectValueSymbol startAngle, DirectValueSymbol finalAngle)
+        {
+            if (lineColor.Type != Type.Cadena)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (thickness.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (x.Type != Type.Decimal && x.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (y.Type != Type.Decimal && y.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (width.Type != Type.Decimal && width.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (height.Type != Type.Decimal && height.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (startAngle.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (finalAngle.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+
+            var cmd = new Arc { Color = lineColor, Thickness = thickness, X = x, Y = y, Width = width, Height = height, StartAngle = startAngle, FinalAngle = finalAngle };
+            _currentScope.CommandList.Commands.Add(cmd);
+        }
+
+        /// <summary>
+        /// Builds a new dibujarLinea command and adds it to current scope
+        /// </summary>
+        /// <param name="lineColor"></param>
+        /// <param name="thickness"></param>
+        /// <param name="x1"></param>
+        /// <param name="y1"></param>
+        /// <param name="x2"></param>
+        /// <param name="y2"></param>
+        void DoLine(DirectValueSymbol lineColor, DirectValueSymbol thickness, DirectValueSymbol x1, DirectValueSymbol y1, DirectValueSymbol x2, DirectValueSymbol y2)
+        {
+            if (lineColor.Type != Type.Cadena)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (thickness.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (x1.Type != Type.Decimal && x1.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (y1.Type != Type.Decimal && y1.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (x2.Type != Type.Decimal && x2.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+            else if (y2.Type != Type.Decimal && y2.Type != Type.Entero)
+            {
+                SemErr("Type mismatch");
+                return;
+            }
+
+            var cmd = new Line { Color = lineColor, Thickness = thickness, X1 = x1, Y1 = y1, X2 = x2, Y2 = y2 };
+            _currentScope.CommandList.Commands.Add(cmd);
+        }
+
+
+        /// <summary>
         /// Builds a new While command and adds it to current scope.
         /// </summary>
         /// <param name="expression">Commands to update the condition.</param>

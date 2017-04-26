@@ -16,7 +16,7 @@ public partial class Parser {
 	public const int _cteent = 3;
 	public const int _ctedbl = 4;
 	public const int _lpar = 5;
-	public const int maxT = 42;
+	public const int maxT = 47;
 
 	const bool _T = true;
 	const bool _x = false;
@@ -111,7 +111,7 @@ public partial class Parser {
 		} else if (la.kind == 6) {
 			Get();
 			funType = Type.Rutina; 
-		} else SynErr(43);
+		} else SynErr(48);
 		Expect(1);
 		var funName = t.val; 
 		Expect(5);
@@ -136,7 +136,7 @@ public partial class Parser {
 			AddReturns(funName, returns); LinkFunctionBody(funName); 
 		} else if (la.kind == 9) {
 			Get();
-		} else SynErr(44);
+		} else SynErr(49);
 	}
 
 	void Declaracion() {
@@ -176,7 +176,7 @@ public partial class Parser {
 		} else if (la.kind == 14) {
 			Get();
 			tipoAux = Type.Cadena; 
-		} else SynErr(45);
+		} else SynErr(50);
 		tipo = tipoAux; 
 	}
 
@@ -193,6 +193,16 @@ public partial class Parser {
 				Condicion();
 			} else if (la.kind == 23) {
 				Ciclo();
+			} else if (la.kind == 25) {
+				DrawLine();
+			} else if (la.kind == 26) {
+				DrawArc();
+			} else if (la.kind == 27) {
+				DrawRec();
+			} else if (la.kind == 28) {
+				DrawEllipse();
+			} else if (la.kind == 29) {
+				DrawTriangle();
 			} else if (la.kind == 24) {
 				Impresion();
 			} else if (FollowedByLPar()) {
@@ -256,6 +266,152 @@ public partial class Parser {
 		var whileBlock = _currentScope.Children.Last().CommandList; DoWhile(expression, result, whileBlock); 
 	}
 
+	void DrawLine() {
+		Expect(25);
+		Expect(5);
+		Expresion();
+		var lineColor = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var thickness = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var x1 = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var y1 = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var x2 = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var y2 = _symbolStack.Pop(); 
+		Expect(8);
+		Expect(9);
+		DoLine(lineColor, thickness, x1, y1, x2, y2); 
+	}
+
+	void DrawArc() {
+		Expect(26);
+		Expect(5);
+		Expresion();
+		var lineColor = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var thickness = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var x = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var y = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var width = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var height = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var startAngle = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var finalAngle = _symbolStack.Pop(); 
+		Expect(8);
+		Expect(9);
+		DoArc(lineColor, thickness, x, y, width, height, startAngle, finalAngle); 
+	}
+
+	void DrawRec() {
+		Expect(27);
+		Expect(5);
+		Expresion();
+		var backgroundColor = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var lineColor = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var thickness = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var x = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var y = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var width = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var height = _symbolStack.Pop(); 
+		Expect(8);
+		Expect(9);
+		DoRectangle(backgroundColor, lineColor, thickness, x, y, width, height); 
+	}
+
+	void DrawEllipse() {
+		Expect(28);
+		Expect(5);
+		Expresion();
+		var backgroundColor = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var lineColor = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var thickness = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var x = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var y = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var width = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var height = _symbolStack.Pop(); 
+		Expect(8);
+		Expect(9);
+		DoEllipse(backgroundColor, lineColor, thickness, x, y, width, height); 
+	}
+
+	void DrawTriangle() {
+		Expect(29);
+		Expect(5);
+		Expresion();
+		var backgroundColor = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var lineColor = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var thickness = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var x1 = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var y1 = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var x2 = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var y2 = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var x3 = _symbolStack.Pop(); 
+		Expect(7);
+		Expresion();
+		var y3 = _symbolStack.Pop(); 
+		Expect(8);
+		Expect(9);
+		DoTriangle(backgroundColor, lineColor, thickness, x1, y1, x2, y2, x3, y3); 
+	}
+
 	void Impresion() {
 		Expect(24);
 		Expect(5);
@@ -303,8 +459,8 @@ public partial class Parser {
 
 	void Expresion() {
 		Exp();
-		while (la.kind == 25 || la.kind == 26) {
-			if (la.kind == 25) {
+		while (la.kind == 30 || la.kind == 31) {
+			if (la.kind == 30) {
 				Get();
 				_operatorStack.Push(Operator.And); 
 			} else {
@@ -338,32 +494,32 @@ public partial class Parser {
 		Expt();
 		if (StartOf(5)) {
 			switch (la.kind) {
-			case 27: {
+			case 32: {
 				Get();
 				_operatorStack.Push(Operator.GreaterThan); 
 				break;
 			}
-			case 28: {
+			case 33: {
 				Get();
 				_operatorStack.Push(Operator.LessThan); 
 				break;
 			}
-			case 29: {
+			case 34: {
 				Get();
 				_operatorStack.Push(Operator.GreaterEqual); 
 				break;
 			}
-			case 30: {
+			case 35: {
 				Get();
 				_operatorStack.Push(Operator.LessEqual); 
 				break;
 			}
-			case 31: {
+			case 36: {
 				Get();
 				_operatorStack.Push(Operator.Different); 
 				break;
 			}
-			case 32: {
+			case 37: {
 				Get();
 				_operatorStack.Push(Operator.Equality); 
 				break;
@@ -376,8 +532,8 @@ public partial class Parser {
 
 	void Expt() {
 		Termino();
-		while (la.kind == 33 || la.kind == 34) {
-			if (la.kind == 33) {
+		while (la.kind == 38 || la.kind == 39) {
+			if (la.kind == 38) {
 				Get();
 				_operatorStack.Push(Operator.Sum); 
 			} else {
@@ -391,11 +547,11 @@ public partial class Parser {
 
 	void Termino() {
 		Factor();
-		while (la.kind == 35 || la.kind == 36 || la.kind == 37) {
-			if (la.kind == 35) {
+		while (la.kind == 40 || la.kind == 41 || la.kind == 42) {
+			if (la.kind == 40) {
 				Get();
 				_operatorStack.Push(Operator.Multiply); 
-			} else if (la.kind == 36) {
+			} else if (la.kind == 41) {
 				Get();
 				_operatorStack.Push(Operator.Divide); 
 			} else {
@@ -409,8 +565,8 @@ public partial class Parser {
 
 	void Factor() {
 		var negative = false; 
-		if (la.kind == 33 || la.kind == 34) {
-			if (la.kind == 33) {
+		if (la.kind == 38 || la.kind == 39) {
+			if (la.kind == 38) {
 				Get();
 			} else {
 				Get();
@@ -427,7 +583,7 @@ public partial class Parser {
 			DirectValueSymbol symbol; 
 			Constante(out symbol);
 			_symbolStack.Push(symbol); 
-		} else SynErr(46);
+		} else SynErr(51);
 		if(negative) DoNegative(); 
 	}
 
@@ -439,16 +595,16 @@ public partial class Parser {
 		} else if (la.kind == 4) {
 			Get();
 			sym = _constBuilder.DecConstant(t.val); 
-		} else if (la.kind == 40 || la.kind == 41) {
+		} else if (la.kind == 45 || la.kind == 46) {
 			Ctebol();
 			sym = _constBuilder.BoolConstant(t.val); 
 		} else if (la.kind == 2) {
 			Get();
 			sym = _constBuilder.StrConstant(t.val); 
-		} else if (la.kind == 38) {
+		} else if (la.kind == 43) {
 			Aleatorio();
 			sym = _constBuilder.DecConstant("0"); DoRandom(sym); 
-		} else if (la.kind == 39) {
+		} else if (la.kind == 44) {
 			Lectura();
 			sym = _constBuilder.StrConstant(""); DoRead(sym); 
 		} else if (FollowedByLPar()) {
@@ -459,25 +615,25 @@ public partial class Parser {
 			Variable variable; 
 			Variable(out variable);
 			sym = variable; 
-		} else SynErr(47);
+		} else SynErr(52);
 	}
 
 	void Ctebol() {
-		if (la.kind == 40) {
+		if (la.kind == 45) {
 			Get();
-		} else if (la.kind == 41) {
+		} else if (la.kind == 46) {
 			Get();
-		} else SynErr(48);
+		} else SynErr(53);
 	}
 
 	void Aleatorio() {
-		Expect(38);
+		Expect(43);
 		Expect(5);
 		Expect(8);
 	}
 
 	void Lectura() {
-		Expect(39);
+		Expect(44);
 		Expect(5);
 		Expect(8);
 	}
@@ -496,13 +652,13 @@ public partial class Parser {
 	}
 	
 	static readonly bool[,] set = {
-		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_x,_x,_x,_x, _x,_x,_T,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_x,_T,_x,_x, _x,_x,_T,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_T,_x,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_x,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_T,_T,_x, _x,_x,_T,_T, _T,_T,_x,_x},
-		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x},
-		{_x,_T,_T,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _T,_T,_x,_x}
+		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
+		{_x,_x,_x,_x, _x,_x,_T,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
+		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
+		{_x,_T,_x,_x, _x,_x,_T,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_T,_x,_T, _T,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
+		{_x,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _x,_x,_x,_T, _T,_T,_T,_x, _x},
+		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
+		{_x,_T,_T,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x}
 
 	};
 } // end Parser
@@ -541,30 +697,35 @@ public class Errors {
 			case 22: s = "\"sino\" expected"; break;
 			case 23: s = "\"mientras\" expected"; break;
 			case 24: s = "\"imprimir\" expected"; break;
-			case 25: s = "\"&&\" expected"; break;
-			case 26: s = "\"||\" expected"; break;
-			case 27: s = "\">\" expected"; break;
-			case 28: s = "\"<\" expected"; break;
-			case 29: s = "\">=\" expected"; break;
-			case 30: s = "\"<=\" expected"; break;
-			case 31: s = "\"<>\" expected"; break;
-			case 32: s = "\"==\" expected"; break;
-			case 33: s = "\"+\" expected"; break;
-			case 34: s = "\"-\" expected"; break;
-			case 35: s = "\"*\" expected"; break;
-			case 36: s = "\"/\" expected"; break;
-			case 37: s = "\"%\" expected"; break;
-			case 38: s = "\"aleatorio\" expected"; break;
-			case 39: s = "\"lectura\" expected"; break;
-			case 40: s = "\"verdadero\" expected"; break;
-			case 41: s = "\"falso\" expected"; break;
-			case 42: s = "??? expected"; break;
-			case 43: s = "invalid DeclaracionFunc"; break;
-			case 44: s = "invalid DeclaracionFunc"; break;
-			case 45: s = "invalid Tipo"; break;
-			case 46: s = "invalid Factor"; break;
-			case 47: s = "invalid Constante"; break;
-			case 48: s = "invalid Ctebol"; break;
+			case 25: s = "\"dibujarLinea\" expected"; break;
+			case 26: s = "\"dibujarArco\" expected"; break;
+			case 27: s = "\"dibujarRectangulo\" expected"; break;
+			case 28: s = "\"dibujarElipse\" expected"; break;
+			case 29: s = "\"dibujarTriangulo\" expected"; break;
+			case 30: s = "\"&&\" expected"; break;
+			case 31: s = "\"||\" expected"; break;
+			case 32: s = "\">\" expected"; break;
+			case 33: s = "\"<\" expected"; break;
+			case 34: s = "\">=\" expected"; break;
+			case 35: s = "\"<=\" expected"; break;
+			case 36: s = "\"<>\" expected"; break;
+			case 37: s = "\"==\" expected"; break;
+			case 38: s = "\"+\" expected"; break;
+			case 39: s = "\"-\" expected"; break;
+			case 40: s = "\"*\" expected"; break;
+			case 41: s = "\"/\" expected"; break;
+			case 42: s = "\"%\" expected"; break;
+			case 43: s = "\"aleatorio\" expected"; break;
+			case 44: s = "\"lectura\" expected"; break;
+			case 45: s = "\"verdadero\" expected"; break;
+			case 46: s = "\"falso\" expected"; break;
+			case 47: s = "??? expected"; break;
+			case 48: s = "invalid DeclaracionFunc"; break;
+			case 49: s = "invalid DeclaracionFunc"; break;
+			case 50: s = "invalid Tipo"; break;
+			case 51: s = "invalid Factor"; break;
+			case 52: s = "invalid Constante"; break;
+			case 53: s = "invalid Ctebol"; break;
 
 			default: s = "error " + n; break;
 		}

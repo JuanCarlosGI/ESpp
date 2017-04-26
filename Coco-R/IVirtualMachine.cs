@@ -148,5 +148,36 @@
         /// </summary>
         /// <param name="commands">The commands.</param>
         void Execute(CommandList commands);
+
+        /// <summary>
+        /// Executes a command
+        /// </summary>
+        /// <param name="cmd">The commands</param>
+        void Execute(Line cmd);
+
+        /// <summary>
+        /// Executes a command
+        /// </summary>
+        /// <param name="cmd">The command</param>
+        void Execute(Arc cmd);
+
+        /// <summary>
+        /// Executes a command
+        /// </summary>
+        /// <param name="cmd">The command</param>
+        void Execute(Rectan cmd);
+
+        /// <summary>
+        /// Executes a command
+        /// </summary>
+        /// <param name="cmd">The command</param>
+        void Execute(Ellipse cmd);
+
+        /// <summary>
+        /// Executes a command
+        /// </summary>
+        /// <param name="cmd"></param>
+        void Execute(Triangle cmd);
+
     }
 }
