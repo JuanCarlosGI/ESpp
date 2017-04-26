@@ -149,7 +149,7 @@ namespace Compiler
             if (cmd.Function.Type != Type.Rutina)
             {
                 var aux = cmd.Function.Returns.Value;
-                cmd.Function.Returns.Unroll();
+                if (!(cmd.Function.Returns is Constant)) cmd.Function.Returns.Unroll();
                 cmd.Result.Value = aux;
             }
         }

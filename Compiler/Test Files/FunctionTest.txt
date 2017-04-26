@@ -20,9 +20,11 @@ rutina hacerTodo(entero veces){
 }
 
 entero sumaUno(entero n){
-	entero uno(); 
-	regresa n + uno();
+	entero uno();
+	entero resultado;
+	resultado = n + uno();
 	entero uno(){regresa 1;}
+	regresa resultado;
 }
 
 entero sumaDos(entero n){

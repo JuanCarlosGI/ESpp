@@ -603,10 +603,10 @@ public partial class Parser {
 			sym = _constBuilder.StrConstant(t.val); 
 		} else if (la.kind == 43) {
 			Aleatorio();
-			sym = _constBuilder.DecConstant("0"); DoRandom(sym); 
+			sym = _varBuilder.NewVariable(Type.Decimal); DoRandom(sym); _currentScope.Add(sym); 
 		} else if (la.kind == 44) {
 			Lectura();
-			sym = _constBuilder.StrConstant(""); DoRead(sym); 
+			sym = _varBuilder.NewVariable(Type.Cadena); DoRead(sym); _currentScope.Add(sym); 
 		} else if (FollowedByLPar()) {
 			Function function; List<DirectValueSymbol> parameters;
 			Funcion(out function, out parameters);
