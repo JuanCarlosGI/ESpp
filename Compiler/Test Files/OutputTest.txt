@@ -7,6 +7,7 @@ rutina dos();
 cadena miString;
 entero uno(entero n) {
 	dos();
+	dibujarTriangulo("cafe","morado",2,400,400,450,410,420,380);
 	entero dos() { regresa 2; }
     regresa sumaUno(sumaUno(sumaUno(n))) + dos();
 }
@@ -28,12 +29,13 @@ main {
 		veinticuatro = 24;
 		aux(veinticuatro);
 
-		dibujarLinea("azul",1,0,0,500,500);
-		dibujarLinea("azul",5,500,0,0,500);
+		dibujarLinea("naranja",3,0,0,500,500);
 		dibujarArco("negro",2,0,0,50,400,0,156);
-		dibujarRectangulo("negro","negro",5,100,130,50,50);
-		dibujarElipse("negro","negro",10,200,130,100,200);
-		dibujarTriangulo("negro","negro",20,0,500,30,500,15,470);
+		dibujarRectangulo("rojo","rosa",5,100,130,50,50);
+		dibujarElipse("azul","naranja",10,200,130,100,200);
+		dibujarTriangulo("rosa","rojo",5,0,500,30,500,15,470);
+		dibujarRectangulo("amarillo","verde",5,6,6,100,150);
+		dibujarElipse("verde","amarillo",5,6,6,100,150);
 	}
 	dos();
 }

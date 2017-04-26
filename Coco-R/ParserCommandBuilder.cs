@@ -245,15 +245,15 @@ namespace Coco_R
         /// <summary>
         /// Builds a new dibujarTriangulo command and adds it to current scope
         /// </summary>
-        /// <param name="backgroundColor"></param>
-        /// <param name="lineColor"></param>
-        /// <param name="thickness"></param>
-        /// <param name="x1"></param>
-        /// <param name="y1"></param>
-        /// <param name="x2"></param>
-        /// <param name="y2"></param>
-        /// <param name="x3"></param>
-        /// <param name="y3"></param>
+        /// <param name="backgroundColor">Background color of the triangle</param>
+        /// <param name="lineColor">Line color of the triangle</param>
+        /// <param name="thickness">thickness of the triangle</param>
+        /// <param name="x1">coodinate</param>
+        /// <param name="y1">coodinate</param>
+        /// <param name="x2">coodinate</param>
+        /// <param name="y2">coodinate</param>
+        /// <param name="x3">coodinate</param>
+        /// <param name="y3">coodinate</param>
         void DoTriangle(DirectValueSymbol backgroundColor, DirectValueSymbol lineColor, DirectValueSymbol thickness, DirectValueSymbol x1, DirectValueSymbol y1, DirectValueSymbol x2, DirectValueSymbol y2, DirectValueSymbol x3, DirectValueSymbol y3)
         {
             if (backgroundColor.Type != Type.Cadena)
@@ -309,13 +309,13 @@ namespace Coco_R
         /// <summary>
         /// Builds a new dibujarElipse command and adds it to current scope
         /// </summary>
-        /// <param name="backgroundColor"></param>
-        /// <param name="lineColor"></param>
-        /// <param name="thickness"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
+        /// <param name="backgroundColor">Background color of the Ellipse</param>
+        /// <param name="lineColor">Line color of the Ellipse</param>
+        /// <param name="thickness">thickness of the Ellipse</param>
+        /// <param name="x">Coordinate</param>
+        /// <param name="y">Coordinate</param>
+        /// <param name="width">Width of the Ellipse</param>
+        /// <param name="height">Height of the Ellipse</param>
         void DoEllipse(DirectValueSymbol backgroundColor, DirectValueSymbol lineColor, DirectValueSymbol thickness, DirectValueSymbol x, DirectValueSymbol y, DirectValueSymbol width, DirectValueSymbol height)
         {
             if (backgroundColor.Type != Type.Cadena)
@@ -361,13 +361,13 @@ namespace Coco_R
         /// <summary>
         /// Builds a new dibujarRectangle command and adds it to current scope
         /// </summary>
-        /// <param name="backgroundColor"></param>
-        /// <param name="lineColor"></param>
-        /// <param name="thickness"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
+        /// <param name="backgroundColor">Background color of the Rectangle</param>
+        /// <param name="lineColor">Line color of the Rectangle</param>
+        /// <param name="thickness">thickness of the Rectangle</param>
+        /// <param name="x">Coordinate</param>
+        /// <param name="y">Coordinate</param>
+        /// <param name="width">Width of the Rectangle</param>
+        /// <param name="height">Height of the Rectangle</param>
         void DoRectangle(DirectValueSymbol backgroundColor, DirectValueSymbol lineColor, DirectValueSymbol thickness, DirectValueSymbol x, DirectValueSymbol y, DirectValueSymbol width, DirectValueSymbol height)
         {
             if (backgroundColor.Type != Type.Cadena)
@@ -413,14 +413,14 @@ namespace Coco_R
         /// <summary>
         /// Builds a new dibujarArco command and adds it to current scope
         /// </summary>
-        /// <param name="lineColor"></param>
-        /// <param name="thickness"></param>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="startAngle"></param>
-        /// <param name="finalAngle"></param>
+        /// <param name="lineColor">Line color of the Arc</param>
+        /// <param name="thickness">thickness of the Arc</param>
+        /// <param name="x">Coordinate</param>
+        /// <param name="y">Coordinate</param>
+        /// <param name="width">Width of the Arc</param>
+        /// <param name="height">Height of the Arc</param>
+        /// <param name="startAngle">startAngle of the Arc</param>
+        /// <param name="finalAngle">startAngle of the Arc</param>
         void DoArc(DirectValueSymbol lineColor, DirectValueSymbol thickness, DirectValueSymbol x, DirectValueSymbol y, DirectValueSymbol width, DirectValueSymbol height, DirectValueSymbol startAngle, DirectValueSymbol finalAngle)
         {
             if (lineColor.Type != Type.Cadena)
@@ -471,12 +471,12 @@ namespace Coco_R
         /// <summary>
         /// Builds a new dibujarLinea command and adds it to current scope
         /// </summary>
-        /// <param name="lineColor"></param>
-        /// <param name="thickness"></param>
-        /// <param name="x1"></param>
-        /// <param name="y1"></param>
-        /// <param name="x2"></param>
-        /// <param name="y2"></param>
+        /// <param name="lineColor">Line color of the Line</param>
+        /// <param name="thickness">thickness of the Line</param>
+        /// <param name="x1">Coordinate</param>
+        /// <param name="y1">Coordinate</param>
+        /// <param name="x2">Coordinate</param>
+        /// <param name="y2">Coordinate</param>
         void DoLine(DirectValueSymbol lineColor, DirectValueSymbol thickness, DirectValueSymbol x1, DirectValueSymbol y1, DirectValueSymbol x2, DirectValueSymbol y2)
         {
             if (lineColor.Type != Type.Cadena)
