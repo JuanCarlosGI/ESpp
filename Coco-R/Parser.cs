@@ -444,7 +444,7 @@ public partial class Parser {
 		}
 		Expect(8);
 		CheckParamAmount(name, parameters.Count); 
-		function = _currentScope.Search(name) as Function; 
+		function = (_currentScope.Search(name) as Function) ?? new Function{Parameters = new List<Variable>()}; 
 	}
 
 	void Asignacion() {
@@ -475,7 +475,7 @@ public partial class Parser {
 	void Variable(out Variable variable, out List<DirectValueSymbol> indexes ) {
 		indexes = new List<DirectValueSymbol>(); 
 		Expect(1);
-		string name = t.val; CheckVariableExists(name); var symbol = _currentScope.Search(name); variable = symbol as Variable; 
+		string name = t.val; CheckVariableExists(name); var symbol = _currentScope.Search(name)??(new Variable()); variable = symbol as Variable; 
 		if (la.kind == 15) {
 			Get();
 			Expresion();

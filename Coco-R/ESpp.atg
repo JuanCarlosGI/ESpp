@@ -110,7 +110,7 @@ PRODUCTIONS
 		[ Expresion		(. parameters.Add(_symbolStack.Pop()); .)
 		{',' Expresion	(. parameters.Add(_symbolStack.Pop()); .)
 		}] ')'			(. CheckParamAmount(name, parameters.Count); .)
-						(. function = _currentScope.Search(name) as Function; .)
+						(. function = (_currentScope.Search(name) as Function) ?? new Function{Parameters = new List<Variable>()}; .)
 		.
 
 	Condicion = 
@@ -135,7 +135,7 @@ PRODUCTIONS
 		.
 	
 	Variable<. out Variable variable, out List<DirectValueSymbol> indexes .> = (. indexes = new List<DirectValueSymbol>(); .)
-		id							(. string name = t.val; CheckVariableExists(name); var symbol = _currentScope.Search(name); variable = symbol as Variable; .) 
+		id							(. string name = t.val; CheckVariableExists(name); var symbol = _currentScope.Search(name)??(new Variable()); variable = symbol as Variable; .) 
 		['['						
 		 Expresion					(. indexes.Add(_symbolStack.Pop() as DirectValueSymbol); .)
 		 { 

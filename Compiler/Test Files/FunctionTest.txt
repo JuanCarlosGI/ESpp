@@ -23,7 +23,7 @@ entero sumaUno(entero n){
 	entero uno();
 	entero resultado;
 	resultado = n + uno();
-	entero uno(){regresa 1;}
+	entero uno() {regresa 1;}
 	regresa resultado;
 }
 

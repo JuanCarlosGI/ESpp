@@ -88,7 +88,7 @@ namespace Coco_R
                 }
             }
             else
-                SemErr($"El nombre {name} ya ha sido declarado en este scope.");
+                SemErr($"El nombre '{name}' ya ha sido declarado en este scope.");
         }
 
         /// <summary>
@@ -99,9 +99,9 @@ namespace Coco_R
         {
             var search = _currentScope.Search(name);
             if (search == null)
-                SemErr($"La variable {name} no ha sido declarada.");
+                SemErr($"La variable '{name}' no ha sido declarada.");
             else if (!(search is Variable))
-                SemErr($"El nombre {name} no se refiere a una variable.");
+                SemErr($"El nombre '{name}' no se refiere a una variable.");
         }
 
         /// <summary>
@@ -112,9 +112,9 @@ namespace Coco_R
         {
             var search = _currentScope.Search(name);
             if (search == null)
-                SemErr($"La función {name} no ha sido declarada.");
+                SemErr($"La función '{name}' no ha sido declarada.");
             else if (!(search is Function))
-                SemErr($"El nombre {name} no se refiere a una funcion.");
+                SemErr($"El nombre '{name}' no se refiere a una funcion.");
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Coco_R
         {
             var symbol = _currentScope.Search(name) as VariableArray;
             if (symbol == null)
-                SemErr($"La variable {name} no es un arreglo.");
+                SemErr($"La variable '{name}' no es un arreglo.");
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace Coco_R
                 var func = _currentScope.Search(name) as Function;
                 if (func == null || func.CommandList != null)
                 {
-                    SemErr($"El nombre {name} ya ha sido declarado en este scope.");
+                    SemErr($"El nombre '{name}' ya ha sido declarado en este scope.");
                 }
                 else if (func.Type == tipo && parameters.Count == func.Parameters.Count)
                 {
@@ -201,7 +201,7 @@ namespace Coco_R
                         if (parameters[param].Type != func.Parameters[param].Type ||
                             parameters[param].Name != func.Parameters[param].Name)
                         {
-                            SemErr("La firma no coincide con una declarada anteriormente.");
+                            SemErr($"La firma de '{name}' no coincide con una declarada anteriormente.");
                             success = false;
                             break;
                         }  
@@ -212,7 +212,7 @@ namespace Coco_R
                     }
                     return;
                 }
-                SemErr("La firma no coincide con una declarada anteriormente.");
+                SemErr($"La firma de '{name}' no coincide con una declarada anteriormente.");
             }
         }
 
@@ -239,7 +239,7 @@ namespace Coco_R
             var fun = _currentScope.Search(name) as Function;
             if (fun == null || fun.Parameters.Count != amount)
             {
-                SemErr($"La funcion {name} no tiene {amount} parametros.");
+                SemErr($"La función '{name}' no tiene {amount} parametros.");
             }
         }
 
@@ -257,7 +257,7 @@ namespace Coco_R
             type = Cube[(int)left.Type, (int)right.Type, (int)op];
             if (type != Type.Error) return true;
 
-            SemErr("Type Mismatch");
+            SemErr("Error de tipos.");
             _symbolStack.Push(new Constant { Type = Type.Entero });
             return false;
         }
@@ -292,7 +292,7 @@ namespace Coco_R
                 if (function == null) continue;
                 if (function.CommandList == null)
                 {
-                    SemErr($"No se declaró el cuerpo de la funcion {function.Name}");
+                    SemErr($"No se declaró el cuerpo de la funcion '{function.Name}'");
                 }
             }
         }
