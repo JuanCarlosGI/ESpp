@@ -24,12 +24,17 @@ namespace Compiler
         /// <summary>
         /// Default color of the Pen.
         /// </summary>
-        private Pen colorPen = new Pen(Color.Black);
+        private readonly Pen _colorPen = new Pen(Color.Black);
 
         /// <summary>
         /// Default color to fill a figure.
         /// </summary>
-        private SolidBrush colorBack= new SolidBrush(Color.Black);
+        private  readonly SolidBrush _colorBack = new SolidBrush(Color.Black);
+
+        /// <summary>
+        /// Object to parse color strings.
+        /// </summary>
+        private readonly ColorParser _colorParser = new ColorParser();
 
         public VirtualMachine()
         {
@@ -115,14 +120,14 @@ namespace Compiler
 
             if (commands == null) return;
 
-            Stack<Assign> stack = new Stack<Assign>();
+            var stack = new Stack<Assign>();
             while (commands.Commands[1] is Assign)
             {
                 stack.Push((Assign)commands.Commands[1]);
                 commands.Commands.RemoveAt(1);
             }
 
-            for (int para = cmd.Parameters.Count - 1; para >= 0; para--)
+            for (var para = cmd.Parameters.Count - 1; para >= 0; para--)
             {
                 var parameter = cmd.Function.Parameters[para];
                 var newCmd = new Assign { Recipient = parameter, Source = cmd.Parameters[para] };
@@ -131,7 +136,7 @@ namespace Compiler
 
             Execute(commands);
 
-            for (int para = cmd.Parameters.Count - 1; para >= 0; para--)
+            for (var para = cmd.Parameters.Count - 1; para >= 0; para--)
             {
                 commands.Commands.RemoveAt(1);
             }
@@ -204,7 +209,7 @@ namespace Compiler
         }
         public void Execute(CommandList commands)
         {
-            for (int i = 0; i < commands.Commands.Count; i++)
+            for (var i = 0; i < commands.Commands.Count; i++)
             {
                 var command = commands.Commands[i];
                 command.ExecuteBy(this);
@@ -213,364 +218,68 @@ namespace Compiler
 
         public void Execute(Line cmd)
         {
-            colorPen.Width = cmd.Thickness.Value;
+            _colorPen.Width = cmd.Thickness.Value;
 
-            if (cmd.Color.Value.Equals("azul"))
-            {
-                colorPen.Color = Color.Blue;              
-            }
-            else if(cmd.Color.Value.Equals("amarillo"))
-            {
-                colorPen.Color = Color.Yellow;
-            }
-            else if (cmd.Color.Value.Equals("rojo"))
-            {
-                colorPen.Color = Color.Red;
-            }
-            else if (cmd.Color.Value.Equals("morado"))
-            {
-                colorPen.Color = Color.Purple;
-            }
-            else if (cmd.Color.Value.Equals("verde"))
-            {
-                colorPen.Color = Color.Green;
-            }
-            else if (cmd.Color.Value.Equals("naranja"))
-            {
-                colorPen.Color = Color.Orange;
-            }
-            else if (cmd.Color.Value.Equals("rosa"))
-            {
-                colorPen.Color = Color.Pink;
-            }
-            else if (cmd.Color.Value.Equals("cafe"))
-            {
-                colorPen.Color = Color.Brown;
-            }
-            else if (cmd.Color.Value.Equals("negro"))
-            {
-                colorPen.Color = Color.Black;
-            }
+            _colorPen.Color = _colorParser.Parse(cmd.Color.Value);
 
-            _graphics.DrawLine(colorPen, cmd.X1.Value, cmd.Y1.Value, cmd.X2.Value, cmd.Y2.Value);
+            _graphics.DrawLine(_colorPen, cmd.X1.Value, cmd.Y1.Value, cmd.X2.Value, cmd.Y2.Value);
         }
 
         public void Execute(Arc cmd)
         {
-            colorPen.Width = cmd.Thickness.Value;
+            _colorPen.Width = cmd.Thickness.Value;
 
-            if (cmd.Color.Value.Equals("azul"))
-            {
-                colorPen.Color = Color.Blue;
-            }
-            else if (cmd.Color.Value.Equals("amarillo"))
-            {
-                colorPen.Color = Color.Yellow;
-            }
-            else if (cmd.Color.Value.Equals("rojo"))
-            {
-                colorPen.Color = Color.Red;
-            }
-            else if (cmd.Color.Value.Equals("morado"))
-            {
-                colorPen.Color = Color.Purple;
-            }
-            else if (cmd.Color.Value.Equals("verde"))
-            {
-                colorPen.Color = Color.Green;
-            }
-            else if (cmd.Color.Value.Equals("naranja"))
-            {
-                colorPen.Color = Color.Orange;
-            }
-            else if (cmd.Color.Value.Equals("rosa"))
-            {
-                colorPen.Color = Color.Pink;
-            }
-            else if (cmd.Color.Value.Equals("cafe"))
-            {
-                colorPen.Color = Color.Brown;
-            }
-            else if (cmd.Color.Value.Equals("negro"))
-            {
-                colorPen.Color = Color.Black;
-            }
+            _colorPen.Color = _colorParser.Parse(cmd.Color.Value);
 
-            _graphics.DrawArc(colorPen, cmd.X.Value, cmd.Y.Value, cmd.Width.Value, cmd.Height.Value, cmd.StartAngle.Value, cmd.FinalAngle.Value);
+            _graphics.DrawArc(_colorPen, cmd.X.Value, cmd.Y.Value, cmd.Width.Value, cmd.Height.Value, cmd.StartAngle.Value, cmd.FinalAngle.Value);
         }
 
         public void Execute(Rectan cmd)
         {
-            colorPen.Width = cmd.Thickness.Value;
+            _colorPen.Width = cmd.Thickness.Value;
 
-            //Line color
-            if (cmd.LineColor.Value.Equals("azul"))
-            {
-                colorPen.Color = Color.Blue;
-            }
-            else if (cmd.LineColor.Value.Equals("amarillo"))
-            {
-                colorPen.Color = Color.Yellow;
-            }
-            else if (cmd.LineColor.Value.Equals("rojo"))
-            {
-                colorPen.Color = Color.Red;
-            }
-            else if (cmd.LineColor.Value.Equals("morado"))
-            {
-                colorPen.Color = Color.Purple;
-            }
-            else if (cmd.LineColor.Value.Equals("verde"))
-            {
-                colorPen.Color = Color.Green;
-            }
-            else if (cmd.LineColor.Value.Equals("naranja"))
-            {
-                colorPen.Color = Color.Orange;
-            }
-            else if (cmd.LineColor.Value.Equals("rosa"))
-            {
-                colorPen.Color = Color.Pink;
-            }
-            else if (cmd.LineColor.Value.Equals("cafe"))
-            {
-                colorPen.Color = Color.Brown;
-            }
-            else if (cmd.LineColor.Value.Equals("negro"))
-            {
-                colorPen.Color = Color.Black;
-            }
-            
-            //Background color
-            if (cmd.BackgroundColor.Value.Equals("azul"))
-            {
-                colorBack.Color = Color.Blue;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("amarillo"))
-            {
-                colorBack.Color = Color.Yellow;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("rojo"))
-            {
-                colorBack.Color = Color.Red;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("morado"))
-            {
-                colorBack.Color = Color.Purple;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("verde"))
-            {
-                colorBack.Color = Color.Green;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("naranja"))
-            {
-                colorBack.Color = Color.Orange;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("rosa"))
-            {
-                colorBack.Color = Color.Pink;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("cafe"))
-            {
-                colorBack.Color = Color.Brown;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("negro"))
-            {
-                colorBack.Color = Color.Black;
-            }
+            _colorPen.Color = _colorParser.Parse(cmd.LineColor.Value);
+            _colorBack.Color = _colorParser.Parse(cmd.BackgroundColor.Value);
 
-            Rectangle rect = new Rectangle(cmd.X.Value, cmd.Y.Value, cmd.Width.Value, cmd.Height.Value);
+            var rect = new Rectangle(cmd.X.Value, cmd.Y.Value, cmd.Width.Value, cmd.Height.Value);
 
-            _graphics.DrawRectangle(colorPen, rect);
-            _graphics.FillRectangle(colorBack, rect);
+            _graphics.DrawRectangle(_colorPen, rect);
+            _graphics.FillRectangle(_colorBack, rect);
         }
 
         public void Execute(Ellipse cmd)
         {
-            colorPen.Width = cmd.Thickness.Value;
+            _colorPen.Width = cmd.Thickness.Value;
 
-            //Line color
-            if (cmd.LineColor.Value.Equals("azul"))
-            {
-                colorPen.Color = Color.Blue;
-            }
-            else if (cmd.LineColor.Value.Equals("amarillo"))
-            {
-                colorPen.Color = Color.Yellow;
-            }
-            else if (cmd.LineColor.Value.Equals("rojo"))
-            {
-                colorPen.Color = Color.Red;
-            }
-            else if (cmd.LineColor.Value.Equals("morado"))
-            {
-                colorPen.Color = Color.Purple;
-            }
-            else if (cmd.LineColor.Value.Equals("verde"))
-            {
-                colorPen.Color = Color.Green;
-            }
-            else if (cmd.LineColor.Value.Equals("naranja"))
-            {
-                colorPen.Color = Color.Orange;
-            }
-            else if (cmd.LineColor.Value.Equals("rosa"))
-            {
-                colorPen.Color = Color.Pink;
-            }
-            else if (cmd.LineColor.Value.Equals("cafe"))
-            {
-                colorPen.Color = Color.Brown;
-            }
-            else if (cmd.LineColor.Value.Equals("negro"))
-            {
-                colorPen.Color = Color.Black;
-            }
+            _colorPen.Color = _colorParser.Parse(cmd.LineColor.Value);
+            _colorBack.Color = _colorParser.Parse(cmd.BackgroundColor.Value);
 
-            //Background color
-            if (cmd.BackgroundColor.Value.Equals("azul"))
-            {
-                colorBack.Color = Color.Blue;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("amarillo"))
-            {
-                colorBack.Color = Color.Yellow;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("rojo"))
-            {
-                colorBack.Color = Color.Red;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("morado"))
-            {
-                colorBack.Color = Color.Purple;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("verde"))
-            {
-                colorBack.Color = Color.Green;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("naranja"))
-            {
-                colorBack.Color = Color.Orange;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("rosa"))
-            {
-                colorBack.Color = Color.Pink;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("cafe"))
-            {
-                colorBack.Color = Color.Brown;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("negro"))
-            {
-                colorBack.Color = Color.Black;
-            }
+            var rect = new Rectangle(cmd.X.Value, cmd.Y.Value, cmd.Width.Value, cmd.Height.Value);
 
-            Rectangle rect = new Rectangle(cmd.X.Value, cmd.Y.Value, cmd.Width.Value, cmd.Height.Value);
-
-            _graphics.DrawEllipse(colorPen, rect);
-            _graphics.FillEllipse(colorBack, rect);
+            _graphics.DrawEllipse(_colorPen, rect);
+            _graphics.FillEllipse(_colorBack, rect);
         }
 
         public void Execute(Triangle cmd)
         {
-            colorPen.Width = cmd.Thickness.Value;
+            _colorPen.Width = cmd.Thickness.Value;
 
-            PointF point1 = new PointF(cmd.X1.Value, cmd.Y1.Value);
-            PointF point2 = new PointF(cmd.X2.Value, cmd.Y2.Value);
-            PointF point3 = new PointF(cmd.X3.Value, cmd.Y3.Value);
+            var point1 = new PointF(cmd.X1.Value, cmd.Y1.Value);
+            var point2 = new PointF(cmd.X2.Value, cmd.Y2.Value);
+            var point3 = new PointF(cmd.X3.Value, cmd.Y3.Value);
                        
             PointF[] curvePoints =
              {
                  point1,
                  point2,
-                 point3,
+                 point3
              };
 
-            //Line color
-            if (cmd.LineColor.Value.Equals("azul"))
-            {
-                colorPen.Color = Color.Blue;
-            }
-            else if (cmd.LineColor.Value.Equals("amarillo"))
-            {
-                colorPen.Color = Color.Yellow;
-            }
-            else if (cmd.LineColor.Value.Equals("rojo"))
-            {
-                colorPen.Color = Color.Red;
-            }
-            else if (cmd.LineColor.Value.Equals("morado"))
-            {
-                colorPen.Color = Color.Purple;
-            }
-            else if (cmd.LineColor.Value.Equals("verde"))
-            {
-                colorPen.Color = Color.Green;
-            }
-            else if (cmd.LineColor.Value.Equals("naranja"))
-            {
-                colorPen.Color = Color.Orange;
-            }
-            else if (cmd.LineColor.Value.Equals("rosa"))
-            {
-                colorPen.Color = Color.Pink;
-            }
-            else if (cmd.LineColor.Value.Equals("cafe"))
-            {
-                colorPen.Color = Color.Brown;
-            }
-            else if (cmd.LineColor.Value.Equals("negro"))
-            {
-                colorPen.Color = Color.Black;
-            }
+            _colorPen.Color = _colorParser.Parse(cmd.LineColor.Value);
+            _colorBack.Color = _colorParser.Parse(cmd.BackgroundColor.Value);
 
-            //Background color
-            if (cmd.BackgroundColor.Value.Equals("azul"))
-            {
-                colorBack.Color = Color.Blue;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("amarillo"))
-            {
-                colorBack.Color = Color.Yellow;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("rojo"))
-            {
-                colorBack.Color = Color.Red;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("morado"))
-            {
-                colorBack.Color = Color.Purple;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("verde"))
-            {
-                colorBack.Color = Color.Green;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("naranja"))
-            {
-                colorBack.Color = Color.Orange;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("rosa"))
-            {
-                colorBack.Color = Color.Pink;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("cafe"))
-            {
-                colorBack.Color = Color.Brown;
-            }
-            else if (cmd.BackgroundColor.Value.Equals("negro"))
-            {
-                colorBack.Color = Color.Black;
-            }
-
-            _graphics.DrawPolygon(colorPen, curvePoints);
-            _graphics.FillPolygon(colorBack, curvePoints);
-        }
-
-            /*
-            public void Execute(DrawLine cmd)
-            {
-               _graphics.DrawLine(new Pen(Color.Black, 3), cmd.x1.Value, cmd.y1.Value, cmd.x2.Value, cmd.y2.Value );
-            }
-            */
-        }
+            _graphics.DrawPolygon(_colorPen, curvePoints);
+            _graphics.FillPolygon(_colorBack, curvePoints);
+        }    
+    }
 }

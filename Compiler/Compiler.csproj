@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColorParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -71,6 +72,7 @@
     <None Include="Logo.png" />
     <None Include="Resources\Logo.ico" />
     <Content Include="Test Files\ArrayTest.txt" />
+    <Content Include="Test Files\Conditions.txt" />
     <Content Include="Test Files\FactorialTest.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -83,10 +85,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Test Files\OutputTest.txt" />
+    <Content Include="Test Files\ProgStructure.txt" />
     <Content Include="Test Files\RecursiveFibo.txt" />
     <Content Include="Test Files\FunctionTest.txt" />
     <Content Include="Test Files\NegativeTest.txt" />
     <Content Include="Test Files\SortTest.txt" />
+    <Content Include="Test Files\ValidTestB.txt" />
     <Content Include="Test Files\VarDeclarationA.txt" />
     <Content Include="Test Files\ValidTestA.txt" />
   </ItemGroup>
