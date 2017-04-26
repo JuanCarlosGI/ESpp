@@ -1,6 +1,4 @@
-﻿variables:
-funciones:
-main {
+﻿main {
 	entero[10,3,4] cubo;
 
 	entero a, b, c;
@@ -32,6 +30,4 @@ main {
 		}
 		a = a + 1;
 	}
-
-	arr = 1.1;
 }

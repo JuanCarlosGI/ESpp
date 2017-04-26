@@ -32,7 +32,10 @@ entero sumaDos(entero n){
 }
 
 main {
-	hacerUnaCosa(5);
+	entero a;
+	a = 5.555;
+	imprimir("a:", a);
+	hacerUnaCosa(5.2);
 	imprimir("");
 	hacerTodo(5);
 	imprimir("");

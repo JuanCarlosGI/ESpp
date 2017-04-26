@@ -581,7 +581,7 @@ namespace Coco_R
             for (var para = 0; para < parameters.Count; para++)
             {
                 if (Cube[(int) function.Parameters[para].Type, (int) parameters[para].Type,
-                        (int) Operator.Asignation] == Type.Error)
+                        (int) Operator.Asignation] != function.Parameters[para].Type)
                 {
                     SemErr("Type mismatch");
                     return;
