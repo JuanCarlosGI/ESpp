@@ -1,0 +1,16 @@
+﻿entero fibo(entero termino)
+{
+	entero resultado;
+	si (termino <= 2){
+		resultado = 1;
+	}
+	sino {
+		resultado = fibo(termino - 1) + fibo(termino - 2);
+	}
+
+	regresa resultado;
+}
+
+main {
+	imprimir(fibo(6));
+}

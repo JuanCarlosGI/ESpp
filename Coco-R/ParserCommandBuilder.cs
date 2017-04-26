@@ -670,5 +670,11 @@ namespace Coco_R
             _currentScope.CommandList.Commands.Add(cmd);
             _symbolStack.Push(result);
         }
+
+        private void DoGetArrayValue(DirectValueSymbol array, DirectValueSymbol recipient)
+        {
+            var cmd = new Assign { Recipient = recipient, Source = array };
+            _currentScope.CommandList.Commands.Add(cmd);
+        }
     }
 }

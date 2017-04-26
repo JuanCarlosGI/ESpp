@@ -99,9 +99,9 @@ PRODUCTIONS
 		] '}'													(. ValidateHasReturn(isFunction, hasReturn); DoPopLocals(); _currentScope = _currentScope.Parent; .)
 		.
 
-	Asignacion =					(. Variable variable; .)
-		Variable<out variable>		(. _symbolStack.Push(variable); .)
-		'=' Expresion ';'			(. DoAssign(); .)
+	Asignacion =								(. Variable variable; List<DirectValueSymbol> indexes = new List<DirectValueSymbol>(); .)
+		Variable<out variable, out indexes>		(. _symbolStack.Push(variable); .)
+		'=' Expresion ';'						(. if(variable is VariableArray) DoAssignIndex((VariableArray)variable, indexes); DoAssign(); .)
 		.
 
 	Funcion<. out Function function, out List<DirectValueSymbol> parameters .> = 
@@ -134,9 +134,9 @@ PRODUCTIONS
 		} ')' ';'					(. DoPrint(expressions); .)
 		.
 	
-	Variable<out Variable variable> = 
+	Variable<. out Variable variable, out List<DirectValueSymbol> indexes .> = (. indexes = new List<DirectValueSymbol>(); .)
 		id							(. string name = t.val; CheckVariableExists(name); var symbol = _currentScope.Search(name); variable = symbol as Variable; .) 
-		['['						(. var indexes = new List<DirectValueSymbol>(); .)
+		['['						
 		 Expresion					(. indexes.Add(_symbolStack.Pop() as DirectValueSymbol); .)
 		 { 
 			',' Expresion			(. indexes.Add(_symbolStack.Pop() as DirectValueSymbol); .)
@@ -269,8 +269,8 @@ PRODUCTIONS
 		| Lectura						(. sym = _constBuilder.StrConstant(""); DoRead(sym); .)
 		| IF(FollowedByLPar())			(. Function function; List<DirectValueSymbol> parameters;.)
 			Funcion<out function, out parameters>		(. var result = _varBuilder.NewVariable(function.Type); DoFunction(function, parameters, result); sym = result; _currentScope.Add(sym); .)
-		|								(. Variable variable; .)
-			Variable<out variable>		(. sym = variable; .)
+		|											(. Variable variable; List<DirectValueSymbol> indexes; .)
+			Variable<out variable, out indexes>		(. sym = variable; if(variable is VariableArray) { sym = _varBuilder.NewVariable(variable.Type); DoGetArrayValue(variable, sym); } .)
 		).
 	
 	Aleatorio = "aleatorio" '(' ')'.

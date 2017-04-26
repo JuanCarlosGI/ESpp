@@ -448,13 +448,13 @@ public partial class Parser {
 	}
 
 	void Asignacion() {
-		Variable variable; 
-		Variable(out variable);
+		Variable variable; List<DirectValueSymbol> indexes = new List<DirectValueSymbol>(); 
+		Variable(out variable, out indexes);
 		_symbolStack.Push(variable); 
 		Expect(20);
 		Expresion();
 		Expect(9);
-		DoAssign(); 
+		if(variable is VariableArray) DoAssignIndex((VariableArray)variable, indexes); DoAssign(); 
 	}
 
 	void Expresion() {
@@ -472,12 +472,12 @@ public partial class Parser {
 		}
 	}
 
-	void Variable(out Variable variable) {
+	void Variable(out Variable variable, out List<DirectValueSymbol> indexes ) {
+		indexes = new List<DirectValueSymbol>(); 
 		Expect(1);
 		string name = t.val; CheckVariableExists(name); var symbol = _currentScope.Search(name); variable = symbol as Variable; 
 		if (la.kind == 15) {
 			Get();
-			var indexes = new List<DirectValueSymbol>(); 
 			Expresion();
 			indexes.Add(_symbolStack.Pop() as DirectValueSymbol); 
 			while (la.kind == 7) {
@@ -612,9 +612,9 @@ public partial class Parser {
 			Funcion(out function, out parameters);
 			var result = _varBuilder.NewVariable(function.Type); DoFunction(function, parameters, result); sym = result; _currentScope.Add(sym); 
 		} else if (la.kind == 1) {
-			Variable variable; 
-			Variable(out variable);
-			sym = variable; 
+			Variable variable; List<DirectValueSymbol> indexes; 
+			Variable(out variable, out indexes);
+			sym = variable; if(variable is VariableArray) { sym = _varBuilder.NewVariable(variable.Type); DoGetArrayValue(variable, sym); } 
 		} else SynErr(52);
 	}
 

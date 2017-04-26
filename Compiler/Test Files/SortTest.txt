@@ -1,0 +1,30 @@
+﻿main {
+	decimal[10] arr;
+
+	entero i;
+	mientras (i < 10) {
+		arr[i] = aleatorio();
+		i = i + 1;
+	}
+
+	i = 0;
+	mientras (i < 10) {
+		entero j;
+		j = i + 1;
+		mientras(j < 10) {
+			si (arr[j] < arr[i]) {
+				decimal aux;
+				aux = arr[i];
+				arr[i] = arr[j];
+				arr[j] = aux;
+			}
+			j = j + 1;
+		}
+		i = i + 1;
+	}
+	i = 0;
+	mientras (i < 10) {
+		imprimir(arr[i]);
+		i = i + 1;
+	}
+}

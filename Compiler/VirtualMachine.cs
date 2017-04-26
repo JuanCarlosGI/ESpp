@@ -19,7 +19,7 @@ namespace Compiler
         /// <summary>
         /// The graphics object from the image.
         /// </summary>
-        private Graphics _graphics;
+        private readonly Graphics _graphics;
 
         /// <summary>
         /// Default color of the Pen.
