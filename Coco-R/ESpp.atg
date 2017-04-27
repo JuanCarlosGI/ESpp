@@ -268,6 +268,7 @@ PRODUCTIONS
 		| ctedbl						(. sym = _constBuilder.DecConstant(t.val); .)
 		| Ctebol						(. sym = _constBuilder.BoolConstant(t.val); .)
 		| ctestr						(. sym = _constBuilder.StrConstant(t.val); .)
+		| ParseNum<out sym>				(. _currentScope.Add(sym); .)
 		| Aleatorio						(. sym = _varBuilder.NewVariable(Type.Decimal); DoRandom(sym); _currentScope.Add(sym); .)
 		| Lectura						(. sym = _varBuilder.NewVariable(Type.Cadena); DoRead(sym); _currentScope.Add(sym); .)
 		| IF(FollowedByLPar())			(. Function function; List<DirectValueSymbol> parameters;.)
@@ -279,6 +280,10 @@ PRODUCTIONS
 	Aleatorio = "aleatorio" '(' ')'.
 	
 	Lectura = "lectura" '(' ')'.
+
+	ParseNum<out DirectValueSymbol res> = "convierteNumero" '(' Expresion ')'
+		(. var number = _symbolStack.Pop(); res = _varBuilder.NewVariable(Type.Decimal); DoParse(number, res);  .)
+		.
 	
 	Ctebol = "verdadero" | "falso".
 

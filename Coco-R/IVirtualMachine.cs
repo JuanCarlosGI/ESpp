@@ -179,6 +179,6 @@
         /// </summary>
         /// <param name="cmd"></param>
         void Execute(Triangle cmd);
-
+        void Execute(Parse parse);
     }
 }

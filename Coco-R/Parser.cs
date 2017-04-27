@@ -16,7 +16,7 @@ public partial class Parser {
 	public const int _cteent = 3;
 	public const int _ctedbl = 4;
 	public const int _lpar = 5;
-	public const int maxT = 47;
+	public const int maxT = 48;
 
 	const bool _T = true;
 	const bool _x = false;
@@ -111,7 +111,7 @@ public partial class Parser {
 		} else if (la.kind == 6) {
 			Get();
 			funType = Type.Rutina; 
-		} else SynErr(48);
+		} else SynErr(49);
 		Expect(1);
 		var funName = t.val; 
 		Expect(5);
@@ -136,7 +136,7 @@ public partial class Parser {
 			AddReturns(funName, returns); LinkFunctionBody(funName); 
 		} else if (la.kind == 9) {
 			Get();
-		} else SynErr(49);
+		} else SynErr(50);
 	}
 
 	void Declaracion() {
@@ -176,7 +176,7 @@ public partial class Parser {
 		} else if (la.kind == 14) {
 			Get();
 			tipoAux = Type.Cadena; 
-		} else SynErr(50);
+		} else SynErr(51);
 		tipo = tipoAux; 
 	}
 
@@ -583,7 +583,7 @@ public partial class Parser {
 			DirectValueSymbol symbol; 
 			Constante(out symbol);
 			_symbolStack.Push(symbol); 
-		} else SynErr(51);
+		} else SynErr(52);
 		if(negative) DoNegative(); 
 	}
 
@@ -595,12 +595,15 @@ public partial class Parser {
 		} else if (la.kind == 4) {
 			Get();
 			sym = _constBuilder.DecConstant(t.val); 
-		} else if (la.kind == 45 || la.kind == 46) {
+		} else if (la.kind == 46 || la.kind == 47) {
 			Ctebol();
 			sym = _constBuilder.BoolConstant(t.val); 
 		} else if (la.kind == 2) {
 			Get();
 			sym = _constBuilder.StrConstant(t.val); 
+		} else if (la.kind == 45) {
+			ParseNum(out sym);
+			_currentScope.Add(sym); 
 		} else if (la.kind == 43) {
 			Aleatorio();
 			sym = _varBuilder.NewVariable(Type.Decimal); DoRandom(sym); _currentScope.Add(sym); 
@@ -615,15 +618,23 @@ public partial class Parser {
 			Variable variable; List<DirectValueSymbol> indexes; 
 			Variable(out variable, out indexes);
 			sym = variable; if(variable is VariableArray) { sym = _varBuilder.NewVariable(variable.Type); DoGetArrayValue(variable, sym); } 
-		} else SynErr(52);
+		} else SynErr(53);
 	}
 
 	void Ctebol() {
-		if (la.kind == 45) {
+		if (la.kind == 46) {
 			Get();
-		} else if (la.kind == 46) {
+		} else if (la.kind == 47) {
 			Get();
-		} else SynErr(53);
+		} else SynErr(54);
+	}
+
+	void ParseNum(out DirectValueSymbol res) {
+		Expect(45);
+		Expect(5);
+		Expresion();
+		Expect(8);
+		var number = _symbolStack.Pop(); res = _varBuilder.NewVariable(Type.Decimal); DoParse(number, res);  
 	}
 
 	void Aleatorio() {
@@ -652,13 +663,13 @@ public partial class Parser {
 	}
 	
 	static readonly bool[,] set = {
-		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
-		{_x,_x,_x,_x, _x,_x,_T,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
-		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
-		{_x,_T,_x,_x, _x,_x,_T,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_T,_x,_T, _T,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
-		{_x,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _x,_x,_x,_T, _T,_T,_T,_x, _x},
-		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x},
-		{_x,_T,_T,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x}
+		{_T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x},
+		{_x,_x,_x,_x, _x,_x,_T,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x},
+		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x},
+		{_x,_T,_x,_x, _x,_x,_T,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_T,_x,_T, _T,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x},
+		{_x,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _x,_x,_x,_T, _T,_T,_T,_T, _x,_x},
+		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x},
+		{_x,_T,_T,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_T, _x,_x}
 
 	};
 } // end Parser
@@ -717,15 +728,16 @@ public class Errors {
 			case 42: s = "\"%\" expected"; break;
 			case 43: s = "\"aleatorio\" expected"; break;
 			case 44: s = "\"lectura\" expected"; break;
-			case 45: s = "\"verdadero\" expected"; break;
-			case 46: s = "\"falso\" expected"; break;
-			case 47: s = "??? expected"; break;
-			case 48: s = "invalid DeclaracionFunc"; break;
+			case 45: s = "\"convierteNumero\" expected"; break;
+			case 46: s = "\"verdadero\" expected"; break;
+			case 47: s = "\"falso\" expected"; break;
+			case 48: s = "??? expected"; break;
 			case 49: s = "invalid DeclaracionFunc"; break;
-			case 50: s = "invalid Tipo"; break;
-			case 51: s = "invalid Factor"; break;
-			case 52: s = "invalid Constante"; break;
-			case 53: s = "invalid Ctebol"; break;
+			case 50: s = "invalid DeclaracionFunc"; break;
+			case 51: s = "invalid Tipo"; break;
+			case 52: s = "invalid Factor"; break;
+			case 53: s = "invalid Constante"; break;
+			case 54: s = "invalid Ctebol"; break;
 
 			default: s = "error " + n; break;
 		}

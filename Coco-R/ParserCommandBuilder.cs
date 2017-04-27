@@ -671,9 +671,30 @@ namespace Coco_R
             _symbolStack.Push(result);
         }
 
+        /// <summary>
+        /// Builds commands so that the current value of an array is stored.
+        /// </summary>
+        /// <param name="array">Array to be accessed.</param>
+        /// <param name="recipient">Symbol where value will be stored.</param>
         private void DoGetArrayValue(DirectValueSymbol array, DirectValueSymbol recipient)
         {
             var cmd = new Assign { Recipient = recipient, Source = array };
+            _currentScope.CommandList.Commands.Add(cmd);
+        }
+
+        /// <summary>
+        /// Does a parse command.
+        /// </summary>
+        /// <param name="str">Symbol with the string to parse.</param>
+        /// <param name="result">Symbol where parsed value will be stored.</param>
+        private void DoParse(DirectValueSymbol str, DirectValueSymbol result)
+        {
+            if (str.Type != Type.Cadena)
+            {
+                SemErr("El valor a convertir debe de ser una cadena.");
+            }
+
+            var cmd = new Parse { Source = str, Recipient = result };
             _currentScope.CommandList.Commands.Add(cmd);
         }
     }

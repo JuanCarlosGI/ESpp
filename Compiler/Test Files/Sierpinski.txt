@@ -1,12 +1,13 @@
 ﻿// Dibuja un triangulo de sierpinski dadas las dimensiones especificadas.
 rutina sierpinski(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, decimal y3, entero niveles, cadena color) {
-	si (niveles < 1)
+	si (niveles <= 1)
 	{
 		dibujarTriangulo(color, color, 1, x1, y1, x2, y2, x3, y3);
 	}
 	sino
 	{
-		decimal promedio(decimal a, decimal b) { regresa (a + b) / 2; }
+		// Declaro función que obtiene el promedio de dos números.
+		decimal promedio(decimal a, decimal b);
 
 		// Obtengo puntos medios entre cada vertice del triangulo.
 		decimal x12, y12, x13, y13, x23, y23;
@@ -17,7 +18,7 @@ rutina sierpinski(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, de
 		x23 = promedio(x2, x3);
 		y23 = promedio(y2, y3);
 
-		// Obtengo nuevo nival para ahorrar operaciones.
+		// Obtengo nuevo nivel para ahorrar operaciones.
 		entero nivelesNuevos;
 		nivelesNuevos = niveles - 1;
 
@@ -25,6 +26,11 @@ rutina sierpinski(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, de
 		sierpinski(x1, y1, x12, y12, x13, y13, nivelesNuevos, color);
 		sierpinski(x12, y12, x2, y2, x23, y23, nivelesNuevos, color);
 		sierpinski(x13, y13, x23, y23, x3, y3, nivelesNuevos, color);
+
+		// Declaro el cuerpo de 'promedio'
+		decimal promedio(decimal a, decimal b) { 
+			regresa (a + b) / 2; 
+		}
 	}
 }
 
@@ -35,7 +41,10 @@ rutina sierpinski(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, de
 		Derecha: Rojo
 */
 main {
-	sierpinski(0, 0, 0, 1000, 500, 0, 8, "verde");
-	sierpinski(0, 1000, 1000, 1000, 500, 0, 8, "blanco");
-	sierpinski(500, 0, 1000, 0, 1000, 1000, 8, "rojo");
+	imprimir("¿Cuántos niveles quieres?");
+	entero niveles;
+	niveles = convierteNumero(lectura());
+	sierpinski(0, 0, 0, 1000, 500, 0, niveles, "verde");
+	sierpinski(0, 1000, 1000, 1000, 500, 0, niveles, "blanco");
+	sierpinski(500, 0, 1000, 0, 1000, 1000, niveles, "rojo");
 }

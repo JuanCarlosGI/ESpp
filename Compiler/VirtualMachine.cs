@@ -311,6 +311,18 @@ namespace Compiler
 
             _graphics.DrawPolygon(_colorPen, curvePoints);
             _graphics.FillPolygon(_colorBack, curvePoints);
-        }    
+        }
+
+        public void Execute(Parse parse)
+        {
+            try
+            {
+                parse.Recipient.Value = double.Parse(parse.Source.Value);
+            }
+            catch (FormatException)
+            {
+                throw new EsppException("El valor a convertir no es un número.");
+            }
+        }
     }
 }

@@ -405,4 +405,25 @@ namespace Coco_R
             vm.Execute(this);
         }
     }
+
+    /// <summary>
+    /// Class representing a command that parses a string into a number.
+    /// </summary>
+    public class Parse : Command
+    {
+        /// <summary>
+        /// Symbol where the result will be stored.
+        /// </summary>
+        public DirectValueSymbol Recipient { get; internal set; }
+
+        /// <summary>
+        /// Symbol where the string is stored.
+        /// </summary>
+        public DirectValueSymbol Source { get; internal set; }
+
+        public override void ExecuteBy(IVirtualMachine vm)
+        {
+            vm.Execute(this);
+        }
+    }
 }

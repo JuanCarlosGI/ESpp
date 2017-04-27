@@ -43,19 +43,38 @@ namespace Compiler
                     Console.WriteLine(parser.errors.count + " errores detectados.");
                 else
                 {
-                    var vm = new VirtualMachine();
-                    commandList.ExecuteBy(vm);
-                    var frm = new Form { ClientSize = new Size(500, 500), Text = @"Resultado", Icon = Properties.Resources.Logo, FormBorderStyle = FormBorderStyle.FixedSingle, MaximizeBox = false};
-                    var pb = new PictureBox { Image = vm.Image, Size = frm.ClientSize, SizeMode = PictureBoxSizeMode.StretchImage};
-                    frm.Controls.Add(pb);
-                    frm.ShowDialog();
+                    try
+                    {
+                        var vm = new VirtualMachine();
+                        commandList.ExecuteBy(vm);
+                        var frm = new Form
+                        {
+                            ClientSize = new Size(500, 500),
+                            Text = @"Resultado",
+                            Icon = Properties.Resources.Logo,
+                            FormBorderStyle = FormBorderStyle.FixedSingle,
+                            MaximizeBox = false
+                        };
+                        var pb = new PictureBox
+                        {
+                            Image = vm.Image,
+                            Size = frm.ClientSize,
+                            SizeMode = PictureBoxSizeMode.StretchImage
+                        };
+                        frm.Controls.Add(pb);
+                        frm.ShowDialog();
+                    }
+                    catch (EsppException e)
+                    {
+                        Console.WriteLine("ERROR:");
+                        Console.WriteLine($"\t{e.Message}");
+                    }
                 }
             }
             else
             {
                 Console.WriteLine("Archivo no encontrado.");
             }
-
         }
     }
 }
