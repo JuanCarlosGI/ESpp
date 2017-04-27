@@ -1,0 +1,30 @@
+﻿rutina sierpinski(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, decimal y3, entero niveles, cadena color) {
+	si (niveles < 1)
+	{
+		dibujarTriangulo(color, color, 1, x1, y1, x2, y2, x3, y3);
+	}
+	sino
+	{
+		decimal promedio(decimal a, decimal b) { regresa (a + b) / 2; }
+		decimal x12, y12, x13, y13, x23, y23;
+		x12 = promedio(x1, x2);
+		y12 = promedio(y1, y2);
+		x13 = promedio(x1, x3);
+		y13 = promedio(y1, y3);
+		x23 = promedio(x2, x3);
+		y23 = promedio(y2, y3);
+
+		entero nivelesNuevos;
+		nivelesNuevos = niveles - 1;
+
+		sierpinski(x1, y1, x12, y12, x13, y13, nivelesNuevos, color);
+		sierpinski(x12, y12, x2, y2, x23, y23, nivelesNuevos, color);
+		sierpinski(x13, y13, x23, y23, x3, y3, nivelesNuevos, color);
+	}
+}
+
+main {
+	sierpinski(0, 0, 0, 1000, 500, 0, 8, "verde");
+	sierpinski(0, 1000, 1000, 1000, 500, 0, 8, "blanco");
+	sierpinski(500, 0, 1000, 0, 1000, 1000, 8, "rojo");
+}

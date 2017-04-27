@@ -71,6 +71,29 @@ namespace Compiler
                     break;
             }
         }
+
+        public void Execute(AssignValue cmd)
+        {
+            switch (cmd.Recipient.Type)
+            {
+                case Type.Entero:
+                    cmd.Recipient.Value = (int)cmd.Value;
+                    break;
+                case Type.Decimal:
+                    cmd.Recipient.Value = (double)cmd.Value;
+                    break;
+                case Type.Booleano:
+                    cmd.Recipient.Value = (bool)cmd.Value;
+                    break;
+                case Type.Cadena:
+                    cmd.Recipient.Value = (string)cmd.Value;
+                    break;
+                default:
+                    cmd.Recipient.Value = cmd.Value;
+                    break;
+            }
+        }
+
         public void Execute(LessThan cmd)
         {
             cmd.Result.Value = cmd.Op1.Value < cmd.Op2.Value;
@@ -120,27 +143,35 @@ namespace Compiler
 
             if (commands == null) return;
 
-            var stack = new Stack<Assign>();
-            while (commands.Commands[1] is Assign)
+            // Remove and save previous assign value commands
+            var stack = new Stack<AssignValue>();
+            while (commands.Commands[1] is AssignValue)
             {
-                stack.Push((Assign)commands.Commands[1]);
+                stack.Push((AssignValue)commands.Commands[1]);
                 commands.Commands.RemoveAt(1);
             }
 
+            // Add my assign value commands.
             for (var para = cmd.Parameters.Count - 1; para >= 0; para--)
             {
                 var parameter = cmd.Function.Parameters[para];
-                var newCmd = new Assign { Recipient = parameter, Source = cmd.Parameters[para] };
+                var newCmd = new AssignValue
+                {
+                    Recipient = parameter,
+                    Value = cmd.Parameters[para].Value
+                };
                 commands.Commands.Insert(1, newCmd);
             }
 
             Execute(commands);
 
+            // Remove my assign value commands
             for (var para = cmd.Parameters.Count - 1; para >= 0; para--)
             {
                 commands.Commands.RemoveAt(1);
             }
 
+            // Restor previous assign value commands.
             while (stack.Count != 0)
             {
                 commands.Commands.Insert(1, stack.Pop());
@@ -264,9 +295,9 @@ namespace Compiler
         {
             _colorPen.Width = cmd.Thickness.Value;
 
-            var point1 = new PointF(cmd.X1.Value, cmd.Y1.Value);
-            var point2 = new PointF(cmd.X2.Value, cmd.Y2.Value);
-            var point3 = new PointF(cmd.X3.Value, cmd.Y3.Value);
+            var point1 = new PointF((float)cmd.X1.Value, (float)cmd.Y1.Value);
+            var point2 = new PointF((float)cmd.X2.Value, (float)cmd.Y2.Value);
+            var point3 = new PointF((float)cmd.X3.Value, (float)cmd.Y3.Value);
                        
             PointF[] curvePoints =
              {

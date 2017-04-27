@@ -82,14 +82,30 @@ namespace Coco_R
     public class Assign : Command
     {
         /// <summary>
-        /// Symbol where a value will be stored.
+        /// Symbol from where the calue will be obtained.
         /// </summary>
         public DirectValueSymbol Source { get; set; }
 
         /// <summary>
-        /// Symbol from where the value will be obtained.
+        /// Symbol from where the value will be saved.
         /// </summary>
         public DirectValueSymbol Recipient { get; set; }
+
+        public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); }
+    }
+
+    public class AssignValue : Command
+    {
+
+        /// <summary>
+        /// Symbol from where the value will be saved.
+        /// </summary>
+        public DirectValueSymbol Recipient { get; set; }
+
+        /// <summary>
+        /// Value to be stored.
+        /// </summary>
+        public dynamic Value { get; set; }
 
         public override void ExecuteBy(IVirtualMachine vm) { vm.Execute(this); }
     }

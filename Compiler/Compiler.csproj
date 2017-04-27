@@ -90,6 +90,7 @@
     <Content Include="Test Files\RecursiveFibo.txt" />
     <Content Include="Test Files\FunctionTest.txt" />
     <Content Include="Test Files\NegativeTest.txt" />
+    <Content Include="Test Files\Sierpinski.txt" />
     <Content Include="Test Files\SortTest.txt" />
     <Content Include="Test Files\ValidTestB.txt" />
     <Content Include="Test Files\VarDeclarationA.txt" />

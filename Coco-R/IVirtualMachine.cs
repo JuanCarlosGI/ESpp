@@ -124,6 +124,7 @@
         /// </summary>
         /// <param name="cmd">The command.</param>
         void Execute(Equals cmd);
+        void Execute(AssignValue assignValue);
 
         /// <summary>
         /// Executes a command.

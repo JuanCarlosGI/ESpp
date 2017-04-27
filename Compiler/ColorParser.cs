@@ -24,6 +24,8 @@ namespace Compiler
                     return Color.Pink;
                 case "cafe":
                     return Color.Brown;
+                case "blanco":
+                    return Color.White;
                 default:
                     return Color.Black;
             }

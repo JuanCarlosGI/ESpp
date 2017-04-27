@@ -45,11 +45,10 @@ namespace Compiler
                 {
                     var vm = new VirtualMachine();
                     commandList.ExecuteBy(vm);
-                    var frm = new Form { ClientSize = new Size(500, 500), Text = @"Resultado", Icon = Properties.Resources.Logo };
+                    var frm = new Form { ClientSize = new Size(500, 500), Text = @"Resultado", Icon = Properties.Resources.Logo, FormBorderStyle = FormBorderStyle.FixedSingle, MaximizeBox = false};
                     var pb = new PictureBox { Image = vm.Image, Size = frm.ClientSize, SizeMode = PictureBoxSizeMode.StretchImage};
                     frm.Controls.Add(pb);
                     frm.ShowDialog();
-
                 }
             }
             else
