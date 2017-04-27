@@ -17,6 +17,9 @@ TOKENS
 	ctedbl = digit{digit}'.'digit{digit}.
 	lpar = '('.
 
+COMMENTS FROM "/*" TO "*/" NESTED
+COMMENTS FROM "//" TO '\n'
+
 IGNORE eol + '\t'
 
 PRODUCTIONS

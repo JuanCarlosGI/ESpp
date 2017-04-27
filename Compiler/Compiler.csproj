@@ -85,6 +85,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Test Files\IterativeFibo.txt" />
     <Content Include="Test Files\OutputTest.txt" />
     <Content Include="Test Files\ProgStructure.txt" />
     <Content Include="Test Files\RecursiveFibo.txt" />

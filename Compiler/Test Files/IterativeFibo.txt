@@ -1,0 +1,15 @@
+﻿main {
+	entero actual, pasado, iter;
+	pasado = 1;
+	actual = 1;
+	iter = 3;
+	mientras(iter<=6)
+	{
+		iter = iter + 1;
+		entero aux = pasado + actual;
+		pasado = actual;
+		actual = aux;
+	}
+
+	imprimir(actual);
+}
