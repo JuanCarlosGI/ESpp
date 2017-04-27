@@ -44,6 +44,7 @@ main {
 	imprimir("¿Cuántos niveles quieres?");
 	entero niveles;
 	niveles = convierteNumero(lectura());
+	
 	sierpinski(0, 0, 0, 1000, 500, 0, niveles, "verde");
 	sierpinski(0, 1000, 1000, 1000, 500, 0, niveles, "blanco");
 	sierpinski(500, 0, 1000, 0, 1000, 1000, niveles, "rojo");
