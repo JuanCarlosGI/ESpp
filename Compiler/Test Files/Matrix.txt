@@ -1,0 +1,43 @@
+main {
+	entero[3,3] arrA;
+	entero[3,3] arrB;
+	entero[3,3] arrC;
+	entero i;
+	entero j;
+	
+	mientras (i < 3) {
+		j = 0;
+		mientras (j < 3){
+			arrA[i,j] = i + 10;
+			arrB[i,j] = i + 10;
+			imprimir(arrB[i,j]);
+			j = j + 1;
+		}
+		i = i + 1;
+	}
+
+	entero x,y,z;
+	mientras (x < 3){
+		y = 0;
+		mientras (y < 3){
+			arrC[x,y] = 0;
+			z = 0;
+			mientras(z < 3){
+				arrC[x,y] = arrC[x,y] + arrA[x,z] * arrB[z,y];
+				z = z + 1;
+			}
+			y = y + 1;
+		}
+	x = x + 1;
+	}
+	i = 0;
+	j = 0;
+	mientras (i < 3) {
+		j = 0;
+		mientras (j < 3){
+			imprimir(arrC[i,j]);
+			j = j + 1;
+		}
+		i = i + 1;
+	}
+}

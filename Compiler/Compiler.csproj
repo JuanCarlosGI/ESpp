@@ -74,6 +74,8 @@
     <None Include="Resources\Logo.ico" />
     <Content Include="Test Files\ArrayTest.txt" />
     <Content Include="Test Files\Conditions.txt" />
+    <Content Include="Test Files\CubeTest.txt" />
+    <Content Include="Test Files\FactorialIteTest.txt" />
     <Content Include="Test Files\FactorialTest.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -86,7 +88,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Test Files\FindTest.txt" />
     <Content Include="Test Files\IterativeFibo.txt" />
+    <Content Include="Test Files\Matrix.txt" />
     <Content Include="Test Files\OutputTest.txt" />
     <Content Include="Test Files\ProgStructure.txt" />
     <Content Include="Test Files\RecursiveFibo.txt" />

@@ -1,0 +1,81 @@
+main
+{
+	entero indice1;
+	indice1 = 2;
+	
+	entero aux1;
+	aux1 = 0;
+
+	entero indice2;
+	indice2 = 2;
+
+	entero aux2;
+	aux2 = 0;
+
+	entero indice3;
+	indice3 = 2;
+
+	entero aux3;
+	aux3 = 0;
+
+	entero[2,2,2] cubo;
+
+	entero[2,2,2] cubo2;
+
+	entero[2,2,2] cubofinal;
+
+	mientras(aux1 <> indice1)
+	{
+		mientras(aux2 <> indice2)
+		{
+			mientras(aux3 <> indice3)
+			{
+				cubo[aux1,aux2,aux3] = 1;
+				imprimir(cubo[aux1,aux2,aux3]);
+				aux3 = aux3 + 1;
+			}
+			aux2 = aux2 + 1;
+			aux3 = 0;
+		}
+		aux1 = aux1 + 1;
+		aux2 = 0;	
+	}
+	aux1 = 0;
+	imprimir(" ");
+	mientras(aux1 <> indice1)
+	{
+		mientras(aux2 <> indice2)
+		{
+			mientras(aux3 <> indice3)
+			{
+				cubo2[aux1,aux2,aux3] = 2;
+				imprimir(cubo2[aux1,aux2,aux3]);
+				aux3 = aux3 + 1;
+			}
+			aux2 = aux2 + 1;
+			aux3 = 0;
+		}
+		aux1 = aux1 + 1;
+		aux2 = 0;	
+	}
+	aux1 = 0;
+	imprimir(" ");
+	mientras(aux1 <> indice1)
+	{
+		mientras(aux2 <> indice2)
+		{
+			mientras(aux3 <> indice3)
+			{
+				cubofinal[aux1,aux2,aux3] = cubo[aux1,aux2,aux3] * cubo2[aux1,aux2,aux3];
+				imprimir(cubofinal[aux1,aux2,aux3]);
+				aux3 = aux3 + 1;
+			}
+			aux2 = aux2 + 1;
+			aux3 = 0;
+		}
+		aux1 = aux1 + 1;
+		aux2 = 0;	
+	}
+	aux1 = 0;
+	
+}

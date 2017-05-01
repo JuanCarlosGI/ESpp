@@ -6,7 +6,8 @@
 	mientras(iter<=6)
 	{
 		iter = iter + 1;
-		entero aux = pasado + actual;
+		entero aux;
+		aux = pasado + actual;
 		pasado = actual;
 		actual = aux;
 	}

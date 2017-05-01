@@ -1,0 +1,27 @@
+entero[10] arr;
+entero find(entero termino)
+{
+	entero resultado;
+	resultado = -1;
+	entero i;
+	mientras(i < 10) {
+		entero x;
+		x = arr[i];
+		si(x == termino){
+			resultado = i;
+		}
+		i = i + 1;	
+	}
+	regresa resultado;
+}
+
+main {
+	entero i;
+	mientras (i < 10) {
+		arr[i] = aleatorio() * 10;
+		imprimir(arr[i]);
+		i = i + 1;
+	}
+	imprimir("");
+	imprimir(find(3));
+}

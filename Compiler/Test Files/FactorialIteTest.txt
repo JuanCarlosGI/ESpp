@@ -1,0 +1,14 @@
+main {
+	entero i;
+	entero x;
+	x = 7;
+	entero y;
+	y = 1;
+	imprimir(x);
+	imprimir("");
+	mientras (i < x) {
+		i = i + 1;
+		y = y * i;
+	}
+	imprimir(y);
+}

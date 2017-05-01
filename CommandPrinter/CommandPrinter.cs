@@ -131,9 +131,13 @@ namespace CommandPrinter
             cmd.If.ExecuteBy(this);
             _indents = _indents.Remove(0, 1);
             _file.WriteLine($"{_indents}Else:");
-            _indents += "\t";
-            cmd.Else.ExecuteBy(this);
-            _indents = _indents.Remove(0, 2);
+            if (cmd.Else != null)
+            {
+                _indents += "\t";
+                cmd.Else.ExecuteBy(this);
+                _indents = _indents.Remove(0, 1);
+            }
+            _indents = _indents.Remove(0, 1);
         }
 
         public void Execute(And cmd)
