@@ -232,6 +232,7 @@ namespace Compiler
         }
         public void Execute(Divide cmd)
         {
+            if (cmd.Op2.Value == 0) throw new EsppException("Division entre cero.");
             cmd.Result.Value = cmd.Op1.Value / cmd.Op2.Value;
         }
         public void Execute(Sum cmd)

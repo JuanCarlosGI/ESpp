@@ -115,7 +115,7 @@ namespace Coco_R
                 var value = Indexes[i].Value;
                 if (value < 0 || value >= Lengths[i])
                 {
-                    throw new Exception("Out of bounds.");
+                    throw new EsppException("Fuera del rango.");
                 }
 
                 accum = accum * Lengths[i] + value;

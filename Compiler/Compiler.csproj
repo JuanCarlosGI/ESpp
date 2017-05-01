@@ -61,7 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorParser.cs" />
-    <Compile Include="EsppException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -70,6 +69,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="VirtualMachine.cs" />
+    <None Include="ClassDiagram.cd" />
     <None Include="Logo.png" />
     <None Include="Resources\Logo.ico" />
     <Content Include="Test Files\ArrayTest.txt" />

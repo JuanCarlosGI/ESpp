@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler", "Compiler\Compil
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coco-R", "Coco-R\Coco-R.csproj", "{9551C306-9132-4C09-8A8B-49D10EA8A4BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandPrinter", "CommandPrinter\CommandPrinter.csproj", "{E77FFCC5-070E-44E1-85C1-56827587404E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{9551C306-9132-4C09-8A8B-49D10EA8A4BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9551C306-9132-4C09-8A8B-49D10EA8A4BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9551C306-9132-4C09-8A8B-49D10EA8A4BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E77FFCC5-070E-44E1-85C1-56827587404E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E77FFCC5-070E-44E1-85C1-56827587404E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E77FFCC5-070E-44E1-85C1-56827587404E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E77FFCC5-070E-44E1-85C1-56827587404E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -49,7 +49,7 @@ namespace Compiler
                         commandList.ExecuteBy(vm);
                         var frm = new Form
                         {
-                            ClientSize = new Size(500, 500),
+                            ClientSize = new Size(1000, 1000),
                             Text = @"Resultado",
                             Icon = Properties.Resources.Logo,
                             FormBorderStyle = FormBorderStyle.FixedSingle,

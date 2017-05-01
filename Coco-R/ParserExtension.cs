@@ -126,7 +126,7 @@ namespace Coco_R
         {
             var symbol = _currentScope.Search(name) as VariableArray;
             if (symbol == null)
-                SemErr($"La variable '{name}' no es un arreglo.");
+                SemErr($"La variable '{name}' no es una estructura multidimensionada.");
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace Coco_R
         /// <returns></returns>
         private bool CheckTypeMismatch(Symbol left, Symbol right, Operator op, out Type type)
         {
-            type = Cube[(int)left.Type, (int)right.Type, (int)op];
+            type = _cube[(int)left.Type, (int)right.Type, (int)op];
             if (type != Type.Error) return true;
 
             SemErr("Error de tipos.");

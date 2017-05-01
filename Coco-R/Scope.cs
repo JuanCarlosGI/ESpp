@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 
 namespace Coco_R
 {
@@ -43,7 +44,7 @@ namespace Coco_R
         /// <summary>
         /// Gets all the symbols in the hash.
         /// </summary>
-        public ICollection Symbols => _hash.Values;
+        public IEnumerable<Symbol> Symbols => _hash.Values.Cast<Symbol>();
 
         /// <summary>
         /// Seaches for a symbol in all available scopes prioritizing the 

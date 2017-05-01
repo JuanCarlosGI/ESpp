@@ -258,47 +258,47 @@ namespace Coco_R
         {
             if (backgroundColor.Type != Type.Cadena)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (lineColor.Type != Type.Cadena)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (thickness.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (x1.Type != Type.Decimal && x1.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (y1.Type != Type.Decimal && y1.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (x2.Type != Type.Decimal && x2.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (y2.Type != Type.Decimal && y2.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (x3.Type != Type.Decimal && x3.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (y3.Type != Type.Decimal && y3.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
 
@@ -320,37 +320,37 @@ namespace Coco_R
         {
             if (backgroundColor.Type != Type.Cadena)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (lineColor.Type != Type.Cadena)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (thickness.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (x.Type != Type.Decimal && x.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (y.Type != Type.Decimal && y.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (width.Type != Type.Decimal && width.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (height.Type != Type.Decimal && height.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
 
@@ -372,37 +372,37 @@ namespace Coco_R
         {
             if (backgroundColor.Type != Type.Cadena)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (lineColor.Type != Type.Cadena)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (thickness.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (x.Type != Type.Decimal && x.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (y.Type != Type.Decimal && y.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (width.Type != Type.Decimal && width.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (height.Type != Type.Decimal && height.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
 
@@ -425,42 +425,42 @@ namespace Coco_R
         {
             if (lineColor.Type != Type.Cadena)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (thickness.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (x.Type != Type.Decimal && x.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (y.Type != Type.Decimal && y.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (width.Type != Type.Decimal && width.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (height.Type != Type.Decimal && height.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (startAngle.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (finalAngle.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
 
@@ -481,32 +481,32 @@ namespace Coco_R
         {
             if (lineColor.Type != Type.Cadena)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (thickness.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (x1.Type != Type.Decimal && x1.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (y1.Type != Type.Decimal && y1.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (x2.Type != Type.Decimal && x2.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
             else if (y2.Type != Type.Decimal && y2.Type != Type.Entero)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
 
@@ -525,7 +525,7 @@ namespace Coco_R
         {
             if (result.Type != Type.Booleano)
             {
-                SemErr("Type mismatch");
+                SemErr("Error de tipos");
                 return;
             }
 
@@ -562,28 +562,18 @@ namespace Coco_R
         /// <param name="result">Symbol where result will be stored.</param>
         private void DoFunction(Function function, List<DirectValueSymbol> parameters, DirectValueSymbol result)
         {
-            if (function == null)
-            {
-                SemErr("Function does not exist.");
-                return;
-            }
             if (function.Type == Type.Rutina)
             {
-                SemErr("Function does not have a return value.");
-                return;
-            }
-            if (function.Parameters.Count != parameters.Count)
-            {
-                SemErr("Wrong amount of arguments.");
+                SemErr("La función no tiene un valor de retorno.");
                 return;
             }
 
             for (var para = 0; para < parameters.Count; para++)
             {
-                if (Cube[(int) function.Parameters[para].Type, (int) parameters[para].Type,
+                if (_cube[(int) function.Parameters[para].Type, (int) parameters[para].Type,
                         (int) Operator.Asignation] != function.Parameters[para].Type)
                 {
-                    SemErr("Type mismatch");
+                    SemErr("Error de tipos");
                     return;
                 }
             }
@@ -609,28 +599,18 @@ namespace Coco_R
         /// parameters.</param>
         private void DoRoutine(Function function, List<DirectValueSymbol> parameters)
         {
-            if (function == null)
-            {
-                SemErr("Function does not exist.");
-                return;
-            }
             if (function.Type != Type.Rutina)
             {
-                SemErr("Function is not a routine.");
-                return;
-            }
-            if (function.Parameters.Count != parameters.Count)
-            {
-                SemErr("Wrong amount of arguments.");
+                SemErr("La función no es una rutina.");
                 return;
             }
 
             for (var para = 0; para < parameters.Count; para++)
             {
-                if (Cube[(int) function.Parameters[para].Type, (int) parameters[para].Type,
+                if (_cube[(int) function.Parameters[para].Type, (int) parameters[para].Type,
                         (int) Operator.Asignation] == Type.Error)
                 {
-                    SemErr("Type mismatch");
+                    SemErr("Error de tipos");
                     return;
                 }
             }

@@ -4,15 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9551C306-9132-4C09-8A8B-49D10EA8A4BB}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{E77FFCC5-070E-44E1-85C1-56827587404E}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Coco_R</RootNamespace>
-    <AssemblyName>Coco-R</AssemblyName>
+    <RootNamespace>CommandPrinter</RootNamespace>
+    <AssemblyName>CommandPrinter</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -40,25 +43,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Command.cs" />
-    <Compile Include="ConstantBuilder.cs" />
-    <Compile Include="EsppException.cs" />
-    <Compile Include="ParserCommandBuilder.cs" />
-    <Compile Include="ParserExtension.cs" />
-    <Compile Include="SemanticCube.cs" />
-    <Compile Include="Scanner.cs" />
-    <Compile Include="Parser.cs" />
+    <Compile Include="CommandPrinter.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Symbols.cs" />
-    <Compile Include="Scope.cs" />
-    <Compile Include="Types.cs" />
-    <Compile Include="VariableBuilder.cs" />
-    <Compile Include="IVirtualMachine.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-    <None Include="CommandsClassDiagram.cd" />
-    <None Include="ESpp.atg" />
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Coco-R\Coco-R.csproj">
+      <Project>{9551c306-9132-4c09-8a8b-49d10ea8a4bb}</Project>
+      <Name>Coco-R</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

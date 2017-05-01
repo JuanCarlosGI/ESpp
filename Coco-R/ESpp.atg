@@ -250,8 +250,8 @@ PRODUCTIONS
 		}.
 	
 	Factor =				(. var negative = false; .)
-		[('+' | '-'			(. negative = true; .)
-		)]
+		['-'			(. negative = true; .)
+		]
 		((
 			'('				(. _operatorStack.Push(Operator.FakeLimit); .)
 			Expresion 

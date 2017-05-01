@@ -5,7 +5,7 @@
         /// <summary>
         /// Semantic cube to determine result type for all operations.
         /// </summary>
-        public Type[,,] Cube =
+        private readonly Type[,,] _cube =
         {
             {
                 // Entero vs entero

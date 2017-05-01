@@ -39,6 +39,7 @@ rutina sierpinski(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, de
 		Izquierda: Verde
 		Centro: Blanco
 		Derecha: Rojo
+
 */
 main {
 	imprimir("¿Cuántos niveles quieres?");
@@ -46,6 +47,6 @@ main {
 	niveles = convierteNumero(lectura());
 	
 	sierpinski(0, 0, 0, 1000, 500, 0, niveles, "verde");
-	sierpinski(0, 1000, 1000, 1000, 500, 0, niveles, "blanco");
+	sierpinski(0, 1000, 1000, 1000, 500, 0, niveles, "azul");
 	sierpinski(500, 0, 1000, 0, 1000, 1000, niveles, "rojo");
 }
