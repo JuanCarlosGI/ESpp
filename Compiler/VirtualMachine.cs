@@ -137,6 +137,10 @@ namespace Compiler
             cmd.Array.Indexes = cmd.Indexes;
         }
 
+        /// <summary>
+        /// Executes a CallFunction command
+        /// </summary>
+        /// <param name="cmd">command to be executed.</param>
         public void Execute(CallFunction cmd)
         {
             var commands = cmd.Function.CommandList;
@@ -171,12 +175,13 @@ namespace Compiler
                 commands.Commands.RemoveAt(1);
             }
 
-            // Restor previous assign value commands.
+            // Restore previous assign value commands.
             while (stack.Count != 0)
             {
                 commands.Commands.Insert(1, stack.Pop());
             }
 
+            // Manages the return value.
             if (cmd.Function.Type != Type.Rutina)
             {
                 var aux = cmd.Function.Returns.Value;
@@ -230,6 +235,11 @@ namespace Compiler
         {
             cmd.Result.Value = cmd.Op1.Value % cmd.Op2.Value;
         }
+
+        /// <summary>
+        /// Executes a divide command
+        /// </summary>
+        /// <param name="cmd">Command to execute.</param>
         public void Execute(Divide cmd)
         {
             if (cmd.Op2.Value == 0) throw new EsppException("Division entre cero.");
@@ -292,6 +302,10 @@ namespace Compiler
             _graphics.FillEllipse(_colorBack, rect);
         }
 
+        /// <summary>
+        /// Executes a triangle command.
+        /// </summary>
+        /// <param name="cmd">Command to execute.</param>
         public void Execute(Triangle cmd)
         {
             _colorPen.Width = cmd.Thickness.Value;

@@ -1,9 +1,7 @@
-﻿variables:
-funciones:
-main {
+﻿main {
 	entero[8] miArreglo;
 	entero contador;
-	miArreglo[3] = 9;
+	miArreglo[1] = 9;
 	contador = 0;
 
 	mientras (contador < 8) {

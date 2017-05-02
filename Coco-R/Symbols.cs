@@ -21,7 +21,7 @@ namespace Coco_R
     }
 
     /// <summary>
-    /// Class representing a symbol which has a valua that can be called
+    /// Class representing a symbol which has a value that can be called
     /// directly.
     /// </summary>
     public abstract class DirectValueSymbol : Symbol
@@ -107,17 +107,26 @@ namespace Coco_R
             }
         }
 
+        /// <summary>
+        /// Calculates the single-array index from all its indexes. This method exploits the fact that all indexes are
+        /// zero based, so no 'K' value is needed; only the size of each dimension, and the value of the index in each
+        /// dimension. Follows the formula:
+        /// r = (.....(((v1*d2+v2)*d3+v3)*d4+v4)....)*dn + vn
+        /// </summary>
+        /// <returns>The 'virtual address' copiled from all indexes.</returns>
         private int GetActualIndex()
         {
             var accum = 0;
             for (var i = 0; i < Indexes.Count; i++)
             {
+                // Gets value of index and checks for out-of-bounds.
                 var value = Indexes[i].Value;
                 if (value < 0 || value >= Lengths[i])
                 {
                     throw new EsppException("Fuera del rango.");
                 }
 
+                // Updates final result.
                 accum = accum * Lengths[i] + value;
             }
 

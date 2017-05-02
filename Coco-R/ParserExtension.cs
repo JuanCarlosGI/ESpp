@@ -188,6 +188,7 @@ namespace Coco_R
             }
             else
             {
+                // Search for funtion in current scope, NOT in superior ones.
                 var func = _currentScope.Search(name) as Function;
                 if (func == null || func.CommandList != null)
                 {
@@ -195,6 +196,7 @@ namespace Coco_R
                 }
                 else if (func.Type == tipo && parameters.Count == func.Parameters.Count)
                 {
+                    // Verify that all parameters have the same name and type
                     bool success = true;
                     for (var param = 0; param < parameters.Count; param++)
                     {
@@ -206,6 +208,8 @@ namespace Coco_R
                             break;
                         }  
                     }
+
+                    // Update reference to parameters.
                     if (success)
                     {
                         func.Parameters = parameters;

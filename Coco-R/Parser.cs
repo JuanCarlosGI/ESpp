@@ -565,13 +565,9 @@ public partial class Parser {
 
 	void Factor() {
 		var negative = false; 
-		if (la.kind == 38 || la.kind == 39) {
-			if (la.kind == 38) {
-				Get();
-			} else {
-				Get();
-				negative = true; 
-			}
+		if (la.kind == 39) {
+			Get();
+			negative = true; 
 		}
 		if (la.kind == 5) {
 			Get();
@@ -617,7 +613,7 @@ public partial class Parser {
 		} else if (la.kind == 1) {
 			Variable variable; List<DirectValueSymbol> indexes; 
 			Variable(out variable, out indexes);
-			sym = variable; if(variable is VariableArray) { sym = _varBuilder.NewVariable(variable.Type); DoGetArrayValue(variable, sym); } 
+			sym = variable; if(variable is VariableArray) { sym = _varBuilder.NewVariable(variable.Type); DoGetArrayValue(variable, sym); _currentScope.Add(sym); } 
 		} else SynErr(53);
 	}
 
@@ -634,7 +630,7 @@ public partial class Parser {
 		Expect(5);
 		Expresion();
 		Expect(8);
-		var number = _symbolStack.Pop(); res = _varBuilder.NewVariable(Type.Decimal); DoParse(number, res);  
+		var number = _symbolStack.Pop(); res = _varBuilder.NewVariable(Type.Decimal); DoParse(number, res); 
 	}
 
 	void Aleatorio() {
@@ -667,7 +663,7 @@ public partial class Parser {
 		{_x,_x,_x,_x, _x,_x,_T,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x},
 		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x},
 		{_x,_T,_x,_x, _x,_x,_T,_x, _x,_x,_x,_T, _T,_T,_T,_x, _x,_x,_x,_x, _x,_T,_x,_T, _T,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x},
-		{_x,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_T,_T, _x,_x,_x,_T, _T,_T,_T,_T, _x,_x},
+		{_x,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _x,_x,_x,_T, _T,_T,_T,_T, _x,_x},
 		{_x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _T,_T,_T,_T, _T,_T,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x},
 		{_x,_T,_T,_T, _T,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_x, _x,_x,_x,_T, _T,_T,_T,_T, _x,_x}
 

@@ -19,8 +19,10 @@ namespace Coco_R
             Type type;
             if (CheckTypeMismatch(op1, op2, oper, out type))
             {
+                // Add new symbol to scope
                 var result = _varBuilder.NewVariable(type);
                 _currentScope.Add(result);
+
                 Command cmd = null;
                 switch (oper)
                 {
@@ -32,6 +34,7 @@ namespace Coco_R
                         break;
                 }
 
+                // Add to  symbol stack and add command to scope's commands.
                 _symbolStack.Push(result);
                 _currentScope.CommandList.Commands.Add(cmd);
             }
@@ -54,6 +57,7 @@ namespace Coco_R
             {
                 var result = _varBuilder.NewVariable(type);
                 _currentScope.Add(result);
+
                 Command cmd = null;
                 switch (oper)
                 {
@@ -90,6 +94,7 @@ namespace Coco_R
             {
                 var result = _varBuilder.NewVariable(type);
                 _currentScope.Add(result);
+
                 Command cmd = null;
                 switch (oper)
                 {
@@ -135,6 +140,7 @@ namespace Coco_R
             {
                 var result = _varBuilder.NewVariable(type);
                 _currentScope.Add(result);
+
                 Command cmd = null;
                 switch (oper)
                 {

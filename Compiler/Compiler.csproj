@@ -70,7 +70,6 @@
     </Compile>
     <Compile Include="VirtualMachine.cs" />
     <None Include="ClassDiagram.cd" />
-    <None Include="Logo.png" />
     <None Include="Resources\Logo.ico" />
     <Content Include="Test Files\ArrayTest.txt" />
     <Content Include="Test Files\Conditions.txt" />

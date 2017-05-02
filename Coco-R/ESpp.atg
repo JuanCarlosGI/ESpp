@@ -274,7 +274,7 @@ PRODUCTIONS
 		| IF(FollowedByLPar())			(. Function function; List<DirectValueSymbol> parameters;.)
 			Funcion<out function, out parameters>		(. var result = _varBuilder.NewVariable(function.Type); DoFunction(function, parameters, result); sym = result; _currentScope.Add(sym); .)
 		|											(. Variable variable; List<DirectValueSymbol> indexes; .)
-			Variable<out variable, out indexes>		(. sym = variable; if(variable is VariableArray) { sym = _varBuilder.NewVariable(variable.Type); DoGetArrayValue(variable, sym); } .)
+			Variable<out variable, out indexes>		(. sym = variable; if(variable is VariableArray) { sym = _varBuilder.NewVariable(variable.Type); DoGetArrayValue(variable, sym); _currentScope.Add(sym); } .)
 		).
 	
 	Aleatorio = "aleatorio" '(' ')'.
@@ -282,7 +282,7 @@ PRODUCTIONS
 	Lectura = "lectura" '(' ')'.
 
 	ParseNum<out DirectValueSymbol res> = "convierteNumero" '(' Expresion ')'
-		(. var number = _symbolStack.Pop(); res = _varBuilder.NewVariable(Type.Decimal); DoParse(number, res);  .)
+		(. var number = _symbolStack.Pop(); res = _varBuilder.NewVariable(Type.Decimal); DoParse(number, res); .)
 		.
 	
 	Ctebol = "verdadero" | "falso".
