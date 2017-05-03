@@ -1,0 +1,61 @@
+main {
+		// techo de la casa
+		dibujarTriangulo("rojo","cafe",10,300,200,700,200,500,100);
+		
+		// cuerpo de la casa
+		dibujarRectangulo("azul","negro",10,300,210,400,200);
+
+		// ventana en la parte del techo
+		dibujarElipse("blanco","amarillo",10,476,132,50,50);
+
+		//-----------------------------------------------------------------
+
+		// contorno de un cuarto de la ventana, inferior derecho
+		dibujarArco("naranja",2,476,132,50,50,0,90);
+
+		// contorno de un cuarto de la ventana, superior izquierdo
+		dibujarArco("naranja",2,476,132,50,50,180,90);
+
+		// contorno de un cuarto de la ventana, superior derecho
+		dibujarArco("cafe",2,476,132,50,50,270,90);
+		
+		// contorno de un cuarto de la ventana, inferior izquierdo
+		dibujarArco("cafe",2,476,132,50,50,90,90);
+	
+		//------------------------------------------------------------------
+		
+		// contorno exterior de un cuarto de la ventana, inferior derecho
+		dibujarArco("cafe",2,471,127,61,61,0,90);
+
+		// contorno exterior de un cuarto de la ventana, inferior derecho
+		dibujarArco("naranja",2,471,127,61,61,90,90);
+
+		// contorno exterior de un cuarto de la ventana, inferior derecho
+		dibujarArco("cafe",2,471,127,61,61,180,90);
+
+		// contorno exterior de un cuarto de la ventana, inferior derecho
+		dibujarArco("naranja",2,471,127,61,61,270,90);
+
+
+		//------------------------------------------------------------------
+		
+		// pasto
+		dibujarLinea("verde",4,0,413,1000,413);
+
+		//------------------------------------------------------------------
+
+		// puerta
+		dibujarRectangulo("cafe","negro",4,550,260,70,150);
+
+		// perilla
+		dibujarElipse("morado","rosa",3,600,340,7,7);
+
+		//------------------------------------------------------------------
+		
+		// arbol
+		dibujarElipse("verde","negro",1,100,170,150,150);
+
+		// tronco
+		dibujarRectangulo("cafe","negro",2,155,320,40,90);
+		
+}
